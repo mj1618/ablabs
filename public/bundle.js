@@ -204,7 +204,7 @@ exports.default = (0, _jumpsuit.Component)({
                         'Active'
                       )
                     ),
-                    exp.active === false && _react2.default.createElement(
+                    exp.active !== true && _react2.default.createElement(
                       'td',
                       null,
                       _react2.default.createElement(
@@ -511,20 +511,16 @@ exports.default = (0, _jumpsuit.Component)({
         ),
         _react2.default.createElement(
           'div',
-          { className: 'top-left-part' },
+          { className: 'top-left-part', style: { height: '60px' } },
           _react2.default.createElement(
-            'a',
-            { className: 'logo', href: 'index.html' },
+            'h1',
+            { className: 'text-center', style: { color: 'white' } },
             _react2.default.createElement(
               'b',
               null,
-              _react2.default.createElement('img', { src: '../plugins/images/eliteadmin-logo.png', alt: 'home' })
+              'AB'
             ),
-            _react2.default.createElement(
-              'span',
-              { className: 'hidden-xs' },
-              _react2.default.createElement('img', { src: '../plugins/images/eliteadmin-text.png', alt: 'home' })
-            )
+            'Labs'
           )
         ),
         _react2.default.createElement(

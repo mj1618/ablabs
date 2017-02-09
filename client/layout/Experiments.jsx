@@ -30,7 +30,7 @@ export default Component({
                                 <td>{exp.nUsers}</td>
                                 <td>{exp.nEvents}</td>
                                 { exp.active===true && <td><div className="label label-table label-success">Active</div></td> }
-                                { exp.active===false && <td><div className="label label-table label-warning">Paused</div></td> }
+                                { exp.active!==true && <td><div className="label label-table label-warning">Paused</div></td> }
                             </tr>
                         })
                     }

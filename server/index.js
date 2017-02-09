@@ -31,13 +31,16 @@ app.get('/login', (req, res) => {
 
 
 app.get('/experiments', (req, res) => {
-    res.render('dashboard',{
-        pageData: {
-            routeId: 'experiments',
-            title:'Experiments',
-            experiments: Experiment.getForAccount(0)
-        }
-    });
+    Experiment.where({account_id:1}).fetchAll().then(es=>{
+        res.render('dashboard',{
+            pageData: {
+                routeId: 'experiments',
+                title:'Experiments',
+                experiments: es.map(e=>e)
+            }
+        });
+    })
+    
 });
 
 

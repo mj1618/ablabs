@@ -1,4 +1,4 @@
-import { User } from '../db';
+import { User } from '../model';
 import fetch from 'node-fetch';
 const querystring = require('querystring');
 export default (app) => {
