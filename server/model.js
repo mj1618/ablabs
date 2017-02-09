@@ -69,19 +69,27 @@ var Account = bookshelf.Model.extend({
   }
 });
 
-User.where('id',1).fetch({withRelated:'accounts'}).then(function(user) {
-  console.log(user.related('accounts').map(acc=>acc.id));
-});
+// User.where('id',1).fetch({withRelated:'accounts'}).then(function(user) {
+//   console.log(user.related('accounts').map(acc=>acc.id));
+// });
 
-User.where('id',1).fetch({withRelated:'accounts'}).then(function(user) {
-  new Account().save().tap(acc=>{
-    user.related('accounts').create(user)
-  })
-});
+// Experiment.where('id',1).fetch({withRelated:'tracks'}).then(function(e) {
+//   console.log(e.related('tracks').map(t=>t.id));
+// });
 
-Account.forge().save().tap(function(acc){
-  Promise.map([User.where('id',1).fetch()], user=>acc.related('users').create(user))
-});
+// User.where('id',1).fetch({withRelated:'accounts'}).then(function(user) {
+//   new Account().save().tap(acc=>{
+//     user.related('accounts').create(user)
+//   })
+// });
+
+// Account.forge().save().tap(function(acc){
+//   Promise.map([User.where('id',1).fetch()], user=>acc.related('users').create(user))
+// });
+
+// Account.where('id',1).fetch({withRelated:'experiments'}).then(function(account){
+//   console.log(account.related('experiments').map(e=>e.id));
+// })
 
 export {
     User,

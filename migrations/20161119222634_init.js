@@ -17,14 +17,14 @@ exports.up = function(knex, Promise) {
 
       }).createTable('user_account', function(table) {
         table.bigIncrements('id').primary();
-        table.bigInteger('user_id').unsigned().index().references('id').inTable('user');
-        table.bigInteger('account_id').unsigned().index().references('id').inTable('account');
+        table.bigInteger('user_id').unsigned().index().references('id').inTable('user').onDelete('CASCADE');
+        table.bigInteger('account_id').unsigned().index().references('id').inTable('account').onDelete('CASCADE');
         table.string('role');
         table.timestamps();
 
       }).createTable('experiment', function(table) {
         table.bigIncrements('id').primary();
-        table.bigInteger('account_id').unsigned().index().references('id').inTable('account');
+        table.bigInteger('account_id').unsigned().index().references('id').inTable('account').onDelete('CASCADE');
         table.string('name');
         table.boolean('active').defaultTo(true);
         table.string('description',10000);
@@ -33,7 +33,7 @@ exports.up = function(knex, Promise) {
 
       }).createTable('variation', function(table) {
         table.bigIncrements('id').primary();
-        table.bigInteger('experiment_id').unsigned().index().references('id').inTable('experiment');
+        table.bigInteger('experiment_id').unsigned().index().references('id').inTable('experiment').onDelete('CASCADE');
         table.string('name');
         table.string('description',10000);
         table.integer('cohort');
@@ -49,15 +49,15 @@ exports.up = function(knex, Promise) {
 
       }).createTable('experiment_event', function(table) {
         table.bigIncrements('id').primary();
-        table.bigInteger('experiment_id').unsigned().index().references('id').inTable('experiment');
+        table.bigInteger('experiment_id').unsigned().index().references('id').inTable('experiment').onDelete('CASCADE');
         table.bigInteger('event_id').unsigned().index().references('id').inTable('event');
         table.timestamps();
 
       }).createTable('track', function(table) {
         table.bigIncrements('id').primary();
-        table.bigInteger('user_id').unsigned().index().references('id').inTable('user');
-        table.bigInteger('event_id').unsigned().index().references('id').inTable('event');
-        table.bigInteger('variation_id').unsigned().index().references('id').inTable('variation');
+        table.bigInteger('user_id').unsigned().index().references('id').inTable('user').onDelete('CASCADE');
+        table.bigInteger('event_id').unsigned().index().references('id').inTable('event').onDelete('CASCADE');
+        table.bigInteger('variation_id').unsigned().index().references('id').inTable('variation').onDelete('CASCADE');
         table.integer('amount');
         table.timestamps();
       });

@@ -6,10 +6,19 @@ exports.seed = function(knex, Promise) {
       return knex('experiment').del()
     })
     .then(()=>{
+      return knex('user_account').del()
+    })
+    .then(()=>{
       return knex('user').del()
     })
     .then(()=>{
       return knex('account').del()
+    })
+    .then(()=>{
+      return knex('track').del()
+    })
+    .then(()=>{
+      return knex('event').del()
     })
     .then(function () {
       return Promise.all([
@@ -21,6 +30,9 @@ exports.seed = function(knex, Promise) {
         knex('experiment').insert({id: 2, name: 'Test Exp', account_id: 1}),
         knex('variation').insert({id: 1, name: 'Var1', experiment_id: 1}),
         knex('variation').insert({id: 2, name: 'Var2', experiment_id: 2}),
+        knex('event').insert({id: 1, name: 'E1'}),
+        knex('track').insert({id: 1, variation_id: 1, event_id:1}),
+        knex('track').insert({id: 2, variation_id: 2, event_id:1}),
       ]);
     });
 };
