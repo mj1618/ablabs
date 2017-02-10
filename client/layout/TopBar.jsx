@@ -8,7 +8,8 @@ export default Component({
         <div className="navbar-header"> <a className="navbar-toggle hidden-sm hidden-md hidden-lg " href="javascript:void(0)" data-toggle="collapse" data-target=".navbar-collapse"><i className="ti-menu"></i></a>
           <div className="top-left-part" style={{height:'60px'}}>
             {/*<a className="logo" href="index.html"><b><img src="../plugins/images/eliteadmin-logo.png" alt="home" /></b><span className="hidden-xs"><img src="../plugins/images/eliteadmin-text.png" alt="home" /></span></a>*/}
-            <h1 className='text-center' style={{color:'white'}}><b>AB</b>Labs</h1>
+            <h1 id="logo-large" className='text-center' style={{color:'white'}}><b>ab</b>Labs</h1>
+            <h1 id="logo-small" className='text-center' style={{color:'white'}}><b>ab</b></h1>
           </div>
           
             <ul className="nav navbar-top-links navbar-left hidden-xs">

@@ -1,0 +1,15 @@
+#logo-large {
+    display:block;
+}
+
+#logo-small {
+    display:none;
+}
+
+.content-wrapper #logo-large {
+    display:none;
+}
+
+.content-wrapper #logo-small {
+    display:block;
+}

@@ -514,13 +514,22 @@ exports.default = (0, _jumpsuit.Component)({
           { className: 'top-left-part', style: { height: '60px' } },
           _react2.default.createElement(
             'h1',
-            { className: 'text-center', style: { color: 'white' } },
+            { id: 'logo-large', className: 'text-center', style: { color: 'white' } },
             _react2.default.createElement(
               'b',
               null,
-              'AB'
+              'ab'
             ),
             'Labs'
+          ),
+          _react2.default.createElement(
+            'h1',
+            { id: 'logo-small', className: 'text-center', style: { color: 'white' } },
+            _react2.default.createElement(
+              'b',
+              null,
+              'ab'
+            )
           )
         ),
         _react2.default.createElement(
