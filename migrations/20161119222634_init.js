@@ -11,20 +11,21 @@ exports.up = function(knex, Promise) {
         table.boolean('verified_email');
         table.timestamps();
 
-      }).createTable('account', function(table) {
+      }).createTable('project', function(table) {
         table.bigIncrements('id').primary();
+        table.string('name');
         table.timestamps();
 
-      }).createTable('user_account', function(table) {
+      }).createTable('user_project', function(table) {
         table.bigIncrements('id').primary();
         table.bigInteger('user_id').unsigned().index().references('id').inTable('user').onDelete('CASCADE');
-        table.bigInteger('account_id').unsigned().index().references('id').inTable('account').onDelete('CASCADE');
+        table.bigInteger('project_id').unsigned().index().references('id').inTable('project').onDelete('CASCADE');
         table.string('role');
         table.timestamps();
 
       }).createTable('experiment', function(table) {
         table.bigIncrements('id').primary();
-        table.bigInteger('account_id').unsigned().index().references('id').inTable('account').onDelete('CASCADE');
+        table.bigInteger('project_id').unsigned().index().references('id').inTable('project').onDelete('CASCADE');
         table.string('name');
         table.boolean('active').defaultTo(true);
         table.string('description',10000);
@@ -70,8 +71,8 @@ exports.down = function(knex, Promise) {
         .dropTable('event')
         .dropTable('variation')
         .dropTable('experiment')
-        .dropTable('user_account')
+        .dropTable('user_project')
         .dropTable('user')
-        .dropTable('account')
+        .dropTable('project')
         ;
 };

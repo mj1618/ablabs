@@ -1,46 +1,133 @@
 import express from 'express';
-import passport from 'passport';
 import request from 'request';
 import fetch from 'node-fetch';
-import {User,Experiment} from './model';
+import {User,Experiment,Project} from './model';
 import auth from './auth';
+import Promise from 'bluebird';
 
 var app = express();
 app.use(require('morgan')('combined'));
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(require('body-parser').json());
-app.use(require('express-session')({ secret: 'p9re8gyp9eurhgisuhgis', resave: false, saveUninitialized: true }));
+app.use(require('express-session')({ secret: 'CBiHUkkdqaMTh80iUVzdSPver41P5fKgDMC07SlDUryG5aTk0MJY4UbQTm7wyagO', resave: false, saveUninitialized: true }));
 app.use(express.static('./public'));
-app.use(passport.initialize());
-app.use(passport.session());
 app.set('view engine', 'ejs');
 
 auth(app);
 
-app.get('/', (req, res) => {
+
+const createPageData = (req, data) => {
+    return Promise.join(
+        Experiment.where({project_id:req.session.project}).count(),
+        Project.where({id:req.session.project}).fetch(),
+        (nExperiments, project)=>{
+            return Object.assign(data,{
+                nExperiments,
+                projectName: project.get('name'),
+                showTitle: true,
+                showMenu: true,
+                showSearch: true,
+                showNotifications: true,
+                showAccount: true
+            });
+        });
+}
+
+const loginMiddleware = (req,res,next)=>{
+    if(!req.session.user) {
+        res.redirect('/login');
+    } else {
+        next();
+    }
+    
+}
+
+const authMiddleware = (req,res,next)=>{
+    if(!req.session.user) {
+        res.redirect('/login');
+    } else if(!req.session.project){
+        User.projects().then(projects=>{
+            if(projects.length>0){
+                console.log(JSON.stringify(projects));
+                req.session.project = projects.pop().id;
+                res.redirect('/');
+                // res.redirect('/create-first-project');
+            } else {
+                res.redirect('/create-first-project');
+            }
+        });
+    } else {
+        next();
+    }
+}
+
+app.get('/', authMiddleware, (req, res) => {
     res.redirect('/experiments');
 });
 
 app.get('/login', (req, res) => {
-    res.render('login',{
+    res.render('dashboard',{
         pageData: {
-            routeId: 'login'
+            routeId: 'login',
+            showMenu: false,
+            showTitle: false,
+            showSearch: false,
+            showNotifications: false,
+            showAccount: false
         }
     });
 });
 
+app.get('/login/email', (req, res) => {
+    res.render('dashboard',{
+        pageData: {
+            routeId: 'login-email',
+            showMenu: false,
+            showTitle: false
+        }
+    });
+});
 
-app.get('/experiments', (req, res) => {
-    Experiment.where({account_id:1}).fetchAll().then(es=>{
+app.get('/create-first-project', loginMiddleware, (req, res) => {
+    res.render('dashboard', {
+        pageData: {
+            routeId: 'create-project',
+            showMenu: false,
+            title: 'Create Project'
+        }
+    });
+});
+
+app.post('/projects/create', loginMiddleware, (req, res) => {
+    Project.create(req.body.name, req.session.user).then(project=>{
+        req.session.project=project.id;
+        res.redirect('/experiments');
+    });
+});
+
+app.get('/experiments', authMiddleware, (req, res) => {
+    Experiment.where({project_id:1}).fetchAll().then(es=>{
+        return createPageData(req,{
+            routeId: 'experiments',
+            title: 'Experiments',
+            experiments: es.map(e=>e)
+        });
+    }).then((pageData)=>{
         res.render('dashboard',{
-            pageData: {
-                routeId: 'experiments',
-                title:'Experiments',
-                experiments: es.map(e=>e)
-            }
+            pageData
         });
     })
-    
+});
+
+app.get('/experiments/create', authMiddleware, (req, res) => {
+    createPageData(req,{
+        routeId: 'create-experiment',
+        title:'Create Experiment'
+    }).then((pageData)=>{
+        res.render('dashboard',{
+            pageData
+        });
+    });
 });
 
 

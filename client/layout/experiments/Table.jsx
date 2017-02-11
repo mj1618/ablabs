@@ -1,14 +1,12 @@
 import React from 'react';
-import {State, Actions, Component, Render} from 'jumpsuit';
 
-
-export default Component({
+export default class Table extends React.Component {
     render(){
         return <div className="row">
         <div className="col-lg-12">
           <div className="white-box">
-            <button className="fcbtn btn btn-primary btn-outline btn-1e waves-effect pull-right">Create Experiment</button>
-            <h3 className="box-title m-b-0">All Experiments </h3>
+            <a href="/experiments/create" className="fcbtn btn btn-primary btn-outline btn-1e waves-effect pull-right">Create Experiment</a>
+            <h3 className="box-title m-b-0">Experiments </h3>
             <p className="text-muted m-b-20">Click on an experiment to view and edit</p>
             <div className="table-responsive">
               <table className="table">
@@ -22,6 +20,13 @@ export default Component({
                   </tr>
                 </thead>
                 <tbody>
+                    {
+                        pageData.experiments.length===0 && <tr>
+                                <td colSpan={5} style={{textAlign:'center'}}>
+                                    You have no experiments
+                                </td>
+                            </tr>
+                    }
                     {
                         pageData.experiments.map((exp,i) => {
                             return <tr key={i}>
@@ -41,4 +46,4 @@ export default Component({
         </div>
       </div>;
     }
-});
+};

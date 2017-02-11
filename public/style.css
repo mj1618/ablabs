@@ -13,3 +13,59 @@
 .content-wrapper #logo-small {
     display:block;
 }
+
+.sidebar #side-menu .user-pro {
+    background:none;
+    background:url(../../plugins/images/profile-menu.png) no-repeat center center / cover;
+}
+.sidebar #side-menu .user-pro a {
+  padding-left: 20px;
+  color:#54667a;
+  color: #a6acbc;
+  color:white;
+}
+.sidebar #side-menu .user-pro .nav-second-level a:hover {
+  color: #ff6849;
+  color: #03a9f3;
+  color:white;
+  background:none;
+}
+
+.sidebar #side-menu .user-pro .nav-second-level a:focus {
+  background-color: #eee;
+}
+.sidebar #side-menu .user-pro .arrow {
+  top: 23px;
+  right: 20px;
+}
+.sidebar #side-menu .user-pro > a {
+  padding: 17px 7px 16px 15px!important;
+}
+.sidebar #side-menu .user-pro .img-circle {
+  width: 30px;
+  margin-right: 10px;
+}
+.sidebar #side-menu .user-pro .nav-second-level li i {
+  margin-right: 5px;
+}
+
+.sidebar #side-menu .user-pro>a {
+    padding: 17px 7px 16px 10px!important;
+}
+
+.btn-social-login {
+  text-align: left;
+}
+.social-login-left {
+  width:25px;
+  
+  text-align: center;
+}
+
+.btn-social-login span {
+  vertical-align: middle;
+}
+
+.btn-github {
+  background-color:#333!important
+}

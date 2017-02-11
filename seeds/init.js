@@ -4,20 +4,20 @@ exports.seed = function(knex, Promise) {
   return Promise.all([
       knex('variation').del(),
       knex('experiment').del(),
-      knex('user_account').del(),
+      knex('user_project').del(),
       knex('user').del(),
-      knex('account').del(),
+      knex('project').del(),
       knex('track').del(),
       knex('event').del()
     ])
     .then(function () {
       return Promise.all([
         // Inserts seed entries
-        knex('account').insert({id: 1}),
+        knex('project').insert({id: 1}),
         knex('user').insert({id: 1, first_name: 'Matt'}),
-        knex('user_account').insert({id: 1, user_id: 1, account_id: 1}),
-        knex('experiment').insert({id: 1, name: 'Facebook Redirect', account_id: 1}),
-        knex('experiment').insert({id: 2, name: 'Test Exp', account_id: 1}),
+        knex('user_project').insert({id: 1, user_id: 1, project_id: 1}),
+        knex('experiment').insert({id: 1, name: 'Facebook Redirect', project_id: 1}),
+        knex('experiment').insert({id: 2, name: 'Test Exp', project_id: 1}),
         knex('variation').insert({id: 1, name: 'Var1', experiment_id: 1}),
         knex('variation').insert({id: 2, name: 'Var2', experiment_id: 2}),
         knex('event').insert({id: 1, name: 'E1'}),

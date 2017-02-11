@@ -5,7 +5,7 @@ export default (app) => {
     const clientId = '1024263950548-0iihqge4pt2jsmatkpp371f5hkls3g4p.apps.googleusercontent.com'
     const clientSecret = 'zyEjfHbecBydCBBvah58vgmE';
     const redirectUri = 'http://localhost:3000/auth/google/callback';
-    app.get('/auth/google', (req,res) => {
+    app.get('/login/google', (req,res) => {
         res.redirect('https://accounts.google.com/o/oauth2/v2/auth?redirect_uri='+redirectUri+'&response_type=code&client_id='+clientId+'&scope=https://www.googleapis.com/auth/userinfo.email');
     });
     app.get('/auth/google/callback',(req,res)=> {
@@ -44,12 +44,12 @@ export default (app) => {
                     .save()
                     .then((result)=>{
                         req.session.user = result.id;
-                        res.json(result);
+                        res.redirect('/');
                     });
                 } else {
                     console.log('setting user session');
                     req.session.user = user.id;
-                    res.json(user);
+                    res.redirect('/');
                 }
             });
 
