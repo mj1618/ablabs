@@ -10,6 +10,7 @@ export default class Create extends React.Component {
             description: "",
             showEventsDropdown: false,
             cohort: 90,
+            filteredEvents:[],
             variations: [
                 {
                     name: "Variation 1",
@@ -59,7 +60,7 @@ export default class Create extends React.Component {
     }
 
     componentDidMount(){
-        this.searchEvents.focus();
+        this.filterEvents();
     }
 
     addVariation(){
@@ -95,6 +96,12 @@ export default class Create extends React.Component {
                 showEventsDropdown: false
             });
         }
+    }
+
+    filterEvents(){
+        this.setState({
+            filteredEvents: this.state.events.filter(e=>e.name.startsWith(this.searchEvents?this.searchEvents.value:''))
+        });
     }
 
     toggleEvent(e){
@@ -178,7 +185,7 @@ export default class Create extends React.Component {
 
                         <div className="form-group">
                             <label className="col-md-12">Events</label>
-                            <div className="col-md-6">
+                            <div className="col-md-6" style={{marginBottom:'10px'}}>
                                 { this.state.selectedEvents.length===0 && <p>No events added yet.</p> }
                                 {
                                     this.state.selectedEvents.map((e,i)=>{
@@ -186,15 +193,21 @@ export default class Create extends React.Component {
                                     })
                                 }
                             </div>
-                            <div className="col-md-6"  onFocus={ ()=>this.onSearchEventsFocus() } onBlur={ (e)=>this.onSearchEventsBlur(e) }>
-                                <input onChange={()=>this.forceUpdate()} ref={(input) => { this.searchEvents = input; }}  type="text" className="form-control" placeholder="Search events..." />
-                                <div className={"list-group " + (this.state.showEventsDropdown===true?'':'invisible')} style={{maxHeight:'206px',overflow:'scroll'}}>
+                            <div className="col-md-6" onFocus={ ()=>this.onSearchEventsFocus() } onBlur={ (e)=>this.onSearchEventsBlur(e) }>
+                                <input onChange={()=>this.filterEvents()} ref={(input) => { this.searchEvents = input; }}  type="text" className="form-control" placeholder="Search events..." />
+                                <div className={"list-group " + (this.state.showEventsDropdown===true?'':'hidden')} style={{maxHeight:'206px',overflow:'scroll'}}>
                                     {
-                                        this.state.events.filter(e=>e.name.startsWith(this.searchEvents?this.searchEvents.value:'')).map((e,i)=>{
+                                        this.state.filteredEvents.map((e,i)=>{
                                             return <a key={i} onClick={()=>this.toggleEvent(e)} href="javascript:void(0)" className={"list-group-item "+(this.state.selectedEvents.indexOf(e)>=0?'active':'')}>{e.name}</a>
                                         })
                                     }
                                 </div>
+                            </div>
+                        </div>
+                        <div className="row">
+
+                            <div className="col-md-4 col-md-push-4">
+                                <button type="button" className="btn btn-lg btn-block btn-outline btn-success waves-effect">Create Experiment</button>
                             </div>
                         </div>
 

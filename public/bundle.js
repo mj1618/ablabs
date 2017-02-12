@@ -780,6 +780,7 @@ var Create = function (_React$Component) {
             description: "",
             showEventsDropdown: false,
             cohort: 90,
+            filteredEvents: [],
             variations: [{
                 name: "Variation 1",
                 description: "",
@@ -818,7 +819,7 @@ var Create = function (_React$Component) {
     _createClass(Create, [{
         key: 'componentDidMount',
         value: function componentDidMount() {
-            this.searchEvents.focus();
+            this.filterEvents();
         }
     }, {
         key: 'addVariation',
@@ -862,6 +863,17 @@ var Create = function (_React$Component) {
             }
         }
     }, {
+        key: 'filterEvents',
+        value: function filterEvents() {
+            var _this2 = this;
+
+            this.setState({
+                filteredEvents: this.state.events.filter(function (e) {
+                    return e.name.startsWith(_this2.searchEvents ? _this2.searchEvents.value : '');
+                })
+            });
+        }
+    }, {
         key: 'toggleEvent',
         value: function toggleEvent(e) {
             if (this.state.selectedEvents.indexOf(e) >= 0) {
@@ -879,7 +891,7 @@ var Create = function (_React$Component) {
     }, {
         key: 'render',
         value: function render() {
-            var _this2 = this;
+            var _this3 = this;
 
             return _react2.default.createElement(
                 'div',
@@ -1019,7 +1031,7 @@ var Create = function (_React$Component) {
                                                             _react2.default.createElement(
                                                                 'button',
                                                                 { type: 'button', onClick: function onClick() {
-                                                                        return _this2.removeVariation(i);
+                                                                        return _this3.removeVariation(i);
                                                                     }, className: 'btn btn-danger btn-circle waves-effect' },
                                                                 _react2.default.createElement('i', { className: 'fa fa-minus' }),
                                                                 ' '
@@ -1032,7 +1044,7 @@ var Create = function (_React$Component) {
                                         _react2.default.createElement(
                                             'button',
                                             { type: 'button', className: 'btn btn-info waves-effect pull-right', onClick: function onClick() {
-                                                    return _this2.addVariation();
+                                                    return _this3.addVariation();
                                                 } },
                                             'Add Variation'
                                         )
@@ -1049,7 +1061,7 @@ var Create = function (_React$Component) {
                                 ),
                                 _react2.default.createElement(
                                     'div',
-                                    { className: 'col-md-6' },
+                                    { className: 'col-md-6', style: { marginBottom: '10px' } },
                                     this.state.selectedEvents.length === 0 && _react2.default.createElement(
                                         'p',
                                         null,
@@ -1059,7 +1071,7 @@ var Create = function (_React$Component) {
                                         return _react2.default.createElement(
                                             'button',
                                             { style: { margin: '5px' }, key: i, type: 'button', onClick: function onClick() {
-                                                    return _this2.toggleEvent(e);
+                                                    return _this3.toggleEvent(e);
                                                 }, className: 'btn btn-outline btn-rounded btn-info waves-effect' },
                                             e.name,
                                             ' ',
@@ -1070,29 +1082,40 @@ var Create = function (_React$Component) {
                                 _react2.default.createElement(
                                     'div',
                                     { className: 'col-md-6', onFocus: function onFocus() {
-                                            return _this2.onSearchEventsFocus();
+                                            return _this3.onSearchEventsFocus();
                                         }, onBlur: function onBlur(e) {
-                                            return _this2.onSearchEventsBlur(e);
+                                            return _this3.onSearchEventsBlur(e);
                                         } },
                                     _react2.default.createElement('input', { onChange: function onChange() {
-                                            return _this2.forceUpdate();
+                                            return _this3.filterEvents();
                                         }, ref: function ref(input) {
-                                            _this2.searchEvents = input;
+                                            _this3.searchEvents = input;
                                         }, type: 'text', className: 'form-control', placeholder: 'Search events...' }),
                                     _react2.default.createElement(
                                         'div',
-                                        { className: "list-group " + (this.state.showEventsDropdown === true ? '' : 'invisible'), style: { maxHeight: '206px', overflow: 'scroll' } },
-                                        this.state.events.filter(function (e) {
-                                            return e.name.startsWith(_this2.searchEvents ? _this2.searchEvents.value : '');
-                                        }).map(function (e, i) {
+                                        { className: "list-group " + (this.state.showEventsDropdown === true ? '' : 'hidden'), style: { maxHeight: '206px', overflow: 'scroll' } },
+                                        this.state.filteredEvents.map(function (e, i) {
                                             return _react2.default.createElement(
                                                 'a',
                                                 { key: i, onClick: function onClick() {
-                                                        return _this2.toggleEvent(e);
-                                                    }, href: 'javascript:void(0)', className: "list-group-item " + (_this2.state.selectedEvents.indexOf(e) >= 0 ? 'active' : '') },
+                                                        return _this3.toggleEvent(e);
+                                                    }, href: 'javascript:void(0)', className: "list-group-item " + (_this3.state.selectedEvents.indexOf(e) >= 0 ? 'active' : '') },
                                                 e.name
                                             );
                                         })
+                                    )
+                                )
+                            ),
+                            _react2.default.createElement(
+                                'div',
+                                { className: 'row' },
+                                _react2.default.createElement(
+                                    'div',
+                                    { className: 'col-md-4 col-md-push-4' },
+                                    _react2.default.createElement(
+                                        'button',
+                                        { type: 'button', className: 'btn btn-lg btn-block btn-outline btn-success waves-effect' },
+                                        'Create Experiment'
                                     )
                                 )
                             )
