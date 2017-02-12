@@ -1093,7 +1093,7 @@ var Create = function (_React$Component) {
                                         }, type: 'text', className: 'form-control', placeholder: 'Search events...' }),
                                     _react2.default.createElement(
                                         'div',
-                                        { className: "list-group " + (this.state.showEventsDropdown === true ? '' : 'hidden'), style: { maxHeight: '206px', overflow: 'scroll' } },
+                                        { className: "list-group " + (this.state.showEventsDropdown === true ? '' : 'hidden'), style: { maxHeight: '206px', overflow: 'scroll', borderBottom: '1px solid #ddd', boxShadow: "0 1px 4px 0 rgba(0,0,0,.1)" } },
                                         this.state.filteredEvents.map(function (e, i) {
                                             return _react2.default.createElement(
                                                 'a',

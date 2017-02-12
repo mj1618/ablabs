@@ -195,7 +195,7 @@ export default class Create extends React.Component {
                             </div>
                             <div className="col-md-6" onFocus={ ()=>this.onSearchEventsFocus() } onBlur={ (e)=>this.onSearchEventsBlur(e) }>
                                 <input onChange={()=>this.filterEvents()} ref={(input) => { this.searchEvents = input; }}  type="text" className="form-control" placeholder="Search events..." />
-                                <div className={"list-group " + (this.state.showEventsDropdown===true?'':'hidden')} style={{maxHeight:'206px',overflow:'scroll'}}>
+                                <div className={"list-group " + (this.state.showEventsDropdown===true?'':'hidden')} style={{maxHeight:'206px',overflow:'scroll', borderBottom:'1px solid #ddd', boxShadow: "0 1px 4px 0 rgba(0,0,0,.1)"}} >
                                     {
                                         this.state.filteredEvents.map((e,i)=>{
                                             return <a key={i} onClick={()=>this.toggleEvent(e)} href="javascript:void(0)" className={"list-group-item "+(this.state.selectedEvents.indexOf(e)>=0?'active':'')}>{e.name}</a>
