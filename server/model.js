@@ -57,6 +57,10 @@ var Variation = bookshelf.Model.extend({
 var Event = bookshelf.Model.extend({
     tableName: 'event',
     hasTimestamps: true
+},{
+    create: function(name){
+        return new Event({name}).save();
+    }
 });
 
 var Track = bookshelf.Model.extend({
@@ -75,7 +79,6 @@ var Project = bookshelf.Model.extend({
     }
 },{
     create: function(name, userId){
-        console.log(name);
         return new Project({name}).save().tap(project=>{
             return User.where('id',userId).fetch().then(user=>{
                 return project.related('users').create(user);

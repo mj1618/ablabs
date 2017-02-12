@@ -1,9 +1,43 @@
 import React from 'react';
 import {focusInCurrentTarget} from '../../util/helpers';
+import Promise from 'bluebird';
+import 'whatwg-fetch';
+
 
 class CreateEventModal extends React.Component {
+    componentDidMount(){
+        $('#createEventModal').on('shown.bs.modal', ()=>this.eventName.value='');
+        $('#createEventModal').on('hidden.bs.modal', ()=>this.eventName.value='');
+    }
     saveEvent(){
-        $('#createEventModal').modal('hide');
+        fetch('/events/create', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: this.eventName.value
+            })
+        }).then(res=>res.json())
+        .then(json=>{
+            if(json.result==='success'){
+                if(this.props.success){
+                    this.props.success(json.event);
+                }
+            } else {
+                if(this.props.fail){
+                    this.props.fail();
+                }
+            }
+            $('#createEventModal').modal('hide');
+        }).catch((e)=>{
+            console.error(e);
+            if(this.props.fail){
+                this.props.fail();
+            }
+            $('#createEventModal').modal('hide');
+        });
     }
     render(){
         return <div id="createEventModal" className="modal fade" tabIndex="-1" role="dialog" aria-labelledby="createEventLabel" aria-hidden="true">
@@ -17,7 +51,7 @@ class CreateEventModal extends React.Component {
                     <div className="form-group">
                         <label className="col-md-12">Event Name</label>
                         <div className="col-md-12">
-                            <input type="text" name="event-name" className="form-control" />
+                            <input type="text" ref={i=>this.eventName=i} name="event-name" className="form-control" />
                         </div>
                     </div>
                   </div>
@@ -53,8 +87,7 @@ export default class Create extends React.Component {
                     percent: 50
                 }
             ],
-            events: [
-            ],
+            events: [],
             selectedEvents: []
         };
     }
@@ -114,6 +147,36 @@ export default class Create extends React.Component {
                 selectedEvents: this.state.selectedEvents.concat(e)
             });
         }
+    }
+
+    eventCreated(e){
+        this.setState({
+            events: this.state.events.concat(e),
+            selectedEvents: this.state.selectedEvents.concat(e),
+            filteredEvents: this.state.events.concat(e).filter(e=>e.name.startsWith(this.searchEvents?this.searchEvents.value:''))
+        });
+
+        $.toast({
+            heading: 'Event created',
+            text: '',
+            position: 'top-right',
+            loaderBg: '#ff6849',
+            icon: 'success',
+            hideAfter: 2000,
+            stack: 6
+        });
+    }
+
+    eventCreationFailed(){
+        $.toast({
+            heading: 'Event failed to create',
+            text: '',
+            position: 'top-right',
+            loaderBg: '#ff6849',
+            icon: 'warning',
+            hideAfter: 2000,
+            stack: 6
+        });
     }
 
     render() {
@@ -180,7 +243,7 @@ export default class Create extends React.Component {
                                             }
                                         </tbody>
                                     </table>
-                                    <button type="button" className="btn btn-success waves-effect pull-right" onClick={()=>this.addVariation()}>Add Variation</button>
+                                    <button type="button" className="btn btn-success waves-effect btn-outline pull-right" onClick={()=>this.addVariation()}>Add Variation</button>
                                 </div>
                             </div>
                         </div>
@@ -190,8 +253,8 @@ export default class Create extends React.Component {
                         <div className="form-group">
                             <div className="col-md-12">
                                 <label>Events</label>
-                                <button type="button" data-toggle="modal" data-target="#createEventModal" className="btn btn-success waves-effect pull-right m-b-10">New Event</button>
-                                <CreateEventModal />
+                                <button type="button" data-toggle="modal" data-target="#createEventModal" className="btn btn-success btn-outline waves-effect pull-right m-b-10">New Event</button>
+                                <CreateEventModal success={e=>this.eventCreated(e)} fail={()=>this.eventCreationFailed()} />
                             </div>
 
                             {

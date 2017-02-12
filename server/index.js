@@ -1,7 +1,7 @@
 import express from 'express';
 import request from 'request';
 import fetch from 'node-fetch';
-import {User,Experiment,Project} from './model';
+import {User,Experiment,Project,Event} from './model';
 import auth from './auth';
 import Promise from 'bluebird';
 
@@ -14,7 +14,6 @@ app.use(express.static('./public'));
 app.set('view engine', 'ejs');
 
 auth(app);
-
 
 const createPageData = (req, data) => {
     return Promise.join(
@@ -105,6 +104,12 @@ app.post('/projects/create', loginMiddleware, (req, res) => {
     });
 });
 
+app.post('/events/create', authMiddleware, (req, res) => {
+    Event.create(req.body.name).then(event=>{
+        res.json({result:'success', event});
+    });
+});
+
 app.get('/experiments', authMiddleware, (req, res) => {
     Experiment.where({project_id:1}).fetchAll().then(es=>{
         return createPageData(req,{
@@ -129,7 +134,6 @@ app.get('/experiments/create', authMiddleware, (req, res) => {
         });
     });
 });
-
 
 app.listen(3000, function () {
     console.log('Listening on port 3000!');
