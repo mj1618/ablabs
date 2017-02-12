@@ -1,4 +1,5 @@
 import React from 'react';
+import {focusInCurrentTarget} from '../../util/helpers';
 
 export default class Create extends React.Component {
 
@@ -7,6 +8,7 @@ export default class Create extends React.Component {
         this.state = {
             name: "",
             description: "",
+            showEventsDropdown: false,
             cohort: 90,
             variations: [
                 {
@@ -19,8 +21,45 @@ export default class Create extends React.Component {
                     description: "",
                     percent: 50
                 }
-            ]
+            ],
+            events: [
+                {
+                    name: 'revenue'
+                },
+                {
+                    name: 'hits'
+                },
+                {
+                    name: 'revenue'
+                },
+                {
+                    name: 'hits'
+                },
+                {
+                    name: 'revenue'
+                },
+                {
+                    name: 'hits'
+                },
+                {
+                    name: 'revenue'
+                },
+                {
+                    name: 'hits'
+                },
+                {
+                    name: 'revenue'
+                },
+                {
+                    name: 'hits'
+                }
+            ],
+            selectedEvents: []
         };
+    }
+
+    componentDidMount(){
+        this.searchEvents.focus();
     }
 
     addVariation(){
@@ -41,6 +80,33 @@ export default class Create extends React.Component {
             });
         }
         return false;
+    }
+
+    onSearchEventsFocus(){
+        this.setState({
+            showEventsDropdown: true
+        });
+    }
+
+    onSearchEventsBlur(e){
+        if (!focusInCurrentTarget(e)) {
+            console.log('table blurred');
+            this.setState({
+                showEventsDropdown: false
+            });
+        }
+    }
+
+    toggleEvent(e){
+        if(this.state.selectedEvents.indexOf(e)>=0){
+            this.setState({
+                selectedEvents: this.state.selectedEvents.filter((es)=>es!==e)
+            });
+        } else {
+            this.setState({
+                selectedEvents: this.state.selectedEvents.concat(e)
+            });
+        }
     }
 
     render() {
@@ -78,10 +144,10 @@ export default class Create extends React.Component {
                                     <table className="table">
                                         <thead>
                                             <tr>
-                                                <th>Name</th>
-                                                <th>Key</th>
-                                                <th style={{width:'80px'}}>Cohort %</th>
-                                                <th style={{width:'40px'}}></th>
+                                                <th className="small">Name</th>
+                                                <th className="small">Description</th>
+                                                <th className="small" style={{width:'80px'}}>Cohort %</th>
+                                                <th className="small" style={{width:'40px'}}></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -112,7 +178,24 @@ export default class Create extends React.Component {
 
                         <div className="form-group">
                             <label className="col-md-12">Events</label>
-                            
+                            <div className="col-md-6">
+                                { this.state.selectedEvents.length===0 && <p>No events added yet.</p> }
+                                {
+                                    this.state.selectedEvents.map((e,i)=>{
+                                        return <button style={{margin:'5px'}} key={i} type="button" onClick={()=>this.toggleEvent(e)} className="btn btn-outline btn-rounded btn-info waves-effect">{e.name} <i className="fa fa-times m-l-5" /></button>
+                                    })
+                                }
+                            </div>
+                            <div className="col-md-6"  onFocus={ ()=>this.onSearchEventsFocus() } onBlur={ (e)=>this.onSearchEventsBlur(e) }>
+                                <input onChange={()=>this.forceUpdate()} ref={(input) => { this.searchEvents = input; }}  type="text" className="form-control" placeholder="Search events..." />
+                                <div className={"list-group " + (this.state.showEventsDropdown===true?'':'invisible')} style={{maxHeight:'206px',overflow:'scroll'}}>
+                                    {
+                                        this.state.events.filter(e=>e.name.startsWith(this.searchEvents?this.searchEvents.value:'')).map((e,i)=>{
+                                            return <a key={i} onClick={()=>this.toggleEvent(e)} href="javascript:void(0)" className={"list-group-item "+(this.state.selectedEvents.indexOf(e)>=0?'active':'')}>{e.name}</a>
+                                        })
+                                    }
+                                </div>
+                            </div>
                         </div>
 
                     </form>
