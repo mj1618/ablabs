@@ -58,8 +58,11 @@ var Event = bookshelf.Model.extend({
     tableName: 'event',
     hasTimestamps: true
 },{
-    create: function(name){
-        return new Event({name}).save();
+    create: function(name, projectId){
+        return new Event({name,project_id:projectId}).save();
+    },
+    findByProject: function(project){
+        return Event.where({project_id: project}).fetchAll()
     }
 });
 

@@ -105,7 +105,7 @@ app.post('/projects/create', loginMiddleware, (req, res) => {
 });
 
 app.post('/events/create', authMiddleware, (req, res) => {
-    Event.create(req.body.name).then(event=>{
+    Event.create(req.body.name, req.session.project).then(event=>{
         res.json({result:'success', event});
     });
 });
@@ -125,9 +125,12 @@ app.get('/experiments', authMiddleware, (req, res) => {
 });
 
 app.get('/experiments/create', authMiddleware, (req, res) => {
-    createPageData(req,{
-        routeId: 'create-experiment',
-        title:'Create Experiment'
+    Event.findByProject(req.session.project).then(events=>{
+        return createPageData(req,{
+            routeId: 'create-experiment',
+            title:'Create Experiment',
+            events
+        });
     }).then((pageData)=>{
         res.render('dashboard',{
             pageData

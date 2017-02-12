@@ -45,6 +45,7 @@ exports.up = function(knex, Promise) {
         table.bigIncrements('id').primary();
         table.string('name');
         table.string('description',10000);
+        table.bigInteger('project_id').unsigned().index().references('id').inTable('project').onDelete('CASCADE');
         table.timestamps();
         table.boolean('deleted').defaultTo(false);
 

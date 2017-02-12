@@ -70,12 +70,12 @@ export default class Create extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            name: "",
-            description: "",
+            name: pageData.experimentName || "",
+            description: pageData.experimentDescription || "",
             showEventsDropdown: false,
             cohort: 90,
             filteredEvents:[],
-            variations: [
+            variations: pageData.variations || [
                 {
                     name: "Variation 1",
                     description: "",
@@ -87,8 +87,8 @@ export default class Create extends React.Component {
                     percent: 50
                 }
             ],
-            events: [],
-            selectedEvents: []
+            events: pageData.events,
+            selectedEvents: pageData.selectedEvents ||  []
         };
     }
 
@@ -280,7 +280,7 @@ export default class Create extends React.Component {
                                         </div>
 
                                         <div className="col-md-6" style={{marginBottom:'10px'}}>
-                                            { this.state.selectedEvents.length===0 && <p>No events added yet.</p> }
+                                            { this.state.selectedEvents.length===0 && <p>No events added yet.<br/>Select one from the list or create a new event.</p> }
                                             {
                                                 this.state.selectedEvents.map((e,i)=>{
                                                     return <button style={{margin:'5px'}} key={i} type="button" onClick={()=>this.toggleEvent(e)} className="btn btn-outline btn-rounded btn-info waves-effect">{e.name} <i className="fa fa-times m-l-5" /></button>
@@ -294,7 +294,7 @@ export default class Create extends React.Component {
                             {
                                 this.state.events.length===0 &&
                                     <div className="col-md-12 text-center">
-                                        <p>You have not created an event in this project yet, please create one to use in this experiment.</p>
+                                        <p>You don't have any events for your project. <br />Please create one to use in this experiment.</p>
                                     </div>
                             }
 

@@ -911,12 +911,12 @@ var Create = function (_React$Component2) {
         var _this5 = _possibleConstructorReturn(this, (Create.__proto__ || Object.getPrototypeOf(Create)).call(this, props));
 
         _this5.state = {
-            name: "",
-            description: "",
+            name: pageData.experimentName || "",
+            description: pageData.experimentDescription || "",
             showEventsDropdown: false,
             cohort: 90,
             filteredEvents: [],
-            variations: [{
+            variations: pageData.variations || [{
                 name: "Variation 1",
                 description: "",
                 percent: 50
@@ -925,8 +925,8 @@ var Create = function (_React$Component2) {
                 description: "",
                 percent: 50
             }],
-            events: [],
-            selectedEvents: []
+            events: pageData.events,
+            selectedEvents: pageData.selectedEvents || []
         };
         return _this5;
     }
@@ -1266,7 +1266,9 @@ var Create = function (_React$Component2) {
                                         this.state.selectedEvents.length === 0 && _react2.default.createElement(
                                             'p',
                                             null,
-                                            'No events added yet.'
+                                            'No events added yet.',
+                                            _react2.default.createElement('br', null),
+                                            'Select one from the list or create a new event.'
                                         ),
                                         this.state.selectedEvents.map(function (e, i) {
                                             return _react2.default.createElement(
@@ -1287,7 +1289,9 @@ var Create = function (_React$Component2) {
                                     _react2.default.createElement(
                                         'p',
                                         null,
-                                        'You have not created an event in this project yet, please create one to use in this experiment.'
+                                        'You don\'t have any events for your project. ',
+                                        _react2.default.createElement('br', null),
+                                        'Please create one to use in this experiment.'
                                     )
                                 )
                             ),
@@ -1543,7 +1547,7 @@ var Create = function (_React$Component) {
                         ),
                         _react2.default.createElement(
                             'form',
-                            { className: 'form-horizontal', method: 'POST' },
+                            { className: 'form-horizontal', method: 'POST', action: '/projects/create' },
                             _react2.default.createElement(
                                 'div',
                                 { className: 'form-group' },
