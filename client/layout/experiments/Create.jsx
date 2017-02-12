@@ -1,6 +1,36 @@
 import React from 'react';
 import {focusInCurrentTarget} from '../../util/helpers';
 
+class CreateEventModal extends React.Component {
+    saveEvent(){
+        $('#createEventModal').modal('hide');
+    }
+    render(){
+        return <div id="createEventModal" className="modal fade" tabIndex="-1" role="dialog" aria-labelledby="createEventLabel" aria-hidden="true">
+              <div className="modal-dialog">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <button type="button" className="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 className="modal-title" id="createEventLabel">Create a New Event</h4>
+                  </div>
+                  <div className="modal-body">
+                    <div className="form-group">
+                        <label className="col-md-12">Event Name</label>
+                        <div className="col-md-12">
+                            <input type="text" name="event-name" className="form-control" />
+                        </div>
+                    </div>
+                  </div>
+                  <div className="modal-footer">
+                    <button type="button" className="btn btn-default waves-effect" data-dismiss="modal">Close</button>
+                    <button type="button" className="btn btn-primary waves-effect" onClick={()=>this.saveEvent()}>Save</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+    }
+}
+
 export default class Create extends React.Component {
 
     constructor(props){
@@ -24,36 +54,6 @@ export default class Create extends React.Component {
                 }
             ],
             events: [
-                {
-                    name: 'revenue'
-                },
-                {
-                    name: 'hits'
-                },
-                {
-                    name: 'revenue'
-                },
-                {
-                    name: 'hits'
-                },
-                {
-                    name: 'revenue'
-                },
-                {
-                    name: 'hits'
-                },
-                {
-                    name: 'revenue'
-                },
-                {
-                    name: 'hits'
-                },
-                {
-                    name: 'revenue'
-                },
-                {
-                    name: 'hits'
-                }
             ],
             selectedEvents: []
         };
@@ -122,7 +122,7 @@ export default class Create extends React.Component {
                 <div className="white-box">
                     <h3 className="box-title m-b-0">Create a New Experiment </h3>
                     <p className="text-muted m-b-30 font-13">An experiment is the basis for an AB test. You define what your variations are and what percentage of users to target.</p>
-                    <form className="form-horizontal">
+                    <div className="form-horizontal">
                         <div className="form-group">
                             <label className="col-md-12">Experiment Name</label>
                             <div className="col-md-12">
@@ -144,11 +144,13 @@ export default class Create extends React.Component {
                             </div>
                         </div>
 
+                        <hr />
+
                         <div className="form-group">
                             <label className="col-md-12">Variations</label>
                             <div className="col-md-12">
                                 <div className="table-responsive">
-                                    <table className="table">
+                                    <table className="table color-table muted-table table-borderless">
                                         <thead>
                                             <tr>
                                                 <th className="small">Name</th>
@@ -178,40 +180,73 @@ export default class Create extends React.Component {
                                             }
                                         </tbody>
                                     </table>
-                                    <button type="button" className="btn btn-info waves-effect pull-right" onClick={()=>this.addVariation()}>Add Variation</button>
+                                    <button type="button" className="btn btn-success waves-effect pull-right" onClick={()=>this.addVariation()}>Add Variation</button>
                                 </div>
                             </div>
                         </div>
 
+                        <hr />
+
                         <div className="form-group">
-                            <label className="col-md-12">Events</label>
-                            <div className="col-md-6" style={{marginBottom:'10px'}}>
-                                { this.state.selectedEvents.length===0 && <p>No events added yet.</p> }
-                                {
-                                    this.state.selectedEvents.map((e,i)=>{
-                                        return <button style={{margin:'5px'}} key={i} type="button" onClick={()=>this.toggleEvent(e)} className="btn btn-outline btn-rounded btn-info waves-effect">{e.name} <i className="fa fa-times m-l-5" /></button>
-                                    })
-                                }
+                            <div className="col-md-12">
+                                <label>Events</label>
+                                <button type="button" data-toggle="modal" data-target="#createEventModal" className="btn btn-success waves-effect pull-right m-b-10">New Event</button>
+                                <CreateEventModal />
                             </div>
-                            <div className="col-md-6" onFocus={ ()=>this.onSearchEventsFocus() } onBlur={ (e)=>this.onSearchEventsBlur(e) }>
-                                <input onChange={()=>this.filterEvents()} ref={(input) => { this.searchEvents = input; }}  type="text" className="form-control" placeholder="Search events..." />
-                                <div className={"list-group " + (this.state.showEventsDropdown===true?'':'hidden')} style={{maxHeight:'206px',overflow:'scroll', borderBottom:'1px solid #ddd', boxShadow: "0 1px 4px 0 rgba(0,0,0,.1)"}} >
-                                    {
-                                        this.state.filteredEvents.map((e,i)=>{
-                                            return <a key={i} onClick={()=>this.toggleEvent(e)} href="javascript:void(0)" className={"list-group-item "+(this.state.selectedEvents.indexOf(e)>=0?'active':'')}>{e.name}</a>
-                                        })
-                                    }
-                                </div>
-                            </div>
+
+                            {
+                                this.state.events.length>0 &&
+                                    <div className="row">
+                                        <div className="col-md-6" onFocus={ ()=>this.onSearchEventsFocus() } onBlur={ (e)=>this.onSearchEventsBlur(e) }>
+                                        
+                                            <input onChange={()=>this.filterEvents()} ref={(input) => { this.searchEvents = input; }}  type="text" className="form-control" placeholder="Search events..." />
+                                            <div className={"list-group " + (this.state.showEventsDropdown===true?'':'')} style={{maxHeight:'206px',overflow:'scroll', borderBottom:'1px solid #ddd', boxShadow: "0 1px 4px 0 rgba(0,0,0,.1)"}} >
+                                                {
+                                                    this.state.filteredEvents.map((e,i)=>{
+                                                        return <a 
+                                                            key={i} 
+                                                            onClick={()=>this.toggleEvent(e)} 
+                                                            href="javascript:void(0)" 
+                                                            className={"list-group-item "+(this.state.selectedEvents.indexOf(e)>=0?'active':'')}>
+                                                                {e.name}
+                                                                <i className={"pull-right fa "+(this.state.selectedEvents.indexOf(e)>=0?'fa-minus':'fa-plus')} />
+                                                            </a>
+                                                    })
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <div className="col-md-6" style={{marginBottom:'10px'}}>
+                                            { this.state.selectedEvents.length===0 && <p>No events added yet.</p> }
+                                            {
+                                                this.state.selectedEvents.map((e,i)=>{
+                                                    return <button style={{margin:'5px'}} key={i} type="button" onClick={()=>this.toggleEvent(e)} className="btn btn-outline btn-rounded btn-info waves-effect">{e.name} <i className="fa fa-times m-l-5" /></button>
+                                                })
+                                            }
+                                            
+                                        </div>
+                                    </div>
+                            }
+
+                            {
+                                this.state.events.length===0 &&
+                                    <div className="col-md-12 text-center">
+                                        <p>You have not created an event in this project yet, please create one to use in this experiment.</p>
+                                    </div>
+                            }
+
                         </div>
+
+                        <hr />
+
                         <div className="row">
 
                             <div className="col-md-4 col-md-push-4">
-                                <button type="button" className="btn btn-lg btn-block btn-outline btn-success waves-effect">Create Experiment</button>
+                                <button type="button" className="btn fcbtn btn-1e btn-lg btn-block btn-outline btn-primary waves-effect">Save Experiment</button>
                             </div>
                         </div>
 
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>;

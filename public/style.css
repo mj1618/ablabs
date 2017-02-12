@@ -31,6 +31,10 @@
   background:none;
 }
 
+.table-borderless tbody tr td {
+    border:0;
+}
+
 .sidebar #side-menu .user-pro .nav-second-level a:focus {
   background-color: #eee;
 }

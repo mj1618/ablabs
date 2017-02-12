@@ -767,15 +767,100 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Create = function (_React$Component) {
-    _inherits(Create, _React$Component);
+var CreateEventModal = function (_React$Component) {
+    _inherits(CreateEventModal, _React$Component);
+
+    function CreateEventModal() {
+        _classCallCheck(this, CreateEventModal);
+
+        return _possibleConstructorReturn(this, (CreateEventModal.__proto__ || Object.getPrototypeOf(CreateEventModal)).apply(this, arguments));
+    }
+
+    _createClass(CreateEventModal, [{
+        key: 'saveEvent',
+        value: function saveEvent() {
+            $('#createEventModal').modal('hide');
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var _this2 = this;
+
+            return _react2.default.createElement(
+                'div',
+                { id: 'createEventModal', className: 'modal fade', tabIndex: '-1', role: 'dialog', 'aria-labelledby': 'createEventLabel', 'aria-hidden': 'true' },
+                _react2.default.createElement(
+                    'div',
+                    { className: 'modal-dialog' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'modal-content' },
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'modal-header' },
+                            _react2.default.createElement(
+                                'button',
+                                { type: 'button', className: 'close', 'data-dismiss': 'modal', 'aria-hidden': 'true' },
+                                '\xD7'
+                            ),
+                            _react2.default.createElement(
+                                'h4',
+                                { className: 'modal-title', id: 'createEventLabel' },
+                                'Create a New Event'
+                            )
+                        ),
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'modal-body' },
+                            _react2.default.createElement(
+                                'div',
+                                { className: 'form-group' },
+                                _react2.default.createElement(
+                                    'label',
+                                    { className: 'col-md-12' },
+                                    'Event Name'
+                                ),
+                                _react2.default.createElement(
+                                    'div',
+                                    { className: 'col-md-12' },
+                                    _react2.default.createElement('input', { type: 'text', name: 'event-name', className: 'form-control' })
+                                )
+                            )
+                        ),
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'modal-footer' },
+                            _react2.default.createElement(
+                                'button',
+                                { type: 'button', className: 'btn btn-default waves-effect', 'data-dismiss': 'modal' },
+                                'Close'
+                            ),
+                            _react2.default.createElement(
+                                'button',
+                                { type: 'button', className: 'btn btn-primary waves-effect', onClick: function onClick() {
+                                        return _this2.saveEvent();
+                                    } },
+                                'Save'
+                            )
+                        )
+                    )
+                )
+            );
+        }
+    }]);
+
+    return CreateEventModal;
+}(_react2.default.Component);
+
+var Create = function (_React$Component2) {
+    _inherits(Create, _React$Component2);
 
     function Create(props) {
         _classCallCheck(this, Create);
 
-        var _this = _possibleConstructorReturn(this, (Create.__proto__ || Object.getPrototypeOf(Create)).call(this, props));
+        var _this3 = _possibleConstructorReturn(this, (Create.__proto__ || Object.getPrototypeOf(Create)).call(this, props));
 
-        _this.state = {
+        _this3.state = {
             name: "",
             description: "",
             showEventsDropdown: false,
@@ -790,30 +875,10 @@ var Create = function (_React$Component) {
                 description: "",
                 percent: 50
             }],
-            events: [{
-                name: 'revenue'
-            }, {
-                name: 'hits'
-            }, {
-                name: 'revenue'
-            }, {
-                name: 'hits'
-            }, {
-                name: 'revenue'
-            }, {
-                name: 'hits'
-            }, {
-                name: 'revenue'
-            }, {
-                name: 'hits'
-            }, {
-                name: 'revenue'
-            }, {
-                name: 'hits'
-            }],
+            events: [],
             selectedEvents: []
         };
-        return _this;
+        return _this3;
     }
 
     _createClass(Create, [{
@@ -865,11 +930,11 @@ var Create = function (_React$Component) {
     }, {
         key: 'filterEvents',
         value: function filterEvents() {
-            var _this2 = this;
+            var _this4 = this;
 
             this.setState({
                 filteredEvents: this.state.events.filter(function (e) {
-                    return e.name.startsWith(_this2.searchEvents ? _this2.searchEvents.value : '');
+                    return e.name.startsWith(_this4.searchEvents ? _this4.searchEvents.value : '');
                 })
             });
         }
@@ -891,7 +956,7 @@ var Create = function (_React$Component) {
     }, {
         key: 'render',
         value: function render() {
-            var _this3 = this;
+            var _this5 = this;
 
             return _react2.default.createElement(
                 'div',
@@ -913,7 +978,7 @@ var Create = function (_React$Component) {
                             'An experiment is the basis for an AB test. You define what your variations are and what percentage of users to target.'
                         ),
                         _react2.default.createElement(
-                            'form',
+                            'div',
                             { className: 'form-horizontal' },
                             _react2.default.createElement(
                                 'div',
@@ -962,6 +1027,7 @@ var Create = function (_React$Component) {
                                     )
                                 )
                             ),
+                            _react2.default.createElement('hr', null),
                             _react2.default.createElement(
                                 'div',
                                 { className: 'form-group' },
@@ -978,7 +1044,7 @@ var Create = function (_React$Component) {
                                         { className: 'table-responsive' },
                                         _react2.default.createElement(
                                             'table',
-                                            { className: 'table' },
+                                            { className: 'table color-table muted-table table-borderless' },
                                             _react2.default.createElement(
                                                 'thead',
                                                 null,
@@ -1031,7 +1097,7 @@ var Create = function (_React$Component) {
                                                             _react2.default.createElement(
                                                                 'button',
                                                                 { type: 'button', onClick: function onClick() {
-                                                                        return _this3.removeVariation(i);
+                                                                        return _this5.removeVariation(i);
                                                                     }, className: 'btn btn-danger btn-circle waves-effect' },
                                                                 _react2.default.createElement('i', { className: 'fa fa-minus' }),
                                                                 ' '
@@ -1043,69 +1109,99 @@ var Create = function (_React$Component) {
                                         ),
                                         _react2.default.createElement(
                                             'button',
-                                            { type: 'button', className: 'btn btn-info waves-effect pull-right', onClick: function onClick() {
-                                                    return _this3.addVariation();
+                                            { type: 'button', className: 'btn btn-success waves-effect pull-right', onClick: function onClick() {
+                                                    return _this5.addVariation();
                                                 } },
                                             'Add Variation'
                                         )
                                     )
                                 )
                             ),
+                            _react2.default.createElement('hr', null),
                             _react2.default.createElement(
                                 'div',
                                 { className: 'form-group' },
                                 _react2.default.createElement(
-                                    'label',
+                                    'div',
                                     { className: 'col-md-12' },
-                                    'Events'
-                                ),
-                                _react2.default.createElement(
-                                    'div',
-                                    { className: 'col-md-6', style: { marginBottom: '10px' } },
-                                    this.state.selectedEvents.length === 0 && _react2.default.createElement(
-                                        'p',
+                                    _react2.default.createElement(
+                                        'label',
                                         null,
-                                        'No events added yet.'
+                                        'Events'
                                     ),
-                                    this.state.selectedEvents.map(function (e, i) {
-                                        return _react2.default.createElement(
-                                            'button',
-                                            { style: { margin: '5px' }, key: i, type: 'button', onClick: function onClick() {
-                                                    return _this3.toggleEvent(e);
-                                                }, className: 'btn btn-outline btn-rounded btn-info waves-effect' },
-                                            e.name,
-                                            ' ',
-                                            _react2.default.createElement('i', { className: 'fa fa-times m-l-5' })
-                                        );
-                                    })
+                                    _react2.default.createElement(
+                                        'button',
+                                        { type: 'button', 'data-toggle': 'modal', 'data-target': '#createEventModal', className: 'btn btn-success waves-effect pull-right m-b-10' },
+                                        'New Event'
+                                    ),
+                                    _react2.default.createElement(CreateEventModal, null)
                                 ),
-                                _react2.default.createElement(
+                                this.state.events.length > 0 && _react2.default.createElement(
                                     'div',
-                                    { className: 'col-md-6', onFocus: function onFocus() {
-                                            return _this3.onSearchEventsFocus();
-                                        }, onBlur: function onBlur(e) {
-                                            return _this3.onSearchEventsBlur(e);
-                                        } },
-                                    _react2.default.createElement('input', { onChange: function onChange() {
-                                            return _this3.filterEvents();
-                                        }, ref: function ref(input) {
-                                            _this3.searchEvents = input;
-                                        }, type: 'text', className: 'form-control', placeholder: 'Search events...' }),
+                                    { className: 'row' },
                                     _react2.default.createElement(
                                         'div',
-                                        { className: "list-group " + (this.state.showEventsDropdown === true ? '' : 'hidden'), style: { maxHeight: '206px', overflow: 'scroll', borderBottom: '1px solid #ddd', boxShadow: "0 1px 4px 0 rgba(0,0,0,.1)" } },
-                                        this.state.filteredEvents.map(function (e, i) {
+                                        { className: 'col-md-6', onFocus: function onFocus() {
+                                                return _this5.onSearchEventsFocus();
+                                            }, onBlur: function onBlur(e) {
+                                                return _this5.onSearchEventsBlur(e);
+                                            } },
+                                        _react2.default.createElement('input', { onChange: function onChange() {
+                                                return _this5.filterEvents();
+                                            }, ref: function ref(input) {
+                                                _this5.searchEvents = input;
+                                            }, type: 'text', className: 'form-control', placeholder: 'Search events...' }),
+                                        _react2.default.createElement(
+                                            'div',
+                                            { className: "list-group " + (this.state.showEventsDropdown === true ? '' : ''), style: { maxHeight: '206px', overflow: 'scroll', borderBottom: '1px solid #ddd', boxShadow: "0 1px 4px 0 rgba(0,0,0,.1)" } },
+                                            this.state.filteredEvents.map(function (e, i) {
+                                                return _react2.default.createElement(
+                                                    'a',
+                                                    {
+                                                        key: i,
+                                                        onClick: function onClick() {
+                                                            return _this5.toggleEvent(e);
+                                                        },
+                                                        href: 'javascript:void(0)',
+                                                        className: "list-group-item " + (_this5.state.selectedEvents.indexOf(e) >= 0 ? 'active' : '') },
+                                                    e.name,
+                                                    _react2.default.createElement('i', { className: "pull-right fa " + (_this5.state.selectedEvents.indexOf(e) >= 0 ? 'fa-minus' : 'fa-plus') })
+                                                );
+                                            })
+                                        )
+                                    ),
+                                    _react2.default.createElement(
+                                        'div',
+                                        { className: 'col-md-6', style: { marginBottom: '10px' } },
+                                        this.state.selectedEvents.length === 0 && _react2.default.createElement(
+                                            'p',
+                                            null,
+                                            'No events added yet.'
+                                        ),
+                                        this.state.selectedEvents.map(function (e, i) {
                                             return _react2.default.createElement(
-                                                'a',
-                                                { key: i, onClick: function onClick() {
-                                                        return _this3.toggleEvent(e);
-                                                    }, href: 'javascript:void(0)', className: "list-group-item " + (_this3.state.selectedEvents.indexOf(e) >= 0 ? 'active' : '') },
-                                                e.name
+                                                'button',
+                                                { style: { margin: '5px' }, key: i, type: 'button', onClick: function onClick() {
+                                                        return _this5.toggleEvent(e);
+                                                    }, className: 'btn btn-outline btn-rounded btn-info waves-effect' },
+                                                e.name,
+                                                ' ',
+                                                _react2.default.createElement('i', { className: 'fa fa-times m-l-5' })
                                             );
                                         })
                                     )
+                                ),
+                                this.state.events.length === 0 && _react2.default.createElement(
+                                    'div',
+                                    { className: 'col-md-12 text-center' },
+                                    _react2.default.createElement(
+                                        'p',
+                                        null,
+                                        'You have not created an event in this project yet, please create one to use in this experiment.'
+                                    )
                                 )
                             ),
+                            _react2.default.createElement('hr', null),
                             _react2.default.createElement(
                                 'div',
                                 { className: 'row' },
@@ -1114,8 +1210,8 @@ var Create = function (_React$Component) {
                                     { className: 'col-md-4 col-md-push-4' },
                                     _react2.default.createElement(
                                         'button',
-                                        { type: 'button', className: 'btn btn-lg btn-block btn-outline btn-success waves-effect' },
-                                        'Create Experiment'
+                                        { type: 'button', className: 'btn fcbtn btn-1e btn-lg btn-block btn-outline btn-primary waves-effect' },
+                                        'Save Experiment'
                                     )
                                 )
                             )
