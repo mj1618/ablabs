@@ -1,3 +1,8 @@
+.fix-sidebar .top-left-part {
+    background: url(/images/banner-1.png);
+    background-size: cover;
+}
+
 #logo-large {
     display:block;
 }

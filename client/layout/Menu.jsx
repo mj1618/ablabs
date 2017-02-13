@@ -62,7 +62,7 @@ export default class Menu extends React.Component {
             <a href="/settings" className="waves-effect">
                 <i className=" zmdi zmdi-swap zmdi-hc-fw fa-fw" ></i> 
                 <span className="hide-menu"> 
-                    Change Project
+                    Switch Project
                 </span>
             </a>
         </li>
@@ -71,7 +71,7 @@ export default class Menu extends React.Component {
             <a href="/settings" className="waves-effect">
                 <i className="zmdi zmdi-plus-circle zmdi-hc-fw fa-fw" ></i> 
                 <span className="hide-menu"> 
-                    Creat Project
+                    Create Project
                 </span>
             </a>
         </li>

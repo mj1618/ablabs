@@ -272,7 +272,7 @@ var Menu = function (_React$Component) {
                                 _react2.default.createElement(
                                     "span",
                                     { className: "hide-menu" },
-                                    "Change Project"
+                                    "Switch Project"
                                 )
                             )
                         ),
@@ -286,7 +286,7 @@ var Menu = function (_React$Component) {
                                 _react2.default.createElement(
                                     "span",
                                     { className: "hide-menu" },
-                                    "Creat Project"
+                                    "Create Project"
                                 )
                             )
                         ),
