@@ -767,19 +767,33 @@ require('whatwg-fetch');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var TextError = function TextError(props) {
+    return _react2.default.createElement(
+        'div',
+        { className: 'row' },
+        _react2.default.createElement(
+            'div',
+            { className: 'col-md-12 text-center m-t-20 text-danger' },
+            props.error
+        )
+    );
+};
+
 var CreateEventModal = function (_React$Component) {
     _inherits(CreateEventModal, _React$Component);
 
-    function CreateEventModal() {
+    function CreateEventModal(props) {
         _classCallCheck(this, CreateEventModal);
 
-        return _possibleConstructorReturn(this, (CreateEventModal.__proto__ || Object.getPrototypeOf(CreateEventModal)).apply(this, arguments));
+        return _possibleConstructorReturn(this, (CreateEventModal.__proto__ || Object.getPrototypeOf(CreateEventModal)).call(this, props));
     }
 
     _createClass(CreateEventModal, [{
@@ -914,19 +928,20 @@ var Create = function (_React$Component2) {
             name: pageData.experimentName || "",
             description: pageData.experimentDescription || "",
             showEventsDropdown: false,
-            cohort: 90,
+            cohort: pageData.cohort || 90,
             filteredEvents: [],
             variations: pageData.variations || [{
                 name: "Variation 1",
                 description: "",
-                percent: 50
+                cohort: 50
             }, {
                 name: "Variation 2",
                 description: "",
-                percent: 50
+                cohort: 50
             }],
             events: pageData.events,
-            selectedEvents: pageData.selectedEvents || []
+            selectedEvents: pageData.selectedEvents || [],
+            errorsTriggered: false
         };
         return _this5;
     }
@@ -939,19 +954,26 @@ var Create = function (_React$Component2) {
     }, {
         key: 'addVariation',
         value: function addVariation() {
+
+            var variations = this.state.variations.concat({
+                name: "Variation " + (this.state.variations.length + 1),
+                description: "",
+                cohort: 0
+            });
+
+            variations.forEach(function (v) {
+                v.cohort = Math.floor(100 / variations.length);
+            });
+
             this.setState({
-                variations: this.state.variations.concat({
-                    name: "Variation " + (this.state.variations.length + 1),
-                    description: "",
-                    percent: 0
-                })
+                variations: variations
             });
             return false;
         }
     }, {
         key: 'removeVariation',
         value: function removeVariation(i) {
-            if (this.state.variations.length > 1) {
+            if (this.state.variations.length > 2) {
                 this.setState({
                     variations: this.state.variations.filter(function (v, j) {
                         return j !== i;
@@ -1020,7 +1042,6 @@ var Create = function (_React$Component2) {
                 heading: 'Event created',
                 text: '',
                 position: 'top-right',
-                loaderBg: '#ff6849',
                 icon: 'success',
                 hideAfter: 2000,
                 stack: 6
@@ -1033,17 +1054,78 @@ var Create = function (_React$Component2) {
                 heading: 'Event failed to create',
                 text: '',
                 position: 'top-right',
-                loaderBg: '#ff6849',
                 icon: 'warning',
                 hideAfter: 2000,
                 stack: 6
             });
         }
     }, {
-        key: 'render',
-        value: function render() {
+        key: 'checkErrors',
+        value: function checkErrors() {
             var _this8 = this;
 
+            var errors = {};
+            if (this.state.name.length === 0) {
+                errors.name = 'You must enter a name for the experiment';
+            }
+            if (this.state.cohort <= 0 || this.state.cohort > 100) {
+                errors.cohort = 'Cohort must be a number from 1 to 100';
+            }
+            if (this.state.variations.length < 2) {
+                errors.variations = 'You must have at least two variations: A and B';
+            } else if (this.state.variations.some(function (v) {
+                return v.name.length === 0 || v.cohort <= 0 || v.cohort > 100;
+            })) {
+                errors.variations = 'Please enter a name and a cohort percentage for all your variations';
+            } else if (this.state.variations.some(function (v) {
+                return _this8.state.variations.some(function (v2) {
+                    return v !== v2 && v2.name === v.name;
+                });
+            })) {
+                errors.variations = 'Each variation must have a unique name';
+            } else if (this.state.variations.reduce(function (a, v) {
+                return a + v.cohort;
+            }, 0) > 100) {
+                errors.variations = 'Variations must add up to less than or equal to 100';
+            } else if (this.state.variations.some(function (v) {
+                return v.cohort <= 0;
+            })) {
+                errors.variations = 'Variations must have a positive cohort percentage';
+            }
+            if (this.state.selectedEvents.length === 0) {
+                errors.events = 'You must select at least 1 event to use in the experiment';
+            }
+
+            return errors;
+        }
+    }, {
+        key: 'submit',
+        value: function submit() {
+            var errors = this.checkErrors();
+            this.setState({ errorsTriggered: true });
+            if (Object.keys(errors).length === 0) {
+                // submit
+            }
+        }
+    }, {
+        key: 'setVariationData',
+        value: function setVariationData(i, data) {
+            this.setState({
+                variations: this.state.variations.map(function (v, j) {
+                    if (i === j) {
+                        return Object.assign({}, v, data);
+                    } else {
+                        return v;
+                    }
+                })
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var _this9 = this;
+
+            var errors = this.checkErrors();
             return _react2.default.createElement(
                 'div',
                 { className: 'row' },
@@ -1077,7 +1159,15 @@ var Create = function (_React$Component2) {
                                 _react2.default.createElement(
                                     'div',
                                     { className: 'col-md-12' },
-                                    _react2.default.createElement('input', { type: 'text', name: 'name', className: 'form-control' })
+                                    _react2.default.createElement('input', {
+                                        onChange: function onChange(e) {
+                                            return _this9.setState({ name: e.target.value });
+                                        },
+                                        value: this.state.name,
+                                        type: 'text',
+                                        name: 'name',
+                                        className: 'form-control' }),
+                                    this.state.errorsTriggered && errors.name && _react2.default.createElement(TextError, { error: errors.name })
                                 )
                             ),
                             _react2.default.createElement(
@@ -1091,7 +1181,26 @@ var Create = function (_React$Component2) {
                                 _react2.default.createElement(
                                     'div',
                                     { className: 'col-md-12' },
-                                    _react2.default.createElement('textarea', { className: 'form-control', rows: '5' })
+                                    _react2.default.createElement('textarea', {
+                                        onChange: function onChange(e) {
+                                            return _this9.setState({ description: e.target.value });
+                                        },
+                                        value: this.state.description,
+                                        className: 'form-control',
+                                        rows: '5' })
+                                ),
+                                this.state.errorsTriggered && errors.description && _react2.default.createElement(
+                                    'div',
+                                    { className: 'help-block with-errors' },
+                                    _react2.default.createElement(
+                                        'ul',
+                                        { className: 'list-unstyled' },
+                                        _react2.default.createElement(
+                                            'li',
+                                            null,
+                                            errors.description
+                                        )
+                                    )
                                 )
                             ),
                             _react2.default.createElement(
@@ -1105,13 +1214,21 @@ var Create = function (_React$Component2) {
                                 _react2.default.createElement(
                                     'div',
                                     { className: 'col-md-3' },
-                                    _react2.default.createElement('input', { type: 'number', name: 'cohort', defaultValue: 90, className: 'form-control', style: { maxWidth: '80px', textAlign: 'right', display: 'inline' } }),
+                                    _react2.default.createElement('input', {
+                                        type: 'number',
+                                        onChange: function onChange(e) {
+                                            return _this9.setState({ cohort: Math.max(1, Math.min(100, e.target.value)) });
+                                        },
+                                        value: this.state.cohort,
+                                        className: 'form-control',
+                                        style: { maxWidth: '80px', textAlign: 'right', display: 'inline' } }),
                                     _react2.default.createElement(
                                         'span',
                                         null,
                                         ' %'
                                     )
-                                )
+                                ),
+                                this.state.errorsTriggered && errors.cohort && _react2.default.createElement(TextError, { error: errors.cohort })
                             ),
                             _react2.default.createElement('hr', null),
                             _react2.default.createElement(
@@ -1159,23 +1276,49 @@ var Create = function (_React$Component2) {
                                                 'tbody',
                                                 null,
                                                 this.state.variations.map(function (v, i) {
+                                                    var _React$createElement, _React$createElement2, _React$createElement3;
+
                                                     return _react2.default.createElement(
                                                         'tr',
-                                                        { key: i },
+                                                        { id: "variation-" + i, key: i },
                                                         _react2.default.createElement(
                                                             'td',
                                                             null,
-                                                            _react2.default.createElement('input', { type: 'text', value: v.name, className: 'form-control' })
+                                                            _react2.default.createElement('input', (_React$createElement = {
+                                                                value: v.name,
+                                                                onChange: function onChange(e) {
+                                                                    return _this9.setVariationData(i, {
+                                                                        'name': e.target.value
+                                                                    });
+                                                                },
+                                                                type: 'text'
+                                                            }, _defineProperty(_React$createElement, 'value', v.name), _defineProperty(_React$createElement, 'className', 'form-control'), _React$createElement))
                                                         ),
                                                         _react2.default.createElement(
                                                             'td',
                                                             null,
-                                                            _react2.default.createElement('input', { type: 'text', value: v.description, className: 'form-control' })
+                                                            _react2.default.createElement('input', (_React$createElement2 = {
+                                                                value: v.name,
+                                                                onChange: function onChange(e) {
+                                                                    return _this9.setVariationData(i, {
+                                                                        'description': e.target.value
+                                                                    });
+                                                                },
+                                                                type: 'text'
+                                                            }, _defineProperty(_React$createElement2, 'value', v.description), _defineProperty(_React$createElement2, 'className', 'form-control'), _React$createElement2))
                                                         ),
                                                         _react2.default.createElement(
                                                             'td',
                                                             null,
-                                                            _react2.default.createElement('input', { type: 'number', value: v.percent, className: 'form-control' })
+                                                            _react2.default.createElement('input', (_React$createElement3 = {
+                                                                value: v.name,
+                                                                onChange: function onChange(e) {
+                                                                    return _this9.setVariationData(i, {
+                                                                        cohort: Math.max(1, Math.min(100, e.target.value))
+                                                                    });
+                                                                },
+                                                                type: 'number'
+                                                            }, _defineProperty(_React$createElement3, 'value', v.cohort), _defineProperty(_React$createElement3, 'className', 'form-control'), _React$createElement3))
                                                         ),
                                                         _react2.default.createElement(
                                                             'td',
@@ -1183,7 +1326,7 @@ var Create = function (_React$Component2) {
                                                             _react2.default.createElement(
                                                                 'button',
                                                                 { type: 'button', onClick: function onClick() {
-                                                                        return _this8.removeVariation(i);
+                                                                        return _this9.removeVariation(i);
                                                                     }, className: 'btn btn-danger btn-circle waves-effect' },
                                                                 _react2.default.createElement('i', { className: 'fa fa-minus' }),
                                                                 ' '
@@ -1196,12 +1339,13 @@ var Create = function (_React$Component2) {
                                         _react2.default.createElement(
                                             'button',
                                             { type: 'button', className: 'btn btn-success waves-effect btn-outline pull-right', onClick: function onClick() {
-                                                    return _this8.addVariation();
+                                                    return _this9.addVariation();
                                                 } },
                                             'Add Variation'
                                         )
                                     )
-                                )
+                                ),
+                                this.state.errorsTriggered && errors.variations && _react2.default.createElement(TextError, { error: errors.variations })
                             ),
                             _react2.default.createElement('hr', null),
                             _react2.default.createElement(
@@ -1221,9 +1365,9 @@ var Create = function (_React$Component2) {
                                         'New Event'
                                     ),
                                     _react2.default.createElement(CreateEventModal, { success: function success(e) {
-                                            return _this8.eventCreated(e);
+                                            return _this9.eventCreated(e);
                                         }, fail: function fail() {
-                                            return _this8.eventCreationFailed();
+                                            return _this9.eventCreationFailed();
                                         } })
                                 ),
                                 this.state.events.length > 0 && _react2.default.createElement(
@@ -1232,30 +1376,30 @@ var Create = function (_React$Component2) {
                                     _react2.default.createElement(
                                         'div',
                                         { className: 'col-md-6', onFocus: function onFocus() {
-                                                return _this8.onSearchEventsFocus();
+                                                return _this9.onSearchEventsFocus();
                                             }, onBlur: function onBlur(e) {
-                                                return _this8.onSearchEventsBlur(e);
+                                                return _this9.onSearchEventsBlur(e);
                                             } },
                                         _react2.default.createElement('input', { onChange: function onChange() {
-                                                return _this8.filterEvents();
+                                                return _this9.filterEvents();
                                             }, ref: function ref(input) {
-                                                _this8.searchEvents = input;
+                                                _this9.searchEvents = input;
                                             }, type: 'text', className: 'form-control', placeholder: 'Search events...' }),
                                         _react2.default.createElement(
                                             'div',
-                                            { className: "list-group " + (this.state.showEventsDropdown === true ? '' : ''), style: { maxHeight: '206px', overflow: 'scroll', borderBottom: '1px solid #ddd', boxShadow: "0 1px 4px 0 rgba(0,0,0,.1)" } },
+                                            { className: "list-group " + (this.state.showEventsDropdown === true ? '' : ''), style: { maxHeight: '206px', marginTop: '-1px', overflow: 'scroll', borderBottom: '1px solid #ddd', boxShadow: "0 1px 4px 0 rgba(0,0,0,.1)" } },
                                             this.state.filteredEvents.map(function (e, i) {
                                                 return _react2.default.createElement(
                                                     'a',
                                                     {
                                                         key: i,
                                                         onClick: function onClick() {
-                                                            return _this8.toggleEvent(e);
+                                                            return _this9.toggleEvent(e);
                                                         },
                                                         href: 'javascript:void(0)',
-                                                        className: "list-group-item " + (_this8.state.selectedEvents.indexOf(e) >= 0 ? 'active' : '') },
+                                                        className: "list-group-item " + (_this9.state.selectedEvents.indexOf(e) >= 0 ? 'active' : '') },
                                                     e.name,
-                                                    _react2.default.createElement('i', { className: "pull-right fa " + (_this8.state.selectedEvents.indexOf(e) >= 0 ? 'fa-minus' : 'fa-plus') })
+                                                    _react2.default.createElement('i', { className: "pull-right fa " + (_this9.state.selectedEvents.indexOf(e) >= 0 ? 'fa-minus' : 'fa-plus') })
                                                 );
                                             })
                                         )
@@ -1274,7 +1418,7 @@ var Create = function (_React$Component2) {
                                             return _react2.default.createElement(
                                                 'button',
                                                 { style: { margin: '5px' }, key: i, type: 'button', onClick: function onClick() {
-                                                        return _this8.toggleEvent(e);
+                                                        return _this9.toggleEvent(e);
                                                     }, className: 'btn btn-outline btn-rounded btn-info waves-effect' },
                                                 e.name,
                                                 ' ',
@@ -1293,7 +1437,8 @@ var Create = function (_React$Component2) {
                                         _react2.default.createElement('br', null),
                                         'Please create one to use in this experiment.'
                                     )
-                                )
+                                ),
+                                this.state.errorsTriggered && errors.events && _react2.default.createElement(TextError, { error: errors.events })
                             ),
                             _react2.default.createElement('hr', null),
                             _react2.default.createElement(
@@ -1304,11 +1449,14 @@ var Create = function (_React$Component2) {
                                     { className: 'col-md-4 col-md-push-4' },
                                     _react2.default.createElement(
                                         'button',
-                                        { type: 'button', className: 'btn fcbtn btn-1e btn-lg btn-block btn-outline btn-primary waves-effect' },
+                                        { onClick: function onClick() {
+                                                return _this9.submit();
+                                            }, type: 'button', className: 'btn fcbtn btn-1e btn-lg btn-block btn-outline btn-primary waves-effect' },
                                         'Save Experiment'
                                     )
                                 )
-                            )
+                            ),
+                            this.state.errorsTriggered && Object.keys(errors).length > 0 && _react2.default.createElement(TextError, { error: 'Please fix the above form errors before submitting' })
                         )
                     )
                 )
