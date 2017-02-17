@@ -106,7 +106,11 @@ app.post('/projects/create', loginMiddleware, (req, res) => {
 
 app.post('/events/create', authMiddleware, (req, res) => {
     Event.create(req.body.name, req.session.project).then(event=>{
-        res.json({result:'success', event});
+        res.json({result:'success', event:{
+            name:event.get('name'),
+            nTracks:0,
+            nExperiments:0
+        }});
     });
 });
 
@@ -116,6 +120,34 @@ app.get('/experiments', authMiddleware, (req, res) => {
             routeId: 'experiments',
             title: 'Experiments',
             experiments: es.map(e=>e)
+        });
+    }).then((pageData)=>{
+        res.render('dashboard',{
+            pageData
+        });
+    })
+});
+
+app.get('/events', authMiddleware, (req, res) => {
+    Event.where({project_id:1}).orderBy('id','DESC').fetchAll({withRelated:['tracks','experiments']}).then(es=>{
+        return Promise.all(es.map( e=>{
+            return Promise.join(
+                e.tracks().count(),
+                e.experiments().fetch(),
+                (nTracks,experiments)=>{
+                    return {
+                        name: e.get('name'),
+                        nTracks,
+                        nExperiments:experiments.length
+                    }
+                }
+            );
+        }) );
+    }).then(events=>{
+        return createPageData(req,{
+            routeId: 'events',
+            title: 'Events',
+            events
         });
     }).then((pageData)=>{
         res.render('dashboard',{

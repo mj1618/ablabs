@@ -13,6 +13,7 @@
     "morgan": "^1.7.0",
     "mysql": "^2.12.0",
     "node-fetch": "^1.6.3",
+    "objection": "^0.6.2",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "react-redux": "^4.4.5",
@@ -36,7 +37,7 @@
     "webpack": "^1.13.2"
   },
   "scripts": {
-    "serve": "nodemon --watch ./server/ --exec babel-node -- ./server/index.js",
+    "serve": "nodemon --ignore server/queries.js --watch ./server/ --exec babel-node -- ./server/index.js",
     "watch": "watchify client/index.js -t babelify -o public/bundle.js -v",
     "build": "browserify -t [ babelify --presets [ react ] ] client/index.js | uglifyjs -mc > public/bundle.js",
     "test": "mocha --compilers js:babel-core/register server/test/ client/test/ --reporter spec --timeout 5000"

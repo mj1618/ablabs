@@ -24,7 +24,7 @@ export default class Menu extends React.Component {
         </li>*/}
         <li className="nav-small-cap m-t-10">--- Project Menu</li>
         <li> 
-            <a href="/experiments" className="waves-effect active">
+            <a href="/experiments" className="waves-effect">
                 <i className="zmdi zmdi-view-dashboard zmdi-hc-fw fa-fw" ></i> 
                 <span className="hide-menu"> 
                     Experiments

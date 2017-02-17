@@ -30,7 +30,6 @@ exports.up = function(knex, Promise) {
         table.boolean('active').defaultTo(true);
         table.string('description',10000);
         table.timestamps();
-        table.boolean('deleted').defaultTo(false);
 
       }).createTable('variation', function(table) {
         table.bigIncrements('id').primary();
@@ -39,7 +38,6 @@ exports.up = function(knex, Promise) {
         table.string('description',10000);
         table.integer('cohort');
         table.timestamps();
-        table.boolean('deleted').defaultTo(false);
 
       }).createTable('event', function(table) {
         table.bigIncrements('id').primary();
@@ -47,7 +45,6 @@ exports.up = function(knex, Promise) {
         table.string('description',10000);
         table.bigInteger('project_id').unsigned().index().references('id').inTable('project').onDelete('CASCADE');
         table.timestamps();
-        table.boolean('deleted').defaultTo(false);
 
       }).createTable('experiment_event', function(table) {
         table.bigIncrements('id').primary();
@@ -57,7 +54,7 @@ exports.up = function(knex, Promise) {
 
       }).createTable('track', function(table) {
         table.bigIncrements('id').primary();
-        table.bigInteger('user_id').unsigned().index().references('id').inTable('user').onDelete('CASCADE');
+        table.string('unique_id');
         table.bigInteger('event_id').unsigned().index().references('id').inTable('event').onDelete('CASCADE');
         table.bigInteger('variation_id').unsigned().index().references('id').inTable('variation').onDelete('CASCADE');
         table.integer('amount');

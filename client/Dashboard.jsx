@@ -2,6 +2,7 @@ import React from 'react';
 import Login from './layout/auth/Login.jsx';
 import LoginEmail from './layout/auth/LoginEmail.jsx';
 import ExperimentsTable from './layout/experiments/Table.jsx';
+import EventsTable from './layout/events/Table.jsx';
 import ProjectsCreate from './layout/projects/Create.jsx';
 import ExperimentsCreate from './layout/experiments/Create.jsx';
 import TopBar from './layout/TopBar.jsx';
@@ -16,6 +17,8 @@ const getPage = ()=>{
             return (<Login/>);
         case 'experiments':
             return <ExperimentsTable/>;
+        case 'events':
+            return <EventsTable/>;
         case 'create-experiment':
             return <ExperimentsCreate/>;
         case 'create-project':

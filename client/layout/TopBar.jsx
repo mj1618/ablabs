@@ -39,7 +39,7 @@ export default class TopBar extends React.Component {
                 </li> }
 
                 { pageData.showAccount && <li className="dropdown"> 
-                    <a className="dropdown-toggle profile-pic" data-toggle="dropdown" href="#"> 
+                    <a className="dropdown-toggle waves-effect profile-pic" data-toggle="dropdown" href="#"> 
                         <i className="zmdi zmdi-face zmdi-hc-fw" style={{fontSize:'28px',verticalAlign:'middle'}} />
                         <b className="hidden-xs">Your Account</b>
                     </a>
