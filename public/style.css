@@ -78,3 +78,9 @@
 .btn-github {
   background-color:#333!important
 }
+
+.spin-center {
+    -webkit-transform-origin: 50% 58%;
+        transform-origin:50% 58%;
+        -ms-transform-origin:50% 58%; /* IE 9 */
+}

@@ -1,9 +1,11 @@
 import express from 'express';
 import request from 'request';
 import fetch from 'node-fetch';
-import {User,Experiment,Project,Event} from './model';
+import {User,Experiment,Project,Event,Variation} from './model';
 import auth from './auth';
 import Promise from 'bluebird';
+
+const autoLogin = true;
 
 var app = express();
 app.use(require('morgan')('combined'));
@@ -13,23 +15,43 @@ app.use(require('express-session')({ secret: 'CBiHUkkdqaMTh80iUVzdSPver41P5fKgDM
 app.use(express.static('./public'));
 app.set('view engine', 'ejs');
 
-auth(app);
+auth(app, (req,res,profile)=>{
+    User.query().where('email', profile.email).then(users=>{
+        if(users.length===0){
+            console.log('inserting user: '+user.id);
+            User.query().insert({
+                email: profile.email,
+                verified_email: profile.verified_email,
+                first_name: profile.given_name,
+                last_name: profile.family_name,
+                google_link: profile.link,
+                picture: profile.picture
+            }).then(result=>{
+                req.session.user = result.id;
+                res.redirect('/');
+            });
+        } else {
+            let user=users[0];
+            req.session.user = user.id;
+            res.redirect('/');
+        }
+    });
+}, (req,res)=>{
+    res.redirect('/');
+});
 
 const createPageData = (req, data) => {
-    return Promise.join(
-        Experiment.where({project_id:req.session.project}).count(),
-        Project.where({id:req.session.project}).fetch(),
-        (nExperiments, project)=>{
-            return Object.assign(data,{
-                nExperiments,
-                projectName: project.get('name'),
-                showTitle: true,
-                showMenu: true,
-                showSearch: true,
-                showNotifications: true,
-                showAccount: true
-            });
-        });
+    return Project.query().findById(1).eager('experiments').then(project=>{
+        return Object.assign({},{
+            nExperiments:project.experiments.length,
+            projectName: project.name,
+            showTitle: true,
+            showMenu: true,
+            showSearch: true,
+            showNotifications: true,
+            showAccount: true
+        },data);
+    });
 }
 
 const loginMiddleware = (req,res,next)=>{
@@ -45,14 +67,14 @@ const authMiddleware = (req,res,next)=>{
     if(!req.session.user) {
         res.redirect('/login');
     } else if(!req.session.project){
-        User.projects().then(projects=>{
+        User.query().findById(req.session.user).eager('projects').then(user=>{
+            let projects = user.projects;
             if(projects.length>0){
                 console.log(JSON.stringify(projects));
-                req.session.project = projects.pop().id;
+                req.session.project = projects[0].id;
                 res.redirect('/');
-                // res.redirect('/create-first-project');
             } else {
-                res.redirect('/create-first-project');
+                res.redirect('/projects/create');
             }
         });
     } else {
@@ -65,16 +87,23 @@ app.get('/', authMiddleware, (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-    res.render('dashboard',{
-        pageData: {
-            routeId: 'login',
-            showMenu: false,
-            showTitle: false,
-            showSearch: false,
-            showNotifications: false,
-            showAccount: false
-        }
-    });
+    if(autoLogin){
+        User.query().where('email','matthew.stephen.james@gmail.com').then(users=>{
+            req.session.user = users[0].id;
+            res.redirect('/');
+        });
+    } else {
+        res.render('dashboard',{
+            pageData: {
+                routeId: 'login',
+                showMenu: false,
+                showTitle: false,
+                showSearch: false,
+                showNotifications: false,
+                showAccount: false
+            }
+        });
+    }
 });
 
 app.get('/login/email', (req, res) => {
@@ -87,39 +116,42 @@ app.get('/login/email', (req, res) => {
     });
 });
 
-app.get('/create-first-project', loginMiddleware, (req, res) => {
-    res.render('dashboard', {
-        pageData: {
-            routeId: 'create-project',
-            showMenu: false,
-            title: 'Create Project'
-        }
+app.get('/projects/create', loginMiddleware, (req, res) => {
+    createPageData(req, {
+        routeId: 'create-project',
+        showMenu: false,
+        showSearch:false,
+        title: 'Create Project'
+    }).then(pageData=>{
+        res.render('dashboard', {
+            pageData
+        });
     });
 });
 
 app.post('/projects/create', loginMiddleware, (req, res) => {
     Project.create(req.body.name, req.session.user).then(project=>{
-        req.session.project=project.id;
         res.redirect('/experiments');
     });
 });
 
 app.post('/events/create', authMiddleware, (req, res) => {
-    Event.create(req.body.name, req.session.project).then(event=>{
+    Event.query().insert({name:req.body.name, project_id: req.session.project}).then(event=>{
         res.json({result:'success', event:{
-            name:event.get('name'),
-            nTracks:0,
-            nExperiments:0
+            id: event.id,
+            name: event.name,
+            nTracks: 0,
+            nExperiments: 0
         }});
     });
 });
 
 app.get('/experiments', authMiddleware, (req, res) => {
-    Experiment.where({project_id:1}).fetchAll().then(es=>{
+    Experiment.query().where('project_id',req.session.project).then(experiments=>{
         return createPageData(req,{
             routeId: 'experiments',
             title: 'Experiments',
-            experiments: es.map(e=>e)
+            experiments
         });
     }).then((pageData)=>{
         res.render('dashboard',{
@@ -129,25 +161,18 @@ app.get('/experiments', authMiddleware, (req, res) => {
 });
 
 app.get('/events', authMiddleware, (req, res) => {
-    Event.where({project_id:1}).orderBy('id','DESC').fetchAll({withRelated:['tracks','experiments']}).then(es=>{
-        return Promise.all(es.map( e=>{
-            return Promise.join(
-                e.tracks().count(),
-                e.experiments().fetch(),
-                (nTracks,experiments)=>{
-                    return {
-                        name: e.get('name'),
-                        nTracks,
-                        nExperiments:experiments.length
-                    }
-                }
-            );
-        }) );
-    }).then(events=>{
+    Event.query().where('project_id',1).orderBy('id','desc').eager('[tracks,experiments]').then(events=>{
+        console.log(JSON.stringify(events));
         return createPageData(req,{
             routeId: 'events',
             title: 'Events',
-            events
+            events: events.map(event=>{
+                return {
+                    name: event.name,
+                    nTracks: event.tracks.length,
+                    nExperiments: event.experiments.length
+                }
+            })
         });
     }).then((pageData)=>{
         res.render('dashboard',{
@@ -156,8 +181,16 @@ app.get('/events', authMiddleware, (req, res) => {
     })
 });
 
+app.post('/experiments/:experimentId/toggle', (req,res)=>{
+    Experiment.query().findById(req.params.experimentId).then(exp=>{
+        return exp.$query().updateAndFetch({active: !exp.active})
+    }).then(newExp => {
+        res.json({result:'success',experiment:newExp});
+    })
+})
+
 app.get('/experiments/create', authMiddleware, (req, res) => {
-    Event.findByProject(req.session.project).then(events=>{
+    Event.query().where('project_id',req.session.project).then(events=>{
         return createPageData(req,{
             routeId: 'create-experiment',
             title:'Create Experiment',
@@ -167,6 +200,39 @@ app.get('/experiments/create', authMiddleware, (req, res) => {
         res.render('dashboard',{
             pageData
         });
+    })
+})
+app.post('/experiments/create', authMiddleware, (req,res) => {
+    let experiment;
+    Experiment.query().insert({
+        project_id: req.session.project,
+        name: req.body.name,
+        description: req.body.description,
+        active: true
+    }).then(exp => {
+        experiment = exp;
+        return Promise.all(req.body.selectedEvents.map(event=>{
+            return experiment.$relatedQuery('events').relate(event.id)
+        }));
+    }).then(()=>{
+        return Promise.all(req.body.variations.map(variation => {
+            return Variation.query().insert({
+                name: variation.name,
+                description: variation.description,
+                cohort: variation.cohort,
+                experiment_id: experiment.id
+            })
+        }));
+    }).then(()=>{
+
+    }).then(()=>{
+        res.json({result:'success', experiment});
+    }).catch((e)=>{
+        console.error(e);
+        if(experiment){
+            Experiment.query().where('id',experiment.id).delete();
+        }
+        res.json({result:'error'});
     });
 });
 

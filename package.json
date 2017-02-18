@@ -37,8 +37,8 @@
     "webpack": "^1.13.2"
   },
   "scripts": {
-    "serve": "nodemon --ignore server/queries.js --watch ./server/ --exec babel-node -- ./server/index.js",
-    "watch": "watchify client/index.js -t babelify -o public/bundle.js -v",
+    "server": "nodemon --ignore server/queries.js --watch ./server/ --exec babel-node -- ./server/index.js",
+    "client": "watchify client/index.js -t babelify -o public/bundle.js -v",
     "build": "browserify -t [ babelify --presets [ react ] ] client/index.js | uglifyjs -mc > public/bundle.js",
     "test": "mocha --compilers js:babel-core/register server/test/ client/test/ --reporter spec --timeout 5000"
   },

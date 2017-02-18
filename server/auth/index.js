@@ -1,5 +1,5 @@
 import google from './google';
 
-export default (app) => {
-    google(app);
+export default (app, loginSuccess, loginError) => {
+    google(app, loginSuccess, loginError);
 };

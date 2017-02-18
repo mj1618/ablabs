@@ -8,7 +8,7 @@ exports.up = function(knex, Promise) {
         table.string('last_name');
         table.string('google_link');
         table.string('picture');
-        table.boolean('verified_email');
+        table.boolean('email_verified');
         table.timestamps();
 
       }).createTable('project', function(table) {

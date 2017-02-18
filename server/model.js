@@ -1,4 +1,6 @@
 var Promise = require("bluebird");
+var objection = require('objection');
+var Model = objection.Model;
 var knex = require('knex')({
     client: 'mysql',
     connection: {
@@ -15,86 +17,146 @@ var knex = require('knex')({
         directory: './seeds/'
     }
 });
+Model.knex(knex);
 
-var bookshelf = require('bookshelf')(knex);
-
-var User = bookshelf.Model.extend({
-    tableName: 'user',
-    hasTimestamps: true,
-    projects: function () {
-        return this.belongsToMany(Project, 'user_project')
+class User extends Model {
+    static get tableName() { return 'user'; }
+    // This object defines the relations to other models.
+    static get relationMappings() {
+        return {
+            projects: {
+                relation: Model.ManyToManyRelation,
+                modelClass: Project,
+                join: {
+                    from: 'user.id',
+                    to: 'project.id',
+                    through: {
+                        from: 'user_project.user_id',
+                        to: 'user_project.project_id'
+                    }
+                }
+            }
+        }
     }
-}, {
-    projects: function(){
-        return User.where('id',1).fetch({withRelated:'projects'}).then(function(user) {
-            return user.related('projects').fetch();
+}
+
+
+class Experiment extends Model {
+    static get tableName() { return 'experiment'; }
+    // This object defines the relations to other models.
+    static get relationMappings() {
+        return {
+            events: {
+                relation: Model.ManyToManyRelation,
+                modelClass: Event,
+                join: {
+                    from: 'experiment.id',
+                    to: 'event.id',
+                    through: {
+                        from: 'experiment_event.experiment_id',
+                        to: 'experiment_event.event_id'
+                    }
+                }
+            },
+            variations: {
+                relation: Model.HasManyRelation,
+                modelClass: Variation,
+                join: {
+                    from: 'experiment.id',
+                    to: 'variation.experiment_id'
+                }
+            }
+        }
+    }
+}
+
+
+class Variation extends Model {
+    static get tableName() { return 'variation'; }
+    // This object defines the relations to other models.
+    static get relationMappings() {
+        return {
+            tracks: {
+                relation: Model.HasManyRelation,
+                modelClass: Track,
+                join: {
+                    from: 'variation.id',
+                    to: 'track.variation_id'
+                }
+            }
+        }
+    }
+}
+
+
+class Event extends Model {
+    static get tableName() { return 'event'; }
+    // This object defines the relations to other models.
+    static get relationMappings() {
+        return {
+            experiments: {
+                relation: Model.ManyToManyRelation,
+                modelClass: Experiment,
+                join: {
+                    from: 'event.id',
+                    to: 'experiment.id',
+                    through: {
+                        from: 'experiment_event.event_id',
+                        to: 'experiment_event.experiment_id'
+                    }
+                }
+            },
+            tracks: {
+                relation: Model.HasManyRelation,
+                modelClass: Track,
+                join: {
+                    from: 'event.id',
+                    to: 'track.event_id'
+                }
+            }
+        }
+    }
+}
+
+
+class Track extends Model {
+    static get tableName() { return 'track'; }
+    
+}
+
+
+class Project extends Model {
+    static get tableName() { return 'project'; }
+    static create(name, userId){
+        return Project.query().insert({name}).then(project=>{
+            return project.$relatedQuery('users').relate(userId);
         });
     }
-});
-
-var Experiment = bookshelf.Model.extend({
-    tableName: 'experiment',
-    hasTimestamps: true,
-    variations: function () {
-        this.hasMany(Variation)
-    },
-    events: function () {
-        return this.belongsToMany(Event, 'experiment_event')
-    },
-    tracks: function () {
-        return this.hasMany(Track).through(Variation)
+    static get relationMappings() {
+        return {
+            users: {
+                relation: Model.ManyToManyRelation,
+                modelClass: User,
+                join: {
+                    from: 'project.id',
+                    to: 'user.id',
+                    through: {
+                        from: 'user_project.project_id',
+                        to: 'user_project.user_id'
+                    }
+                }
+            },
+            experiments: {
+                relation: Model.HasManyRelation,
+                modelClass: Experiment,
+                join: {
+                    from: 'project.id',
+                    to: 'experiment.project_id'
+                }
+            }
+        }
     }
-});
-
-var Variation = bookshelf.Model.extend({
-    tableName: 'variation',
-    hasTimestamps: true,
-    tracks: function () {
-        return this.hasMany(Track)
-    }
-});
-
-var Event = bookshelf.Model.extend({
-    tableName: 'event',
-    hasTimestamps: true,
-    experiments: function () {
-        return this.belongsToMany(Experiment, 'experiment_event','event_id','experiment_id')
-    },
-    tracks: function () {
-        return this.hasMany(Track)
-    }
-},{
-    create: function(name, projectId){
-        return new Event({name,project_id:projectId}).save();
-    },
-    findByProject: function(project){
-        return Event.where({project_id: project}).fetchAll()
-    }
-});
-
-var Track = bookshelf.Model.extend({
-    tableName: 'track',
-    hasTimestamps: true
-});
-
-var Project = bookshelf.Model.extend({
-    tableName: 'project',
-    hasTimestamps: true,
-    users: function () {
-        return this.belongsToMany(User, 'user_project')
-    },
-    experiments: function () {
-        return this.hasMany(Experiment)
-    }
-},{
-    create: function(name, userId){
-        return new Project({name}).save().tap(project=>{
-            return User.where('id',userId).fetch().then(user=>{
-                return project.related('users').create(user);
-            });
-        });
-    }
-});
+}
 
 
 export {
@@ -103,6 +165,5 @@ export {
     Variation,
     Event,
     Track,
-    Project,
-    bookshelf
+    Project
 }

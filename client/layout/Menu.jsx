@@ -68,7 +68,7 @@ export default class Menu extends React.Component {
         </li>
 
         <li> 
-            <a href="/settings" className="waves-effect">
+            <a href="/projects/create" className="waves-effect">
                 <i className="zmdi zmdi-plus-circle zmdi-hc-fw fa-fw" ></i> 
                 <span className="hide-menu"> 
                     Create Project

@@ -287,7 +287,7 @@ var Menu = function (_React$Component) {
                             null,
                             _react2.default.createElement(
                                 "a",
-                                { href: "/settings", className: "waves-effect" },
+                                { href: "/projects/create", className: "waves-effect" },
                                 _react2.default.createElement("i", { className: "zmdi zmdi-plus-circle zmdi-hc-fw fa-fw" }),
                                 _react2.default.createElement(
                                     "span",
@@ -420,7 +420,7 @@ var TopBar = function (_React$Component) {
     _createClass(TopBar, [{
         key: 'render',
         value: function render() {
-            var leftStyles = { height: '60px' };
+            var leftStyles = { height: '60px', cursor: 'pointer' };
             if (pageData.showMenu === false) {
                 leftStyles.position = 'absolute';
             }
@@ -437,7 +437,9 @@ var TopBar = function (_React$Component) {
                     ),
                     _react2.default.createElement(
                         'div',
-                        { className: 'top-left-part', style: leftStyles },
+                        { className: 'top-left-part', style: leftStyles, onClick: function onClick() {
+                                return window.location = '/';
+                            } },
                         _react2.default.createElement(
                             'h1',
                             { id: 'logo-large', className: 'text-center', style: { color: 'white' } },
@@ -1327,7 +1329,18 @@ var Create = function (_React$Component) {
             var errors = this.checkErrors();
             this.setState({ errorsTriggered: true });
             if (Object.keys(errors).length === 0) {
-                // submit
+                fetch('/experiments/create', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(this.state)
+                }).then(function (res) {
+                    return res.json();
+                }).then(function (json) {
+                    console.log(json);
+                });
             }
         }
     }, {
@@ -1694,7 +1707,7 @@ exports.default = Create;
 ;
 
 },{"../../util/helpers":13,"../events/CreateModal.jsx":8,"bluebird":14,"react":185,"whatwg-fetch":186}],11:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
@@ -1702,9 +1715,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = require("react");
+var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
+
+var _bluebird = require('bluebird');
+
+var _bluebird2 = _interopRequireDefault(_bluebird);
+
+require('whatwg-fetch');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1717,134 +1736,212 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Table = function (_React$Component) {
     _inherits(Table, _React$Component);
 
-    function Table() {
+    function Table(props) {
         _classCallCheck(this, Table);
 
-        return _possibleConstructorReturn(this, (Table.__proto__ || Object.getPrototypeOf(Table)).apply(this, arguments));
+        var _this = _possibleConstructorReturn(this, (Table.__proto__ || Object.getPrototypeOf(Table)).call(this, props));
+
+        _this.state = {
+            experiments: pageData.experiments,
+            toggling: pageData.experiments.map(function () {
+                return false;
+            })
+        };
+        return _this;
     }
 
     _createClass(Table, [{
-        key: "render",
+        key: 'toggleActive',
+        value: function toggleActive(i) {
+            var _this2 = this;
+
+            if (this.state.toggling[i] === true) {
+                return true;
+            }
+            this.setState({
+                toggling: this.state.toggling.map(function (t, j) {
+                    if (j === i) {
+                        return true;
+                    } else {
+                        return t;
+                    }
+                })
+            });
+            fetch('/experiments/' + this.state.experiments[i].id + '/toggle', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(function (res) {
+                return res.json();
+            }).then(function (json) {
+                _this2.setState({
+                    experiments: _this2.state.experiments.map(function (exp, j) {
+                        if (j === i) {
+                            return json.experiment;
+                        } else {
+                            return exp;
+                        }
+                    }),
+                    toggling: _this2.state.toggling.map(function (t, j) {
+                        if (j === i) {
+                            return false;
+                        } else {
+                            return t;
+                        }
+                    })
+                });
+            }).catch(function (e) {
+                console.error(e);
+                _this2.setState({
+                    toggling: _this2.state.toggling.map(function (t, j) {
+                        if (j === i) {
+                            return false;
+                        } else {
+                            return t;
+                        }
+                    })
+                });
+            });
+        }
+    }, {
+        key: 'render',
         value: function render() {
+            var _this3 = this;
+
             return _react2.default.createElement(
-                "div",
-                { className: "row" },
+                'div',
+                { className: 'row' },
                 _react2.default.createElement(
-                    "div",
-                    { className: "col-lg-12" },
+                    'div',
+                    { className: 'col-lg-12' },
                     _react2.default.createElement(
-                        "div",
-                        { className: "white-box" },
+                        'div',
+                        { className: 'white-box' },
                         _react2.default.createElement(
-                            "a",
-                            { href: "/experiments/create", className: "fcbtn btn btn-primary btn-outline btn-1e waves-effect pull-right" },
-                            "Create Experiment"
+                            'a',
+                            { href: '/experiments/create', className: 'fcbtn btn btn-primary btn-outline btn-1e waves-effect pull-right' },
+                            'Create Experiment'
                         ),
                         _react2.default.createElement(
-                            "h3",
-                            { className: "box-title m-b-0" },
-                            "Experiments "
+                            'h3',
+                            { className: 'box-title m-b-0' },
+                            'Experiments '
                         ),
                         _react2.default.createElement(
-                            "p",
-                            { className: "text-muted m-b-20" },
-                            "Click on an experiment to view and edit"
+                            'p',
+                            { className: 'text-muted m-b-20' },
+                            'Click on an experiment to view and edit'
                         ),
                         _react2.default.createElement(
-                            "div",
-                            { className: "table-responsive" },
+                            'div',
+                            { className: 'table-responsive' },
                             _react2.default.createElement(
-                                "table",
-                                { className: "table" },
+                                'table',
+                                { className: 'table' },
                                 _react2.default.createElement(
-                                    "thead",
+                                    'thead',
                                     null,
                                     _react2.default.createElement(
-                                        "tr",
+                                        'tr',
                                         null,
                                         _react2.default.createElement(
-                                            "th",
+                                            'th',
                                             null,
-                                            "Experiment"
+                                            'Experiment'
                                         ),
                                         _react2.default.createElement(
-                                            "th",
+                                            'th',
                                             null,
-                                            "Cohort %"
+                                            'Cohort %'
                                         ),
                                         _react2.default.createElement(
-                                            "th",
+                                            'th',
                                             null,
-                                            "Unique Users"
+                                            'Unique Users'
                                         ),
                                         _react2.default.createElement(
-                                            "th",
+                                            'th',
                                             null,
-                                            "Events"
+                                            'Events'
                                         ),
                                         _react2.default.createElement(
-                                            "th",
+                                            'th',
                                             null,
-                                            "Active"
+                                            'Active'
                                         )
                                     )
                                 ),
                                 _react2.default.createElement(
-                                    "tbody",
+                                    'tbody',
                                     null,
-                                    pageData.experiments.length === 0 && _react2.default.createElement(
-                                        "tr",
+                                    this.state.experiments.length === 0 && _react2.default.createElement(
+                                        'tr',
                                         null,
                                         _react2.default.createElement(
-                                            "td",
+                                            'td',
                                             { colSpan: 5, style: { textAlign: 'center' } },
-                                            "You have no experiments"
+                                            'You have no experiments'
                                         )
                                     ),
-                                    pageData.experiments.map(function (exp, i) {
+                                    this.state.experiments.map(function (exp, i) {
                                         return _react2.default.createElement(
-                                            "tr",
+                                            'tr',
                                             { key: i },
                                             _react2.default.createElement(
-                                                "td",
+                                                'td',
                                                 null,
                                                 _react2.default.createElement(
-                                                    "a",
+                                                    'a',
                                                     { href: "/experiments/" + exp.id },
                                                     exp.name
                                                 )
                                             ),
                                             _react2.default.createElement(
-                                                "td",
+                                                'td',
                                                 null,
                                                 exp.cohortPercent
                                             ),
                                             _react2.default.createElement(
-                                                "td",
+                                                'td',
                                                 null,
                                                 exp.nUsers
                                             ),
                                             _react2.default.createElement(
-                                                "td",
+                                                'td',
                                                 null,
                                                 exp.nEvents
                                             ),
-                                            exp.active === true && _react2.default.createElement(
-                                                "td",
+                                            _this3.state.toggling[i] === true && _react2.default.createElement(
+                                                'td',
                                                 null,
                                                 _react2.default.createElement(
-                                                    "div",
-                                                    { className: "label label-table label-success" },
-                                                    "Active"
+                                                    'div',
+                                                    { className: 'btn btn-sm btn-default btn-rounded', style: { color: 'black', width: '80px', cursor: 'default' } },
+                                                    _react2.default.createElement('i', { className: 'fa fa-spinner fa-spin' })
                                                 )
                                             ),
-                                            exp.active !== true && _react2.default.createElement(
-                                                "td",
+                                            _this3.state.toggling[i] !== true && exp.active === 1 && _react2.default.createElement(
+                                                'td',
                                                 null,
                                                 _react2.default.createElement(
-                                                    "div",
-                                                    { className: "label label-table label-warning" },
-                                                    "Paused"
+                                                    'div',
+                                                    { className: 'btn btn-sm btn-success btn-rounded', style: { width: '80px' }, onClick: function onClick() {
+                                                            return _this3.toggleActive(i);
+                                                        } },
+                                                    'Active'
+                                                )
+                                            ),
+                                            _this3.state.toggling[i] !== true && exp.active !== 1 && _react2.default.createElement(
+                                                'td',
+                                                null,
+                                                _react2.default.createElement(
+                                                    'div',
+                                                    { className: 'btn btn-sm btn-warning btn-rounded', style: { width: '80px' }, onClick: function onClick() {
+                                                            return _this3.toggleActive(i);
+                                                        } },
+                                                    'Paused'
                                                 )
                                             )
                                         );
@@ -1864,7 +1961,7 @@ var Table = function (_React$Component) {
 exports.default = Table;
 ;
 
-},{"react":185}],12:[function(require,module,exports){
+},{"bluebird":14,"react":185,"whatwg-fetch":186}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1909,7 +2006,7 @@ var Create = function (_React$Component) {
                         _react2.default.createElement(
                             'h3',
                             { className: 'box-title m-b-0' },
-                            'Create your first project '
+                            'Create your project '
                         ),
                         _react2.default.createElement(
                             'p',

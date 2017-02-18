@@ -160,7 +160,18 @@ export default class Create extends React.Component {
         const errors = this.checkErrors();
         this.setState({errorsTriggered:true});
         if(Object.keys(errors).length===0){
-            // submit
+            fetch('/experiments/create', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(this.state)
+            })
+            .then(res=>res.json())
+            .then(json=>{
+                console.log(json);
+            })
         }
     }
 
