@@ -135,9 +135,9 @@ export default class Create extends React.Component {
         if(this.state.name.length===0){
             errors.name='You must enter a name for the experiment';
         }
-        if(this.state.cohort<=0 || this.state.cohort>100){
-            errors.cohort='Cohort must be a number from 1 to 100';
-        }
+        // if(this.state.cohort<=0 || this.state.cohort>100){
+        //     errors.cohort='Cohort must be a number from 1 to 100';
+        // }
         if(this.state.variations.length<2){
             errors.variations='You must have at least two variations: A and B';
         } else if (this.state.variations.some(v=>v.name.length===0 || v.cohort<=0 || v.cohort>100)){
@@ -236,7 +236,7 @@ export default class Create extends React.Component {
                             }
                         </div>
 
-                        <div className="form-group">
+                        {/*<div className="form-group">
                             <label className="col-md-12">Cohort</label>
                             <div className="col-md-3">
                                 <input 
@@ -252,7 +252,7 @@ export default class Create extends React.Component {
                                 this.state.errorsTriggered && 
                                 errors.cohort && <TextError error={errors.cohort} />
                             }
-                        </div>
+                        </div>*/}
 
                         <hr />
 

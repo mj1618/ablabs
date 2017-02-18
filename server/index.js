@@ -146,8 +146,30 @@ app.post('/events/create', authMiddleware, (req, res) => {
     });
 });
 
+const sumCohorts = (experiments )=>{
+    return Promise.map(experiments, experiment => {
+        return experiment.$relatedQuery('variations');
+    }).then(vvs=>{
+        return vvs.map(vs=>{
+            return vs.reduce((t,v) => t+v.cohort, 0);
+        })
+    })
+}
+const sumTracks = (experiments )=>{
+    return Promise.map(experiments, experiment => {
+        return 
+    })
+}
+
 app.get('/experiments', authMiddleware, (req, res) => {
-    Experiment.query().where('project_id',req.session.project).then(experiments=>{
+    Experiment.query().where('project_id',req.session.project).eager('variations.tracks').then(experiments=>{
+        return experiments.map((exp,i) => {
+            exp.nTracks = exp.variations.reduce((t, v)=>t+v.tracks.length,0);
+            exp.cohort = exp.variations.reduce((t, v)=>t+v.cohort,0);
+            exp.variations=[];
+            return exp;
+        });
+    }).then(experiments=>{
         return createPageData(req,{
             routeId: 'experiments',
             title: 'Experiments',
@@ -185,7 +207,7 @@ app.post('/experiments/:experimentId/toggle', (req,res)=>{
     Experiment.query().findById(req.params.experimentId).then(exp=>{
         return exp.$query().updateAndFetch({active: !exp.active})
     }).then(newExp => {
-        res.json({result:'success',experiment:newExp});
+        res.json({result:'success',active:newExp.active});
     })
 })
 
@@ -201,7 +223,8 @@ app.get('/experiments/create', authMiddleware, (req, res) => {
             pageData
         });
     })
-})
+});
+
 app.post('/experiments/create', authMiddleware, (req,res) => {
     let experiment;
     Experiment.query().insert({
@@ -223,8 +246,6 @@ app.post('/experiments/create', authMiddleware, (req,res) => {
                 experiment_id: experiment.id
             })
         }));
-    }).then(()=>{
-
     }).then(()=>{
         res.json({result:'success', experiment});
     }).catch((e)=>{

@@ -37,7 +37,7 @@ export default class Table extends React.Component {
             this.setState({
                 experiments: this.state.experiments.map((exp,j)=>{
                     if(j===i){
-                        return json.experiment;
+                        return Object.assign({},exp, {active:json.active});
                     } else {
                         return exp;
                     }
@@ -77,8 +77,8 @@ export default class Table extends React.Component {
                   <tr>
                     <th>Experiment</th>
                     <th>Cohort %</th>
-                    <th>Unique Users</th>
-                    <th>Events</th>
+                    <th># Unique Users</th>
+                    <th># Tracked Events</th>
                     <th>Active</th>
                   </tr>
                 </thead>
@@ -94,9 +94,9 @@ export default class Table extends React.Component {
                         this.state.experiments.map((exp,i) => {
                             return <tr key={i}>
                                 <td><a href={"/experiments/"+exp.id}>{exp.name}</a></td>
-                                <td>{exp.cohortPercent}</td>
+                                <td>{exp.cohort}%</td>
                                 <td>{exp.nUsers}</td>
-                                <td>{exp.nEvents}</td>
+                                <td>{exp.nTracks}</td>
                                 { this.state.toggling[i]===true && <td><div className="btn btn-sm btn-default btn-rounded" style={{color:'black',width:'80px',cursor:'default'}}><i className="fa fa-spinner fa-spin"/></div></td>}
                                 { this.state.toggling[i]!==true && exp.active===1 && <td><div className="btn btn-sm btn-success btn-rounded" style={{width:'80px'}} onClick={()=>this.toggleActive(i)}>Active</div></td> }
                                 { this.state.toggling[i]!==true && exp.active!==1 && <td><div className="btn btn-sm btn-warning btn-rounded" style={{width:'80px'}} onClick={()=>this.toggleActive(i)}>Paused</div></td> }

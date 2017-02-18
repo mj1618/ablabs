@@ -1293,9 +1293,9 @@ var Create = function (_React$Component) {
             if (this.state.name.length === 0) {
                 errors.name = 'You must enter a name for the experiment';
             }
-            if (this.state.cohort <= 0 || this.state.cohort > 100) {
-                errors.cohort = 'Cohort must be a number from 1 to 100';
-            }
+            // if(this.state.cohort<=0 || this.state.cohort>100){
+            //     errors.cohort='Cohort must be a number from 1 to 100';
+            // }
             if (this.state.variations.length < 2) {
                 errors.variations = 'You must have at least two variations: A and B';
             } else if (this.state.variations.some(function (v) {
@@ -1438,33 +1438,6 @@ var Create = function (_React$Component) {
                                         )
                                     )
                                 )
-                            ),
-                            _react2.default.createElement(
-                                'div',
-                                { className: 'form-group' },
-                                _react2.default.createElement(
-                                    'label',
-                                    { className: 'col-md-12' },
-                                    'Cohort'
-                                ),
-                                _react2.default.createElement(
-                                    'div',
-                                    { className: 'col-md-3' },
-                                    _react2.default.createElement('input', {
-                                        type: 'number',
-                                        onChange: function onChange(e) {
-                                            return _this5.setState({ cohort: Math.max(1, Math.min(100, e.target.value)) });
-                                        },
-                                        value: this.state.cohort,
-                                        className: 'form-control',
-                                        style: { maxWidth: '80px', textAlign: 'right', display: 'inline' } }),
-                                    _react2.default.createElement(
-                                        'span',
-                                        null,
-                                        ' %'
-                                    )
-                                ),
-                                this.state.errorsTriggered && errors.cohort && _react2.default.createElement(TextError, { error: errors.cohort })
                             ),
                             _react2.default.createElement('hr', null),
                             _react2.default.createElement(
@@ -1779,7 +1752,7 @@ var Table = function (_React$Component) {
                 _this2.setState({
                     experiments: _this2.state.experiments.map(function (exp, j) {
                         if (j === i) {
-                            return json.experiment;
+                            return Object.assign({}, exp, { active: json.active });
                         } else {
                             return exp;
                         }
@@ -1859,12 +1832,12 @@ var Table = function (_React$Component) {
                                         _react2.default.createElement(
                                             'th',
                                             null,
-                                            'Unique Users'
+                                            '# Unique Users'
                                         ),
                                         _react2.default.createElement(
                                             'th',
                                             null,
-                                            'Events'
+                                            '# Tracked Events'
                                         ),
                                         _react2.default.createElement(
                                             'th',
@@ -1901,7 +1874,8 @@ var Table = function (_React$Component) {
                                             _react2.default.createElement(
                                                 'td',
                                                 null,
-                                                exp.cohortPercent
+                                                exp.cohort,
+                                                '%'
                                             ),
                                             _react2.default.createElement(
                                                 'td',
@@ -1911,7 +1885,7 @@ var Table = function (_React$Component) {
                                             _react2.default.createElement(
                                                 'td',
                                                 null,
-                                                exp.nEvents
+                                                exp.nTracks
                                             ),
                                             _this3.state.toggling[i] === true && _react2.default.createElement(
                                                 'td',
