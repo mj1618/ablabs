@@ -41,17 +41,24 @@ auth(app, (req,res,profile)=>{
 });
 
 const createPageData = (req, data) => {
-    return Project.query().findById(1).eager('experiments').then(project=>{
-        return Object.assign({},{
-            nExperiments:project.experiments.length,
-            projectName: project.name,
-            showTitle: true,
-            showMenu: true,
-            showSearch: true,
-            showNotifications: true,
-            showAccount: true
-        },data);
-    });
+    return Promise.join(
+        Project.query().findById(1).eager('[experiments,events]'),
+        User.query().findById(req.session.user).eager('projects'),
+        (project, user) => {
+            return Object.assign({},{
+                nProjects: user.projects.length,
+                nExperiments: project.experiments.length,
+                nEvents: project.events.length,
+                projectName: project.name,
+                showTitle: true,
+                showMenu: true,
+                showSearch: true,
+                showNotifications: true,
+                showAccount: true,
+                token: project.token
+            }, data);
+        }
+    );
 }
 
 const loginMiddleware = (req,res,next)=>{
@@ -151,6 +158,20 @@ app.get('/projects/create', loginMiddleware, (req, res) => {
         });
     });
 });
+app.get('/settings', loginMiddleware, (req, res) => {
+    Project.query().findById(1).eager('users').then(project=>{
+        return createPageData(req, {
+            routeId: 'project-settings',
+            title: 'Project Settings',
+            users: project.users
+        });
+    })
+    .then(pageData=>{
+        res.render('dashboard', {
+            pageData
+        });
+    });
+});
 
 app.post('/projects/create', loginMiddleware, (req, res) => {
     Project.create(req.body.name, req.session.user).then(project=>{
@@ -237,7 +258,7 @@ app.post('/experiments/:experimentId/toggle', (req,res)=>{
     }).then(newExp => {
         res.json({result:'success',active:newExp.active});
     })
-})
+});
 
 app.get('/experiments/create', authMiddleware, (req, res) => {
     Event.query().where('project_id',req.session.project).then(events=>{

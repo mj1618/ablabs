@@ -14,6 +14,7 @@ exports.up = function(knex, Promise) {
       }).createTable('project', function(table) {
         table.bigIncrements('id').primary();
         table.string('name');
+        table.string('token');
         table.timestamps();
 
       }).createTable('user_project', function(table) {

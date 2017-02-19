@@ -193,7 +193,8 @@ class Project extends Model {
                     to: 'user.id',
                     through: {
                         from: 'user_project.project_id',
-                        to: 'user_project.user_id'
+                        to: 'user_project.user_id',
+                        extra: ['role']
                     }
                 }
             },
@@ -204,11 +205,24 @@ class Project extends Model {
                     from: 'project.id',
                     to: 'experiment.project_id'
                 }
+            },
+            events: {
+                relation: Model.HasManyRelation,
+                modelClass: Event,
+                join: {
+                    from: 'project.id',
+                    to: 'event.project_id'
+                }
             }
         }
     }
 }
 
+const roles = {
+    OWNER: 'owner',
+    EDITOR: 'editor',
+    VIEWER: 'viewer'
+}
 
 export {
     User,
@@ -217,5 +231,6 @@ export {
     Event,
     Track,
     Project,
-    Assign
+    Assign,
+    roles
 }

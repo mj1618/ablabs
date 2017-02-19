@@ -1,3 +1,4 @@
+
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -18,10 +19,9 @@ exports.seed = function(knex, Promise) {
     ])
     .then(function () {
       return Promise.all([
-        // Inserts seed entries
-        knex('project').insert({id: 1, name: 'VGW'}),
+        knex('project').insert({id: 1, name: 'VGW', token: require('crypto').randomBytes(16).toString('hex')}),
         knex('user').insert({id: 1, first_name: 'Matt', email: 'matthew.stephen.james@gmail.com'}),
-        knex('user_project').insert({id: 1, user_id: 1, project_id: 1}),
+        knex('user_project').insert({id: 1, user_id: 1, project_id: 1, role: 'owner'}),
         knex('experiment').insert({id: 1, name: 'Facebook Redirect', project_id: 1}),
         knex('variation').insert({id: 1, cohort:33, name: 'Standard', experiment_id: 1}),
         knex('variation').insert({id: 2, cohort:33, name: 'Redirect No-Popups', experiment_id: 1}),

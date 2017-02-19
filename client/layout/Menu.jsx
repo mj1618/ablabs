@@ -37,6 +37,7 @@ export default class Menu extends React.Component {
                 <i className="zmdi zmdi-chart zmdi-hc-fw fa-fw" ></i> 
                 <span className="hide-menu"> 
                     Events
+                    <span className="label label-rouded label-info pull-right">{pageData.nEvents}</span>
                 </span>
             </a>
         </li>
@@ -59,10 +60,11 @@ export default class Menu extends React.Component {
             </a>
         </li>
         <li> 
-            <a href="/settings" className="waves-effect">
+            <a href="/switch-project" className="waves-effect">
                 <i className=" zmdi zmdi-swap zmdi-hc-fw fa-fw" ></i> 
                 <span className="hide-menu"> 
                     Switch Project
+                    <span className="label label-rouded label-purple pull-right">{pageData.nProjects}</span>
                 </span>
             </a>
         </li>
@@ -78,7 +80,7 @@ export default class Menu extends React.Component {
 
         <li className="nav-small-cap m-t-10">--- Support</li>
         <li> 
-            <a href="/settings" className="waves-effect">
+            <a href="/contact" className="waves-effect">
                 <i className="zmdi  zmdi zmdi-comment-text zmdi-hc-fw fa-fw" ></i> 
                 <span className="hide-menu"> 
                     Contact Us
