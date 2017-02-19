@@ -83,6 +83,22 @@ class Variation extends Model {
                     from: 'variation.id',
                     to: 'track.variation_id'
                 }
+            },
+            tracks: {
+                relation: Model.HasManyRelation,
+                modelClass: Track,
+                join: {
+                    from: 'variation.id',
+                    to: 'track.variation_id'
+                }
+            },
+            assigns: {
+                relation: Model.HasManyRelation,
+                modelClass: Assign,
+                join: {
+                    from: 'variation.id',
+                    to: 'assign.variation_id'
+                }
             }
         }
     }
@@ -121,7 +137,42 @@ class Event extends Model {
 
 class Track extends Model {
     static get tableName() { return 'track'; }
-    
+    static get relationMappings() {
+        return {
+            variation: {
+                relation: Model.BelongsToOneRelation,
+                modelClass: Variation,
+                join: {
+                    from: 'track.variation_id',
+                    to: 'variation.id'
+                }
+            },
+            event: {
+                relation: Model.BelongsToOneRelation,
+                modelClass: Event,
+                join: {
+                    from: 'track.event_id',
+                    to: 'event.id'
+                }
+            }
+        }
+    }
+}
+
+class Assign extends Model {
+    static get tableName() { return 'assign'; }
+    static get relationMappings() {
+        return {
+            variation: {
+                relation: Model.BelongsToOneRelation,
+                modelClass: Variation,
+                join: {
+                    from: 'assign.variation_id',
+                    to: 'variation.id'
+                }
+            }
+        }
+    }
 }
 
 
@@ -165,5 +216,6 @@ export {
     Variation,
     Event,
     Track,
-    Project
+    Project,
+    Assign
 }

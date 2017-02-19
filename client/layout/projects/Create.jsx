@@ -5,7 +5,7 @@ export default class Create extends React.Component {
         return <div className="row" style={{marginTop:'15vh'}}>
             <div className="col-md-4 col-md-push-4 col-sm-12">
                 <div className="white-box">
-                    <h3 className="box-title m-b-0">Create your project </h3>
+                    <h3 className="box-title m-b-0">Create a project </h3>
                     <p className="text-muted m-b-20">Use projects to group your experiments. </p>
                     <form className="form-horizontal" method="POST" action="/projects/create">
                         <div className="form-group">

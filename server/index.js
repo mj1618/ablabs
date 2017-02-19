@@ -1,7 +1,7 @@
 import express from 'express';
 import request from 'request';
 import fetch from 'node-fetch';
-import {User,Experiment,Project,Event,Variation} from './model';
+import {User,Experiment,Project,Event,Variation,Assign,Track} from './model';
 import auth from './auth';
 import Promise from 'bluebird';
 
@@ -116,6 +116,29 @@ app.get('/login/email', (req, res) => {
     });
 });
 
+app.get('/logout', (req,res)=>{
+    req.session.user = null;
+    req.session.project = null;
+    res.redirect('/');
+});
+
+
+app.get('/experiments/:experimentId/view', (req, res) => {
+    Experiment.query().findById(req.params.experimentId)
+    .then(experiment=>{
+        return createPageData(req, {
+            routeId: 'view-experiment',
+            title: experiment.name
+        });
+    })
+    .then(pageData=>{
+        res.render('dashboard', {
+            pageData
+        });
+    });
+});
+
+
 app.get('/projects/create', loginMiddleware, (req, res) => {
     createPageData(req, {
         routeId: 'create-project',
@@ -162,13 +185,18 @@ const sumTracks = (experiments )=>{
 }
 
 app.get('/experiments', authMiddleware, (req, res) => {
-    Experiment.query().where('project_id',req.session.project).eager('variations.tracks').then(experiments=>{
-        return experiments.map((exp,i) => {
-            exp.nTracks = exp.variations.reduce((t, v)=>t+v.tracks.length,0);
-            exp.cohort = exp.variations.reduce((t, v)=>t+v.cohort,0);
-            exp.variations=[];
-            return exp;
-        });
+    Experiment.query().where('project_id',req.session.project).eager('variations').then(experiments=>{
+        return Promise.join(
+            Assign.query().whereIn('variation_id',[1,2,3]).count().then(c=>c.length>0 ? c[0]['count(*)'] : 0),
+            Track.query().whereIn('variation_id',[1,2,3]).count().then(c=>c.length>0 ? c[0]['count(*)'] : 0),
+            (nUsers, nTracks)=>{
+                return experiments.map((exp,i) => {
+                    exp.nTracks = nTracks;
+                    exp.cohort = exp.variations.reduce((t, v)=>t+v.cohort,0);
+                    exp.nUsers = nUsers;
+                    return exp;
+                });
+            });
     }).then(experiments=>{
         return createPageData(req,{
             routeId: 'experiments',

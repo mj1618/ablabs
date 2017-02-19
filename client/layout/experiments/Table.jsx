@@ -93,7 +93,7 @@ export default class Table extends React.Component {
                     {
                         this.state.experiments.map((exp,i) => {
                             return <tr key={i}>
-                                <td><a href={"/experiments/"+exp.id}>{exp.name}</a></td>
+                                <td><a href={`/experiments/${exp.id}/view`}>{exp.name}</a></td>
                                 <td>{exp.cohort}%</td>
                                 <td>{exp.nUsers}</td>
                                 <td>{exp.nTracks}</td>

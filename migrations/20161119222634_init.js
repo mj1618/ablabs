@@ -57,7 +57,13 @@ exports.up = function(knex, Promise) {
         table.string('unique_id');
         table.bigInteger('event_id').unsigned().index().references('id').inTable('event').onDelete('CASCADE');
         table.bigInteger('variation_id').unsigned().index().references('id').inTable('variation').onDelete('CASCADE');
-        table.integer('amount');
+        table.integer('amount').defaultTo(1);
+        table.timestamps();
+
+      }).createTable('assign', function(table) {
+        table.bigIncrements('id').primary();
+        table.string('unique_id');
+        table.bigInteger('variation_id').unsigned().index().references('id').inTable('variation').onDelete('CASCADE');
         table.timestamps();
       });
 };
@@ -65,6 +71,7 @@ exports.up = function(knex, Promise) {
 exports.down = function(knex, Promise) {
     return knex.schema
         .dropTable('track')
+        .dropTable('assign')
         .dropTable('experiment_event')
         .dropTable('event')
         .dropTable('variation')

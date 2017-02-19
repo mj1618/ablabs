@@ -44,8 +44,7 @@ export default class TopBar extends React.Component {
                         <b className="hidden-xs">Your Account</b>
                     </a>
                     <ul className="dropdown-menu dropdown-user scale-up">
-                        <li><a href="#"><i className="ti-user"></i> Account Settings</a></li>
-                        <li><a href="#"><i className="fa fa-power-off"></i> Logout</a></li>
+                        <li><a href="/logout"><i className="fa fa-power-off"></i> Logout</a></li>
                     </ul>
                 </li> }
             </ul>

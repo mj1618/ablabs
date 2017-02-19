@@ -5,6 +5,7 @@ import ExperimentsTable from './layout/experiments/Table.jsx';
 import EventsTable from './layout/events/Table.jsx';
 import ProjectsCreate from './layout/projects/Create.jsx';
 import ExperimentsCreate from './layout/experiments/Create.jsx';
+import ExperimentsView from './layout/experiments/View.jsx';
 import TopBar from './layout/TopBar.jsx';
 import Menu from './layout/Menu.jsx';
 import Title from './layout/Title.jsx';
@@ -21,6 +22,8 @@ const getPage = ()=>{
             return <EventsTable/>;
         case 'create-experiment':
             return <ExperimentsCreate/>;
+        case 'view-experiment':
+            return <ExperimentsView/>;
         case 'create-project':
             return <ProjectsCreate/>;
         case 'login-email':
