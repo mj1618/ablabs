@@ -101,11 +101,11 @@ class Analysis extends React.Component {
                                 }
                                 {
                                     this.state.values.filter(v=>v===this.state.baseline).map((v,i) => <tr key={i}>
-                                            <td>{v.variation}</td>
+                                            <td style={{verticalAlign: 'middle'}}>{v.variation}</td>
                                             {
                                                 pageData.experiment.events.map((event,i) => <td key={i}>
                                                         {this.getPercentage(v,event)}
-                                                        <br/><small>{v[event.name]}</small>
+                                                        <br/><span>{v[event.name]}</span>
                                                     </td>
                                                 )
                                             }
@@ -114,11 +114,11 @@ class Analysis extends React.Component {
                                 }
                                 {
                                     this.state.values.filter(v=>v!==this.state.baseline).map((v,i) => <tr key={i}>
-                                            <td>{v.variation}</td>
+                                            <td style={{verticalAlign: 'middle'}}>{v.variation}</td>
                                             {
                                                 pageData.experiment.events.map((event,i) => <td key={i}>
                                                         {this.getPercentage(v,event)}
-                                                        <br/><small>{v[event.name]}</small>
+                                                        <br/><span>{v[event.name]}</span>
                                                     </td>
                                                 )
                                             }

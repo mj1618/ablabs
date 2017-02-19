@@ -1083,11 +1083,7 @@ var Table = function (_React$Component) {
                                             _react2.default.createElement(
                                                 'td',
                                                 null,
-                                                _react2.default.createElement(
-                                                    'a',
-                                                    { href: "/event/" + e.id },
-                                                    e.name
-                                                )
+                                                e.name
                                             ),
                                             _react2.default.createElement(
                                                 'td',
@@ -2207,7 +2203,7 @@ var Analysis = function (_React$Component2) {
                                                 { key: i },
                                                 _react2.default.createElement(
                                                     'td',
-                                                    null,
+                                                    { style: { verticalAlign: 'middle' } },
                                                     v.variation
                                                 ),
                                                 pageData.experiment.events.map(function (event, i) {
@@ -2217,7 +2213,7 @@ var Analysis = function (_React$Component2) {
                                                         _this3.getPercentage(v, event),
                                                         _react2.default.createElement('br', null),
                                                         _react2.default.createElement(
-                                                            'small',
+                                                            'span',
                                                             null,
                                                             v[event.name]
                                                         )
@@ -2233,7 +2229,7 @@ var Analysis = function (_React$Component2) {
                                                 { key: i },
                                                 _react2.default.createElement(
                                                     'td',
-                                                    null,
+                                                    { style: { verticalAlign: 'middle' } },
                                                     v.variation
                                                 ),
                                                 pageData.experiment.events.map(function (event, i) {
@@ -2243,7 +2239,7 @@ var Analysis = function (_React$Component2) {
                                                         _this3.getPercentage(v, event),
                                                         _react2.default.createElement('br', null),
                                                         _react2.default.createElement(
-                                                            'small',
+                                                            'span',
                                                             null,
                                                             v[event.name]
                                                         )

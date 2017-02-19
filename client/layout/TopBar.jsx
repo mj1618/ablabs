@@ -8,13 +8,13 @@ export default class TopBar extends React.Component {
         }
         return <nav className="navbar navbar-default navbar-static-top m-b-0">
         <div className="navbar-header"> 
-          {pageData.showMenu && <a className="navbar-toggle hidden-sm hidden-md hidden-lg " href="javascript:void(0)" data-toggle="collapse" data-target=".navbar-collapse"><i className="ti-menu"></i></a> }
-          <div className="top-left-part" style={leftStyles} onClick={()=>window.location='/'}>
-            {/*<a className="logo" href="index.html"><b><img src="../plugins/images/eliteadmin-logo.png" alt="home" /></b><span className="hidden-xs"><img src="../plugins/images/eliteadmin-text.png" alt="home" /></span></a>*/}
-            <h1 id="logo-large" className='text-center' style={{color:'white'}}><b>AB</b>Labs</h1>
-            <h1 id="logo-small" className='text-center' style={{color:'white'}}><b>AB</b></h1>
-          </div>
-          
+            {pageData.showMenu && <a className="navbar-toggle hidden-sm hidden-md hidden-lg " href="javascript:void(0)" data-toggle="collapse" data-target=".navbar-collapse"><i className="ti-menu"></i></a> }
+            <div className="top-left-part" style={leftStyles} onClick={()=>window.location='/'}>
+                {/*<a className="logo" href="index.html"><b><img src="../plugins/images/eliteadmin-logo.png" alt="home" /></b><span className="hidden-xs"><img src="../plugins/images/eliteadmin-text.png" alt="home" /></span></a>*/}
+                <h1 id="logo-large" className='text-center' style={{color:'white'}}><b>AB</b>Labs</h1>
+                <h1 id="logo-small" className='text-center' style={{color:'white'}}><b>AB</b></h1>
+            </div>
+            
             <ul className="nav navbar-top-links navbar-left hidden-xs">
               <li><a href="javascript:void(0)" className="open-close hidden-xs waves-effect waves-light">{ pageData.showMenu && <i className="icon-arrow-left-circle ti-menu"></i> }</a></li>
               {/*{ pageData.showSearch && <li className="in">

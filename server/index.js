@@ -271,6 +271,7 @@ app.get('/events', authMiddleware, (req, res) => {
             title: 'Events',
             events: events.map(event=>{
                 return {
+                    id: event.id,
                     name: event.name,
                     nTracks: event.tracks.length,
                     nExperiments: event.experiments.length

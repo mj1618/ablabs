@@ -9,7 +9,6 @@ export default class Table extends React.Component {
         }
     }
 
-
     eventCreated(e){
         this.setState({
             events: [e].concat(this.state.events)
@@ -64,7 +63,8 @@ export default class Table extends React.Component {
                     {
                         this.state.events.map((e,i) => {
                             return <tr key={i}>
-                                <td><a href={"/event/"+e.id}>{e.name}</a></td>
+                                {/*<td><a href={"/event/"+e.id}>{e.name}</a></td>*/}
+                                <td>{e.name}</td>
                                 <td>{e.nExperiments}</td>
                                 <td>{e.nTracks}</td>
                             </tr>
