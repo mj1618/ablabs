@@ -42,20 +42,20 @@ auth(app, (req,res,profile)=>{
 
 const createPageData = (req, data) => {
     return Promise.join(
-        Project.query().findById(1).eager('[experiments,events]'),
-        User.query().findById(req.session.user).eager('projects'),
+        req.session.project ? Project.query().findById(req.session.project).eager('[experiments,events]') : null,
+        req.session.user ? User.query().findById(req.session.user).eager('projects') : null,
         (project, user) => {
             return Object.assign({},{
-                nProjects: user.projects.length,
-                nExperiments: project.experiments.length,
-                nEvents: project.events.length,
-                projectName: project.name,
+                nProjects: user ? user.projects.length : 0,
+                nExperiments: project ? project.experiments.length : 0,
+                nEvents: project ? project.events.length : 0,
+                projectName: project ? project.name : '',
+                token: project ? project.token : '',
                 showTitle: true,
                 showMenu: true,
                 showSearch: true,
                 showNotifications: true,
-                showAccount: true,
-                token: project.token
+                showAccount: true
             }, data);
         }
     );
@@ -130,12 +130,41 @@ app.get('/logout', (req,res)=>{
 });
 
 
-app.get('/experiments/:experimentId/view', (req, res) => {
-    Experiment.query().findById(req.params.experimentId)
-    .then(experiment=>{
+app.get('/experiments/:experimentId/view', authMiddleware, (req, res) => {
+    let experiment;
+    Experiment.query().findById(req.params.experimentId).eager('[variations,events]')
+    .then(exp=>{
+        experiment = exp;
+        console.log(exp);
+        return Track.query()
+            .select('event_id','variation_id')
+            .whereIn('event_id',experiment.events.map(e=>e.id))
+            .whereIn('variation_id',experiment.variations.map(v=>v.id))
+            .groupBy('event_id')
+            .groupBy('variation_id')
+            .count()
+            .then(ns=>{
+                console.log(ns);
+                return exp.variations.map(v=>{
+                    let res = {
+                        variation: v.name
+                    };
+                    ns.filter(n => n.variation_id===v.id).forEach(n=>{
+                        let eventName = experiment.events.find(e=>e.id===n.event_id).name;
+                        res[eventName] = n['count(*)'];
+                        console.log('found');
+                    })
+                    console.log(res);
+                    return res;
+                });
+            })
+    })
+    .then((ns) => {
         return createPageData(req, {
             routeId: 'view-experiment',
-            title: experiment.name
+            title: experiment.name,
+            experiment,
+            values: ns
         });
     })
     .then(pageData=>{
@@ -158,7 +187,7 @@ app.get('/projects/create', loginMiddleware, (req, res) => {
         });
     });
 });
-app.get('/settings', loginMiddleware, (req, res) => {
+app.get('/settings', authMiddleware, (req, res) => {
     Project.query().findById(1).eager('users').then(project=>{
         return createPageData(req, {
             routeId: 'project-settings',
@@ -252,7 +281,7 @@ app.get('/events', authMiddleware, (req, res) => {
     })
 });
 
-app.post('/experiments/:experimentId/toggle', (req,res)=>{
+app.post('/experiments/:experimentId/toggle', authMiddleware, (req,res)=>{
     Experiment.query().findById(req.params.experimentId).then(exp=>{
         return exp.$query().updateAndFetch({active: !exp.active})
     }).then(newExp => {

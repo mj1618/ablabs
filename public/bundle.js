@@ -1986,6 +1986,26 @@ var View = function (_React$Component) {
     }
 
     _createClass(View, [{
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+
+            Morris.Bar({
+                element: 'variation-chart',
+                data: pageData.values,
+                xkey: 'variation',
+                ykeys: pageData.experiment.events.map(function (e) {
+                    return e.name;
+                }),
+                labels: pageData.experiment.events.map(function (e) {
+                    return e.name;
+                }),
+                barColors: ['#b8edf0', '#b4c1d7', '#fcc9ba'],
+                hideHover: 'auto',
+                gridLineColor: '#eef0f2',
+                resize: true
+            });
+        }
+    }, {
         key: 'render',
         value: function render() {
             return _react2.default.createElement(
@@ -2002,7 +2022,8 @@ var View = function (_React$Component) {
                             { className: 'box-title m-b-0' },
                             'Experiment Report'
                         ),
-                        _react2.default.createElement('p', { className: 'text-muted m-b-30 font-13' })
+                        _react2.default.createElement('p', { className: 'text-muted m-b-30 font-13' }),
+                        _react2.default.createElement('div', { id: 'variation-chart' })
                     )
                 )
             );

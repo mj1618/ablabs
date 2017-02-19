@@ -56,6 +56,20 @@ promises.push(
     })
 )
 
+promises.push(
+    Experiment.query().findById(1).eager('[variations,events]').then(exp=>{
+        return Track.query()
+            .select('event_id','variation_id')
+            .whereIn('event_id',exp.events.map(e=>e.id))
+            .whereIn('variation_id',exp.variations.map(v=>v.id))
+            .groupBy('event_id')
+            .groupBy('variation_id')
+            .count()
+    }).then(ns=>{
+        console.log(ns);
+    })
+);
+
 Promise.all(promises).then(()=>{
     process.exit(0);
 })

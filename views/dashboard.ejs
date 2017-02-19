@@ -29,6 +29,10 @@
     <!-- We have chosen the skin-blue (blue.css) for this starter
          page. However, you can choose any other skin from folder css / colors .
          -->
+
+<!-- Morris CSS -->
+<link href="/plugins/bower_components/morrisjs/morris.css" rel="stylesheet">
+
          
     <link href="/eliteadmin/css/colors/default.css" id="theme" rel="stylesheet">
     <link href="/style.css" id="theme" rel="stylesheet">
@@ -63,9 +67,14 @@
     <!-- Custom Theme JavaScript -->
     <script src="/eliteadmin/js/custom.min.js"></script>
 
+<!--Morris JavaScript -->
+<script src="/plugins/bower_components/raphael/raphael-min.js"></script>
+<script src="/plugins/bower_components/morrisjs/morris.js"></script>
+
     <script type="text/javascript">
         var pageData = <%- JSON.stringify(pageData) %>;
     </script>
+
     <script src="/bundle.js"></script>
 
 </body>
