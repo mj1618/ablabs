@@ -4,6 +4,7 @@ import LoginEmail from './layout/auth/LoginEmail.jsx';
 import ExperimentsTable from './layout/experiments/Table.jsx';
 import EventsTable from './layout/events/Table.jsx';
 import ProjectsCreate from './layout/projects/Create.jsx';
+import SwitchProject from './layout/projects/Switch.jsx';
 import ProjectSettings from './layout/projects/Settings.jsx';
 import ExperimentsCreate from './layout/experiments/Create.jsx';
 import ExperimentsView from './layout/experiments/View.jsx';
@@ -27,6 +28,8 @@ const getPage = ()=>{
             return <ExperimentsView/>;
         case 'create-project':
             return <ProjectsCreate/>;
+        case 'switch-project':
+            return <SwitchProject/>;
         case 'project-settings':
             return <ProjectSettings/>;
         case 'login-email':

@@ -60,17 +60,23 @@ export default class Menu extends React.Component {
             </a>
         </li>
         <li> 
-            <a href="/switch-project" className="waves-effect">
+            <a href="javascript:void(0)" className="waves-effect">
                 <i className=" zmdi zmdi-swap zmdi-hc-fw fa-fw" ></i> 
                 <span className="hide-menu"> 
-                    Switch Project
+                    Switch Project<span className="fa arrow"></span>
                     <span className="label label-rouded label-purple pull-right">{pageData.nProjects}</span>
                 </span>
             </a>
+            <ul className="nav nav-second-level collapse" aria-expanded="false">
+                {
+                    pageData.projects.map((p,i)=>{
+                        return <li key={i}> <a href={`/switch-project/${p.id}`}>{p.name}</a> </li>
+                    })
+                }
+            </ul>
         </li>
-
         <li> 
-            <a href="/projects/create" className="waves-effect">
+            <a href="/create-project" className="waves-effect">
                 <i className="zmdi zmdi-plus-circle zmdi-hc-fw fa-fw" ></i> 
                 <span className="hide-menu"> 
                     Create Project

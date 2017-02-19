@@ -47,6 +47,7 @@ const createPageData = (req, data) => {
         (project, user) => {
             return Object.assign({},{
                 nProjects: user ? user.projects.length : 0,
+                projects: user ? user.projects : [],
                 nExperiments: project ? project.experiments.length : 0,
                 nEvents: project ? project.events.length : 0,
                 projectName: project ? project.name : '',
@@ -170,8 +171,7 @@ app.get('/experiments/:experimentId/view', authMiddleware, (req, res) => {
     });
 });
 
-
-app.get('/projects/create', loginMiddleware, (req, res) => {
+app.get('/create-project', loginMiddleware, (req, res) => {
     createPageData(req, {
         routeId: 'create-project',
         showMenu: false,
@@ -183,6 +183,12 @@ app.get('/projects/create', loginMiddleware, (req, res) => {
         });
     });
 });
+
+app.get('/switch-project/:projectId', loginMiddleware, (req, res) => {
+    req.session.project = req.params.projectId;
+    res.redirect('/');
+});
+
 app.get('/settings', authMiddleware, (req, res) => {
     Project.query().findById(1).eager('users').then(project=>{
         return createPageData(req, {
@@ -222,13 +228,13 @@ const sumCohorts = (experiments )=>{
     }).then(vvs=>{
         return vvs.map(vs=>{
             return vs.reduce((t,v) => t+v.cohort, 0);
-        })
-    })
+        });
+    });
 }
 const sumTracks = (experiments )=>{
     return Promise.map(experiments, experiment => {
         return 
-    })
+    });
 }
 
 app.get('/experiments', authMiddleware, (req, res) => {
