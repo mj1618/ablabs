@@ -43,6 +43,7 @@ exports.up = function(knex, Promise) {
       }).createTable('event', function(table) {
         table.bigIncrements('id').primary();
         table.string('name');
+        table.unique('name');
         table.string('description',10000);
         table.bigInteger('project_id').unsigned().index().references('id').inTable('project').onDelete('CASCADE');
         table.timestamps();

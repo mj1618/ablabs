@@ -1976,19 +1976,18 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var View = function (_React$Component) {
-    _inherits(View, _React$Component);
+var BarGraph = function (_React$Component) {
+    _inherits(BarGraph, _React$Component);
 
-    function View() {
-        _classCallCheck(this, View);
+    function BarGraph() {
+        _classCallCheck(this, BarGraph);
 
-        return _possibleConstructorReturn(this, (View.__proto__ || Object.getPrototypeOf(View)).apply(this, arguments));
+        return _possibleConstructorReturn(this, (BarGraph.__proto__ || Object.getPrototypeOf(BarGraph)).apply(this, arguments));
     }
 
-    _createClass(View, [{
+    _createClass(BarGraph, [{
         key: 'componentDidMount',
         value: function componentDidMount() {
-
             Morris.Bar({
                 element: 'variation-chart',
                 data: pageData.values,
@@ -2026,6 +2025,254 @@ var View = function (_React$Component) {
                         _react2.default.createElement('div', { id: 'variation-chart' })
                     )
                 )
+            );
+        }
+    }]);
+
+    return BarGraph;
+}(_react2.default.Component);
+
+;
+
+var Analysis = function (_React$Component2) {
+    _inherits(Analysis, _React$Component2);
+
+    function Analysis(props) {
+        _classCallCheck(this, Analysis);
+
+        var _this2 = _possibleConstructorReturn(this, (Analysis.__proto__ || Object.getPrototypeOf(Analysis)).call(this, props));
+
+        _this2.state = {
+            baseline: pageData.values[0],
+            values: pageData.values,
+            experiment: pageData.experiment
+        };
+        return _this2;
+    }
+
+    _createClass(Analysis, [{
+        key: 'getPercentage',
+        value: function getPercentage(v, event) {
+            var r = Number(100.0 * v[event.name] / this.state.baseline[event.name] - 100).toFixed(1);
+            if (r > 0) {
+                return _react2.default.createElement(
+                    'span',
+                    { className: 'text-success' },
+                    '+',
+                    r,
+                    '%'
+                );
+            } else if (r < 0) {
+                return _react2.default.createElement(
+                    'span',
+                    { className: 'text-danger' },
+                    r,
+                    '%'
+                );
+            } else {
+                return _react2.default.createElement(
+                    'span',
+                    { className: '' },
+                    r,
+                    '%'
+                );
+            }
+        }
+    }, {
+        key: 'changeBaseline',
+        value: function changeBaseline(name) {
+            console.log('change baseline: ' + name);
+            this.setState({
+                baseline: this.state.values.find(function (v) {
+                    return v.variation === name;
+                })
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var _this3 = this;
+
+            var baseline = this.state.baseline;
+            return _react2.default.createElement(
+                'div',
+                { className: 'row' },
+                _react2.default.createElement(
+                    'div',
+                    { className: 'col-lg-12' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'white-box' },
+                        _react2.default.createElement(
+                            'h3',
+                            { className: 'box-title m-b-0' },
+                            'Experiment Analysis'
+                        ),
+                        _react2.default.createElement('p', { className: 'text-muted m-b-30 font-13' }),
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'row' },
+                            _react2.default.createElement(
+                                'div',
+                                { className: 'btn-group col-md-12' },
+                                _react2.default.createElement(
+                                    'div',
+                                    { className: 'pull-right' },
+                                    _react2.default.createElement(
+                                        'button',
+                                        { 'aria-expanded': 'false', 'data-toggle': 'dropdown', className: 'btn btn-info dropdown-toggle waves-effect waves-light', type: 'button' },
+                                        'Baseline: ',
+                                        this.state.baseline.variation,
+                                        ' ',
+                                        _react2.default.createElement('span', { className: 'caret' })
+                                    ),
+                                    _react2.default.createElement(
+                                        'ul',
+                                        { role: 'menu', className: 'dropdown-menu' },
+                                        this.state.values.filter(function (v) {
+                                            return v !== _this3.state.baseline;
+                                        }).map(function (v, i) {
+                                            return _react2.default.createElement(
+                                                'li',
+                                                { key: i },
+                                                _react2.default.createElement(
+                                                    'a',
+                                                    { href: 'javascript:void(0)', onClick: function onClick() {
+                                                            return _this3.changeBaseline(v.variation);
+                                                        } },
+                                                    v.variation
+                                                )
+                                            );
+                                        })
+                                    )
+                                )
+                            )
+                        ),
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'row' },
+                            _react2.default.createElement(
+                                'div',
+                                { className: 'table-responsive col-md-12' },
+                                _react2.default.createElement(
+                                    'table',
+                                    { className: 'table' },
+                                    _react2.default.createElement(
+                                        'thead',
+                                        null,
+                                        _react2.default.createElement(
+                                            'tr',
+                                            null,
+                                            _react2.default.createElement(
+                                                'th',
+                                                null,
+                                                'Variation'
+                                            ),
+                                            pageData.experiment.events.map(function (e, i) {
+                                                return _react2.default.createElement(
+                                                    'th',
+                                                    { key: i },
+                                                    e.name
+                                                );
+                                            })
+                                        )
+                                    ),
+                                    _react2.default.createElement(
+                                        'tbody',
+                                        null,
+                                        this.state.values.length === 0 && _react2.default.createElement(
+                                            'tr',
+                                            null,
+                                            _react2.default.createElement(
+                                                'td',
+                                                { colSpan: 5, style: { textAlign: 'center' } },
+                                                'You have no data'
+                                            )
+                                        ),
+                                        this.state.values.filter(function (v) {
+                                            return v === _this3.state.baseline;
+                                        }).map(function (v, i) {
+                                            return _react2.default.createElement(
+                                                'tr',
+                                                { key: i },
+                                                _react2.default.createElement(
+                                                    'td',
+                                                    null,
+                                                    v.variation
+                                                ),
+                                                pageData.experiment.events.map(function (event, i) {
+                                                    return _react2.default.createElement(
+                                                        'td',
+                                                        { key: i },
+                                                        _this3.getPercentage(v, event),
+                                                        _react2.default.createElement('br', null),
+                                                        _react2.default.createElement(
+                                                            'small',
+                                                            null,
+                                                            v[event.name]
+                                                        )
+                                                    );
+                                                })
+                                            );
+                                        }),
+                                        this.state.values.filter(function (v) {
+                                            return v !== _this3.state.baseline;
+                                        }).map(function (v, i) {
+                                            return _react2.default.createElement(
+                                                'tr',
+                                                { key: i },
+                                                _react2.default.createElement(
+                                                    'td',
+                                                    null,
+                                                    v.variation
+                                                ),
+                                                pageData.experiment.events.map(function (event, i) {
+                                                    return _react2.default.createElement(
+                                                        'td',
+                                                        { key: i },
+                                                        _this3.getPercentage(v, event),
+                                                        _react2.default.createElement('br', null),
+                                                        _react2.default.createElement(
+                                                            'small',
+                                                            null,
+                                                            v[event.name]
+                                                        )
+                                                    );
+                                                })
+                                            );
+                                        })
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            );
+        }
+    }]);
+
+    return Analysis;
+}(_react2.default.Component);
+
+;
+
+var View = function (_React$Component3) {
+    _inherits(View, _React$Component3);
+
+    function View() {
+        _classCallCheck(this, View);
+
+        return _possibleConstructorReturn(this, (View.__proto__ || Object.getPrototypeOf(View)).apply(this, arguments));
+    }
+
+    _createClass(View, [{
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                'div',
+                null,
+                _react2.default.createElement(Analysis, null),
+                _react2.default.createElement(BarGraph, null)
             );
         }
     }]);

@@ -135,7 +135,6 @@ app.get('/experiments/:experimentId/view', authMiddleware, (req, res) => {
     Experiment.query().findById(req.params.experimentId).eager('[variations,events]')
     .then(exp=>{
         experiment = exp;
-        console.log(exp);
         return Track.query()
             .select('event_id','variation_id')
             .whereIn('event_id',experiment.events.map(e=>e.id))
@@ -144,7 +143,6 @@ app.get('/experiments/:experimentId/view', authMiddleware, (req, res) => {
             .groupBy('variation_id')
             .count()
             .then(ns=>{
-                console.log(ns);
                 return exp.variations.map(v=>{
                     let res = {
                         variation: v.name
@@ -152,9 +150,7 @@ app.get('/experiments/:experimentId/view', authMiddleware, (req, res) => {
                     ns.filter(n => n.variation_id===v.id).forEach(n=>{
                         let eventName = experiment.events.find(e=>e.id===n.event_id).name;
                         res[eventName] = n['count(*)'];
-                        console.log('found');
-                    })
-                    console.log(res);
+                    });
                     return res;
                 });
             })
@@ -204,6 +200,7 @@ app.get('/settings', authMiddleware, (req, res) => {
 
 app.post('/projects/create', loginMiddleware, (req, res) => {
     Project.create(req.body.name, req.session.user).then(project=>{
+        req.session.project = project.id;
         res.redirect('/experiments');
     });
 });
