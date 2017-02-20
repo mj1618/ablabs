@@ -1,4 +1,5 @@
 import React from 'react';
+import {TabMenu, TabMenuItem, TabContent, TabPanel} from '../../tabs/index';
 
 class Collaborators extends React.Component {
     constructor(props){
@@ -72,26 +73,13 @@ export default class Settings extends React.Component {
                 <div className="white-box">
                     <h3 className="box-title m-b-0">{pageData.projectName} Settings</h3>
                     {/*<p className="text-muted m-b-30 font-13"></p>*/}
-                    <ul className="nav customtab nav-tabs" role="tablist">
-                        <li role="presentation" className="active">
-                            <a href="#integration" aria-controls="integration" role="tab" data-toggle="tab" aria-expanded="true">
-                                <span className="visible-xs">
-                                    <i className="zmdi zmdi-layers"></i>
-                                </span>
-                                <span className="hidden-xs"> Integration</span>
-                            </a>
-                        </li>
-                        <li role="presentation" className="">
-                            <a href="#collaborators" aria-controls="collaborators" role="tab" data-toggle="tab" aria-expanded="true">
-                                <span className="visible-xs">
-                                    <i className="zmdi zmdi-layers"></i>
-                                </span>
-                                <span className="hidden-xs"> Collaborators</span>
-                            </a>
-                        </li>
-                    </ul>
-                    <div className="tab-content">
-                        <div role="tabpanel" className="tab-pane fade active in" id="integration">
+
+                    <TabMenu>
+                        <TabMenuItem id='integration' name='Integration' icon='zmdi zmdi-layers' first={true} />
+                        <TabMenuItem id='collaborators' name='Collaborators' icon='zmdi zmdi-person' />
+                    </TabMenu>
+                    <TabContent>
+                        <TabPanel id='integration' first={true}>
                             <div className="modal-body form-horizontal">
                                 <div className="form-group col-md-12">
                                     <label className="control-label">Project API Token</label>
@@ -104,13 +92,12 @@ export default class Settings extends React.Component {
                                 </div>
                             </div>
                             <div className="clearfix"></div>
-                        </div>
-                        <div role="tabpanel" className="tab-pane fade" id="collaborators">
+                        </TabPanel>
+                        <TabPanel id='collaborators'>
                             <Collaborators />
                             <div className="clearfix"></div>
-                        </div>
-                    </div>
-                    
+                        </TabPanel>
+                    </TabContent>
                 </div>
             </div>
         </div>;

@@ -179,7 +179,7 @@ class Assign extends Model {
 class Project extends Model {
     static get tableName() { return 'project'; }
     static create(name, userId){
-        return Project.query().insert({name}).then(project=>{
+        return Project.query().insert({name, token:require('crypto').randomBytes(16).toString('hex')}).then(project=>{
             return project.$relatedQuery('users').relate(userId);
         });
     }

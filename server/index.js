@@ -307,6 +307,37 @@ app.get('/experiments/create', authMiddleware, (req, res) => {
     })
 });
 
+
+app.get('/developer', authMiddleware, (req, res) => {
+    createPageData(req,{
+        routeId: 'developer',
+        title:'Developer Guide'
+    }).then((pageData)=>{
+        res.render('dashboard',{
+            pageData
+        });
+    })
+});
+
+app.get('/experiments/:experimentId/edit', authMiddleware, (req, res) => {
+    Promise.join(
+        Event.query().where('project_id',req.session.project),
+        Experiment.query().findById(req.params.experimentId).eager('[variations,events]'),
+        (events,experiment)=>{
+            return createPageData(req,{
+                routeId: 'edit-experiment',
+                title:'Edit Experiment',
+                events,
+                experiment
+            }).then((pageData)=>{
+                res.render('dashboard',{
+                    pageData
+                });
+            });
+        }
+    );
+});
+
 app.post('/experiments/create', authMiddleware, (req,res) => {
     let experiment;
     Experiment.query().insert({

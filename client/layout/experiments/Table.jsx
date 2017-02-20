@@ -80,6 +80,7 @@ export default class Table extends React.Component {
                     <th># Unique Users</th>
                     <th># Tracked Events</th>
                     <th>Active</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -100,6 +101,11 @@ export default class Table extends React.Component {
                                 { this.state.toggling[i]===true && <td><div className="btn btn-sm btn-default btn-rounded" style={{color:'black',width:'80px',cursor:'default'}}><i className="fa fa-spinner fa-spin"/></div></td>}
                                 { this.state.toggling[i]!==true && exp.active===1 && <td><div className="btn btn-sm btn-success btn-rounded" style={{width:'80px'}} onClick={()=>this.toggleActive(i)}>Active</div></td> }
                                 { this.state.toggling[i]!==true && exp.active!==1 && <td><div className="btn btn-sm btn-warning btn-rounded" style={{width:'80px'}} onClick={()=>this.toggleActive(i)}>Paused</div></td> }
+                                <td>
+                                    <a href={`/experiments/${exp.id}/edit`} data-toggle="tooltip" data-original-title="Edit"> 
+                                        <i className="fa fa-pencil text-inverse m-r-10"></i> 
+                                    </a>
+                                </td>
                             </tr>
                         })
                     }
