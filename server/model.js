@@ -21,6 +21,13 @@ Model.knex(knex);
 
 class User extends Model {
     static get tableName() { return 'user'; }
+    
+    $beforeInsert(){
+        this.created_at = new Date().toISOString();
+    }
+    $beforeUpdate(){
+        this.updated_at = new Date().toISOString();
+    }
     // This object defines the relations to other models.
     static get relationMappings() {
         return {
@@ -43,6 +50,12 @@ class User extends Model {
 
 class Experiment extends Model {
     static get tableName() { return 'experiment'; }
+    $beforeInsert(){
+        this.created_at = new Date().toISOString();
+    }
+    $beforeUpdate(){
+        this.updated_at = new Date().toISOString();
+    }
     // This object defines the relations to other models.
     static get relationMappings() {
         return {
@@ -73,6 +86,12 @@ class Experiment extends Model {
 
 class Variation extends Model {
     static get tableName() { return 'variation'; }
+    $beforeInsert(){
+        this.created_at = new Date().toISOString();
+    }
+    $beforeUpdate(){
+        this.updated_at = new Date().toISOString();
+    }
     // This object defines the relations to other models.
     static get relationMappings() {
         return {
@@ -107,6 +126,12 @@ class Variation extends Model {
 
 class Event extends Model {
     static get tableName() { return 'event'; }
+    $beforeInsert(){
+        this.created_at = new Date().toISOString();
+    }
+    $beforeUpdate(){
+        this.updated_at = new Date().toISOString();
+    }
     // This object defines the relations to other models.
     static get relationMappings() {
         return {
@@ -137,6 +162,12 @@ class Event extends Model {
 
 class Track extends Model {
     static get tableName() { return 'track'; }
+    $beforeInsert(){
+        this.created_at = new Date().toISOString();
+    }
+    $beforeUpdate(){
+        this.updated_at = new Date().toISOString();
+    }
     static get relationMappings() {
         return {
             variation: {
@@ -161,6 +192,12 @@ class Track extends Model {
 
 class Assign extends Model {
     static get tableName() { return 'assign'; }
+    $beforeInsert(){
+        this.created_at = new Date().toISOString();
+    }
+    $beforeUpdate(){
+        this.updated_at = new Date().toISOString();
+    }
     static get relationMappings() {
         return {
             variation: {
@@ -178,6 +215,12 @@ class Assign extends Model {
 
 class Project extends Model {
     static get tableName() { return 'project'; }
+    $beforeInsert(){
+        this.created_at = new Date().toISOString();
+    }
+    $beforeUpdate(){
+        this.updated_at = new Date().toISOString();
+    }
     static create(name, userId){
         return Project.query().insert({name, token:require('crypto').randomBytes(16).toString('hex')}).then(project=>{
             return project.$relatedQuery('users').relate(userId);

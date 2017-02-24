@@ -41,7 +41,7 @@ exports.seed = function(knex, Promise) {
       }
       for(var i = 0; i<1234; i++){
           let user = users[getRandomInt(0,99)];
-          ps.push(knex('track').insert({unique_id: user.unique_id, event_id: getRandomInt(1,3), variation_id: user.variation_id }));
+          ps.push(knex('track').insert({unique_id: user.unique_id, event_id: getRandomInt(1,3), variation_id: user.variation_id, created_at: new Date ( 2017, 1, getRandomInt(1,28) ) }));
       }
 
       return Promise.all(ps);

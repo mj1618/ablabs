@@ -4,6 +4,7 @@ import fetch from 'node-fetch';
 import {User,Experiment,Project,Event,Variation,Assign,Track} from './model';
 import auth from './auth';
 import Promise from 'bluebird';
+import df from 'dateformat';
 
 const autoLogin = true;
 
@@ -136,33 +137,63 @@ app.get('/experiments/:experimentId/view', authMiddleware, (req, res) => {
     Experiment.query().findById(req.params.experimentId).eager('[variations,events]')
     .then(exp=>{
         experiment = exp;
-        return Track.query()
-            .select('event_id','variation_id')
-            .whereIn('event_id',experiment.events.map(e=>e.id))
-            .whereIn('variation_id',experiment.variations.map(v=>v.id))
-            .groupBy('event_id')
-            .groupBy('variation_id')
-            .count()
-            .then(ns=>{
-                return exp.variations.map(v=>{
-                    let res = {
-                        variation: v.name
-                    };
-                    ns.filter(n => n.variation_id===v.id).forEach(n=>{
-                        let eventName = experiment.events.find(e=>e.id===n.event_id).name;
-                        res[eventName] = n['count(*)'];
+        return Promise.join(
+            Track.query()
+                .select('event_id','variation_id')
+                .whereIn('event_id',experiment.events.map(e=>e.id))
+                .whereIn('variation_id',experiment.variations.map(v=>v.id))
+                .groupBy('event_id')
+                .groupBy('variation_id')
+                .count()
+                .then(ns=>{
+                    return exp.variations.map(v=>{
+                        let res = {
+                            variation: v.name
+                        };
+                        ns.filter(n => n.variation_id===v.id).forEach(n=>{
+                            let eventName = experiment.events.find(e=>e.id===n.event_id).name;
+                            res[eventName] = n['count(*)'];
+                        });
+                        return res;
                     });
-                    return res;
+                }),
+            Track.query()
+                .select('event_id','variation_id','created_at')
+                .whereIn('event_id',experiment.events.map(e=>e.id))
+                .whereIn('variation_id',experiment.variations.map(v=>v.id))
+                .groupBy('created_at')
+                .groupBy('event_id')
+                .groupBy('variation_id')
+                .orderBy('created_at')
+                .count()
+                .then(lvs=>{
+                    const results = {};
+                    exp.events.forEach(e=>{
+                        const data = {};
+                        lvs.filter(v=>v.event_id===e.id).forEach(v=>{
+                            if(!data[df(v.created_at,'yyyy-mm-dd')]){
+                                data[df(v.created_at,'yyyy-mm-dd')] = {
+                                    date: df(v.created_at,'yyyy-mm-dd')
+                                };
+                                experiment.variations.forEach(va=>{
+                                    data[df(v.created_at,'yyyy-mm-dd')][va.name] = 0;
+                                })
+                            }
+                            data[df(v.created_at,'yyyy-mm-dd')][experiment.variations.find(va=>va.id===v.variation_id).name] += v['count(*)'];
+                        })
+                        results[e.name] = Object.values(data);
+                    });
+                    return results;
+                }),
+            (ns,lvs) => {
+                return createPageData(req, {
+                    routeId: 'view-experiment',
+                    title: experiment.name,
+                    experiment,
+                    values: ns,
+                    lineChartValues: lvs
                 });
             })
-    })
-    .then((ns) => {
-        return createPageData(req, {
-            routeId: 'view-experiment',
-            title: experiment.name,
-            experiment,
-            values: ns
-        });
     })
     .then(pageData=>{
         res.render('dashboard', {

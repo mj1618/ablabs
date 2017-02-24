@@ -1015,7 +1015,7 @@ var CreateEventModal = function (_React$Component) {
 
 exports.default = CreateEventModal;
 
-},{"../../util/helpers":21,"bluebird":22,"react":193,"whatwg-fetch":194}],10:[function(require,module,exports){
+},{"../../util/helpers":21,"bluebird":22,"react":193,"whatwg-fetch":195}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1778,7 +1778,7 @@ var Create = function (_React$Component) {
 exports.default = Create;
 ;
 
-},{"../../util/helpers":21,"../events/CreateModal.jsx":9,"bluebird":22,"react":193,"whatwg-fetch":194}],12:[function(require,module,exports){
+},{"../../util/helpers":21,"../events/CreateModal.jsx":9,"bluebird":22,"react":193,"whatwg-fetch":195}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2044,7 +2044,7 @@ var Table = function (_React$Component) {
 exports.default = Table;
 ;
 
-},{"bluebird":22,"react":193,"whatwg-fetch":194}],13:[function(require,module,exports){
+},{"bluebird":22,"react":193,"whatwg-fetch":195}],13:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2065,7 +2065,11 @@ var _bluebird2 = _interopRequireDefault(_bluebird);
 
 require('whatwg-fetch');
 
+var _watchjs = require('watchjs');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -2073,8 +2077,242 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var BarGraph = function (_React$Component) {
-    _inherits(BarGraph, _React$Component);
+var baseline = void 0;
+
+var BaseLineValue = function (_React$Component) {
+    _inherits(BaseLineValue, _React$Component);
+
+    function BaseLineValue(props) {
+        _classCallCheck(this, BaseLineValue);
+
+        return _possibleConstructorReturn(this, (BaseLineValue.__proto__ || Object.getPrototypeOf(BaseLineValue)).call(this, props));
+    }
+
+    _createClass(BaseLineValue, [{
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            var _this2 = this;
+
+            (0, _watchjs.watch)(baseline, function () {
+                return _this2.forceUpdate();
+            });
+        }
+    }, {
+        key: 'changeBaseline',
+        value: function changeBaseline(name) {
+            console.log('change baseline: ' + name);
+            baseline.value = pageData.values.find(function (v) {
+                return v.variation === name;
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var _this3 = this;
+
+            return _react2.default.createElement(
+                'div',
+                { className: 'btn-group col-md-12' },
+                _react2.default.createElement(
+                    'div',
+                    { className: 'pull-right' },
+                    _react2.default.createElement(
+                        'button',
+                        { 'aria-expanded': 'false', 'data-toggle': 'dropdown', className: 'btn btn-info dropdown-toggle waves-effect waves-light', type: 'button' },
+                        'Baseline: ',
+                        baseline.value.variation,
+                        ' ',
+                        _react2.default.createElement('span', { className: 'caret' })
+                    ),
+                    _react2.default.createElement(
+                        'ul',
+                        { role: 'menu', className: 'dropdown-menu' },
+                        pageData.values.filter(function (v) {
+                            return v !== baseline.value.name;
+                        }).map(function (v, i) {
+                            return _react2.default.createElement(
+                                'li',
+                                { key: i },
+                                _react2.default.createElement(
+                                    'a',
+                                    { href: 'javascript:void(0)', onClick: function onClick() {
+                                            return _this3.changeBaseline(v.variation);
+                                        } },
+                                    v.variation
+                                )
+                            );
+                        })
+                    )
+                )
+            );
+        }
+    }]);
+
+    return BaseLineValue;
+}(_react2.default.Component);
+
+var BaseLineEvent = function (_React$Component2) {
+    _inherits(BaseLineEvent, _React$Component2);
+
+    function BaseLineEvent(props) {
+        _classCallCheck(this, BaseLineEvent);
+
+        return _possibleConstructorReturn(this, (BaseLineEvent.__proto__ || Object.getPrototypeOf(BaseLineEvent)).call(this, props));
+    }
+
+    _createClass(BaseLineEvent, [{
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            var _this5 = this;
+
+            (0, _watchjs.watch)(baseline, function () {
+                return _this5.forceUpdate();
+            });
+        }
+    }, {
+        key: 'changeBaseline',
+        value: function changeBaseline(e) {
+            console.log('change baseline: ' + e.name);
+            baseline.event = Object.assign({}, e);
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var _this6 = this;
+
+            return _react2.default.createElement(
+                'div',
+                { className: 'btn-group col-md-12' },
+                _react2.default.createElement(
+                    'div',
+                    { className: 'pull-right' },
+                    _react2.default.createElement(
+                        'button',
+                        { 'aria-expanded': 'false', 'data-toggle': 'dropdown', className: 'btn btn-info dropdown-toggle waves-effect waves-light', type: 'button' },
+                        'Event: ',
+                        baseline.event.name,
+                        ' ',
+                        _react2.default.createElement('span', { className: 'caret' })
+                    ),
+                    _react2.default.createElement(
+                        'ul',
+                        { role: 'menu', className: 'dropdown-menu' },
+                        pageData.experiment.events.filter(function (e) {
+                            return e.id !== baseline.event.id;
+                        }).map(function (e, i) {
+                            return _react2.default.createElement(
+                                'li',
+                                { key: i },
+                                _react2.default.createElement(
+                                    'a',
+                                    { href: 'javascript:void(0)', onClick: function onClick() {
+                                            return _this6.changeBaseline(e);
+                                        } },
+                                    e.name
+                                )
+                            );
+                        })
+                    )
+                )
+            );
+        }
+    }]);
+
+    return BaseLineEvent;
+}(_react2.default.Component);
+
+var line = void 0;
+var colors = ['#00bfc7', '#fdc006', '#9675ce', '#fb9678', '#01c0c8', '#8698b7'];
+
+var LineGraph = function (_React$Component3) {
+    _inherits(LineGraph, _React$Component3);
+
+    function LineGraph() {
+        _classCallCheck(this, LineGraph);
+
+        return _possibleConstructorReturn(this, (LineGraph.__proto__ || Object.getPrototypeOf(LineGraph)).apply(this, arguments));
+    }
+
+    _createClass(LineGraph, [{
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            var _this8 = this;
+
+            line = Morris.Line(_defineProperty({
+                parseTime: true,
+                xkey: 'date',
+                element: 'variation-line-chart',
+                data: pageData.lineChartValues['Logged In'],
+                ykeys: pageData.experiment.variations.map(function (v) {
+                    return v.name;
+                }),
+                labels: pageData.experiment.variations.map(function (v) {
+                    return v.name;
+                }),
+                lineColors: colors,
+                hideHover: 'auto',
+                gridLineColor: '#eef0f2',
+                resize: true
+            }, 'hideHover', false));
+            (0, _watchjs.watch)(baseline, function () {
+                return _this8.update();
+            });
+        }
+    }, {
+        key: 'update',
+        value: function update() {
+            console.log('name: ' + baseline.event.name);
+            line.setData(pageData.lineChartValues[baseline.event.name]);
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                'div',
+                { className: 'row' },
+                _react2.default.createElement(
+                    'div',
+                    { className: 'col-lg-12' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'white-box' },
+                        _react2.default.createElement(
+                            'h3',
+                            { className: 'box-title m-b-0' },
+                            'Experiment Report'
+                        ),
+                        _react2.default.createElement(BaseLineEvent, null),
+                        _react2.default.createElement('p', { className: 'text-muted m-b-30 font-13' }),
+                        _react2.default.createElement(
+                            'ul',
+                            { className: 'list-inline text-right' },
+                            pageData.experiment.variations.map(function (v, i) {
+                                return _react2.default.createElement(
+                                    'li',
+                                    null,
+                                    _react2.default.createElement(
+                                        'h5',
+                                        null,
+                                        _react2.default.createElement('i', { className: 'fa fa-circle m-r-5', style: { color: colors[i % colors.length] } }),
+                                        v.name
+                                    )
+                                );
+                            })
+                        ),
+                        _react2.default.createElement('div', { id: 'variation-line-chart' })
+                    )
+                )
+            );
+        }
+    }]);
+
+    return LineGraph;
+}(_react2.default.Component);
+
+;
+
+var BarGraph = function (_React$Component4) {
+    _inherits(BarGraph, _React$Component4);
 
     function BarGraph() {
         _classCallCheck(this, BarGraph);
@@ -2131,26 +2369,31 @@ var BarGraph = function (_React$Component) {
 
 ;
 
-var Analysis = function (_React$Component2) {
-    _inherits(Analysis, _React$Component2);
+var Analysis = function (_React$Component5) {
+    _inherits(Analysis, _React$Component5);
 
     function Analysis(props) {
         _classCallCheck(this, Analysis);
 
-        var _this2 = _possibleConstructorReturn(this, (Analysis.__proto__ || Object.getPrototypeOf(Analysis)).call(this, props));
+        var _this10 = _possibleConstructorReturn(this, (Analysis.__proto__ || Object.getPrototypeOf(Analysis)).call(this, props));
 
-        _this2.state = {
-            baseline: pageData.values[0],
+        _this10.state = {
             values: pageData.values,
             experiment: pageData.experiment
         };
-        return _this2;
+        if (!baseline) {
+            baseline = {
+                value: pageData.values[0],
+                event: pageData.experiment.events[0]
+            };
+        }
+        return _this10;
     }
 
     _createClass(Analysis, [{
         key: 'getPercentage',
         value: function getPercentage(v, event) {
-            var r = Number(100.0 * v[event.name] / this.state.baseline[event.name] - 100).toFixed(1);
+            var r = Number(100.0 * v[event.name] / baseline.value[event.name] - 100).toFixed(1);
             if (r > 0) {
                 return _react2.default.createElement(
                     'span',
@@ -2176,21 +2419,20 @@ var Analysis = function (_React$Component2) {
             }
         }
     }, {
-        key: 'changeBaseline',
-        value: function changeBaseline(name) {
-            console.log('change baseline: ' + name);
-            this.setState({
-                baseline: this.state.values.find(function (v) {
-                    return v.variation === name;
-                })
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            var _this11 = this;
+
+            (0, _watchjs.watch)(baseline, function () {
+                return _this11.forceUpdate();
             });
         }
     }, {
         key: 'render',
         value: function render() {
-            var _this3 = this;
+            var _this12 = this;
 
-            var baseline = this.state.baseline;
+            var base = baseline.value;
             return _react2.default.createElement(
                 'div',
                 { className: 'row' },
@@ -2206,45 +2448,7 @@ var Analysis = function (_React$Component2) {
                             'Experiment Analysis'
                         ),
                         _react2.default.createElement('p', { className: 'text-muted m-b-30 font-13' }),
-                        _react2.default.createElement(
-                            'div',
-                            { className: 'row' },
-                            _react2.default.createElement(
-                                'div',
-                                { className: 'btn-group col-md-12' },
-                                _react2.default.createElement(
-                                    'div',
-                                    { className: 'pull-right' },
-                                    _react2.default.createElement(
-                                        'button',
-                                        { 'aria-expanded': 'false', 'data-toggle': 'dropdown', className: 'btn btn-info dropdown-toggle waves-effect waves-light', type: 'button' },
-                                        'Baseline: ',
-                                        this.state.baseline.variation,
-                                        ' ',
-                                        _react2.default.createElement('span', { className: 'caret' })
-                                    ),
-                                    _react2.default.createElement(
-                                        'ul',
-                                        { role: 'menu', className: 'dropdown-menu' },
-                                        this.state.values.filter(function (v) {
-                                            return v !== _this3.state.baseline;
-                                        }).map(function (v, i) {
-                                            return _react2.default.createElement(
-                                                'li',
-                                                { key: i },
-                                                _react2.default.createElement(
-                                                    'a',
-                                                    { href: 'javascript:void(0)', onClick: function onClick() {
-                                                            return _this3.changeBaseline(v.variation);
-                                                        } },
-                                                    v.variation
-                                                )
-                                            );
-                                        })
-                                    )
-                                )
-                            )
-                        ),
+                        _react2.default.createElement(BaseLineValue, null),
                         _react2.default.createElement(
                             'div',
                             { className: 'row' },
@@ -2287,7 +2491,7 @@ var Analysis = function (_React$Component2) {
                                             )
                                         ),
                                         this.state.values.filter(function (v) {
-                                            return v === _this3.state.baseline;
+                                            return v === base;
                                         }).map(function (v, i) {
                                             return _react2.default.createElement(
                                                 'tr',
@@ -2301,7 +2505,7 @@ var Analysis = function (_React$Component2) {
                                                     return _react2.default.createElement(
                                                         'td',
                                                         { key: i },
-                                                        _this3.getPercentage(v, event),
+                                                        _this12.getPercentage(v, event),
                                                         _react2.default.createElement('br', null),
                                                         _react2.default.createElement(
                                                             'span',
@@ -2313,7 +2517,7 @@ var Analysis = function (_React$Component2) {
                                             );
                                         }),
                                         this.state.values.filter(function (v) {
-                                            return v !== _this3.state.baseline;
+                                            return v !== base;
                                         }).map(function (v, i) {
                                             return _react2.default.createElement(
                                                 'tr',
@@ -2327,7 +2531,7 @@ var Analysis = function (_React$Component2) {
                                                     return _react2.default.createElement(
                                                         'td',
                                                         { key: i },
-                                                        _this3.getPercentage(v, event),
+                                                        _this12.getPercentage(v, event),
                                                         _react2.default.createElement('br', null),
                                                         _react2.default.createElement(
                                                             'span',
@@ -2353,8 +2557,8 @@ var Analysis = function (_React$Component2) {
 
 ;
 
-var View = function (_React$Component3) {
-    _inherits(View, _React$Component3);
+var View = function (_React$Component6) {
+    _inherits(View, _React$Component6);
 
     function View() {
         _classCallCheck(this, View);
@@ -2369,7 +2573,7 @@ var View = function (_React$Component3) {
                 'div',
                 null,
                 _react2.default.createElement(Analysis, null),
-                _react2.default.createElement(BarGraph, null)
+                _react2.default.createElement(LineGraph, null)
             );
         }
     }]);
@@ -2380,7 +2584,7 @@ var View = function (_React$Component3) {
 exports.default = View;
 ;
 
-},{"../../util/helpers":21,"bluebird":22,"react":193,"whatwg-fetch":194}],14:[function(require,module,exports){
+},{"../../util/helpers":21,"bluebird":22,"react":193,"watchjs":194,"whatwg-fetch":195}],14:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -28626,6 +28830,359 @@ module.exports = validateDOMNesting;
 module.exports = require('./lib/React');
 
 },{"./lib/React":76}],194:[function(require,module,exports){
+/**
+ * DEVELOPED BY
+ * GIL LOPES BUENO
+ * gilbueno.mail@gmail.com
+ *
+ * WORKS WITH:
+ * IE 9+, FF 4+, SF 5+, WebKit, CH 7+, OP 12+, BESEN, Rhino 1.7+
+ *
+ * FORK:
+ * https://github.com/melanke/Watch.JS
+ */
+
+"use strict";
+(function (factory) {
+    if (typeof exports === 'object') {
+        // Node. Does not work with strict CommonJS, but
+        // only CommonJS-like enviroments that support module.exports,
+        // like Node.
+        module.exports = factory();
+    } else if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(factory);
+    } else {
+        // Browser globals
+        window.WatchJS = factory();
+        window.watch = window.WatchJS.watch;
+        window.unwatch = window.WatchJS.unwatch;
+        window.callWatchers = window.WatchJS.callWatchers;
+    }
+}(function () {
+
+    var WatchJS = {
+        noMore: false
+    },
+    defineWatcher,
+    unwatchOne,
+    callWatchers;
+
+    var isFunction = function (functionToCheck) {
+            var getType = {};
+            return functionToCheck && getType.toString.call(functionToCheck) == '[object Function]';
+    };
+
+    var isInt = function (x) {
+        return x % 1 === 0;
+    };
+
+    var isArray = function(obj) {
+        return Object.prototype.toString.call(obj) === '[object Array]';
+    };
+
+    var isModernBrowser = function () {
+        return Object.defineProperty || Object.prototype.__defineGetter__;
+    };
+
+    var defineGetAndSet = function (obj, propName, getter, setter) {
+        try {
+                Object.defineProperty(obj, propName, {
+                        get: getter,
+                        set: setter,
+                        enumerable: true,
+                        configurable: true
+                });
+        } catch(error) {
+            try{
+                Object.prototype.__defineGetter__.call(obj, propName, getter);
+                Object.prototype.__defineSetter__.call(obj, propName, setter);
+            }catch(error2){
+                throw "watchJS error: browser not supported :/"
+            }
+        }
+    };
+
+    var defineProp = function (obj, propName, value) {
+        try {
+            Object.defineProperty(obj, propName, {
+                enumerable: false,
+                configurable: true,
+                writable: false,
+                value: value
+            });
+        } catch(error) {
+            obj[propName] = value;
+        }
+    };
+
+    var watch = function () {
+
+        if (isFunction(arguments[1])) {
+            watchAll.apply(this, arguments);
+        } else if (isArray(arguments[1])) {
+            watchMany.apply(this, arguments);
+        } else {
+            watchOne.apply(this, arguments);
+        }
+
+    };
+
+
+    var watchAll = function (obj, watcher, level) {
+
+        if (obj instanceof String || (!(obj instanceof Object) && !isArray(obj))) { //accepts only objects and array (not string)
+            return;
+        }
+
+        var props = [];
+
+
+        if(isArray(obj)) {
+            for (var prop = 0; prop < obj.length; prop++) { //for each item if obj is an array
+                props.push(prop); //put in the props
+            }
+        } else {
+            for (var prop2 in obj) { //for each attribute if obj is an object
+                props.push(prop2); //put in the props
+            }
+        }
+
+        watchMany(obj, props, watcher, level); //watch all itens of the props
+    };
+
+
+    var watchMany = function (obj, props, watcher, level) {
+
+        for (var prop in props) { //watch each attribute of "props" if is an object
+            watchOne(obj, props[prop], watcher, level);
+        }
+
+    };
+
+    var watchOne = function (obj, prop, watcher, level) {
+
+        if(isFunction(obj[prop])) { //dont watch if it is a function
+            return;
+        }
+
+        if(obj[prop] != null && (level === undefined || level > 0)){
+            if(level !== undefined){
+                level--;
+            }
+            watchAll(obj[prop], watcher, level); //recursively watch all attributes of this
+        }
+
+        defineWatcher(obj, prop, watcher);
+
+    };
+
+    var unwatch = function () {
+
+        if (isFunction(arguments[1])) {
+            unwatchAll.apply(this, arguments);
+        } else if (isArray(arguments[1])) {
+            unwatchMany.apply(this, arguments);
+        } else {
+            unwatchOne.apply(this, arguments);
+        }
+
+    };
+
+    var unwatchAll = function (obj, watcher) {
+
+        if (obj instanceof String || (!(obj instanceof Object) && !isArray(obj))) { //accepts only objects and array (not string)
+            return;
+        }
+
+        var props = [];
+
+
+        if (isArray(obj)) {
+            for (var prop = 0; prop < obj.length; prop++) { //for each item if obj is an array
+                props.push(prop); //put in the props
+            }
+        } else {
+            for (var prop2 in obj) { //for each attribute if obj is an object
+                props.push(prop2); //put in the props
+            }
+        }
+
+        unwatchMany(obj, props, watcher); //watch all itens of the props
+    };
+
+
+    var unwatchMany = function (obj, props, watcher) {
+
+        for (var prop2 in props) { //watch each attribute of "props" if is an object
+            unwatchOne(obj, props[prop2], watcher);
+        }
+    };
+
+    if(isModernBrowser()){
+
+        defineWatcher = function (obj, prop, watcher) {
+
+            var val = obj[prop];
+
+            watchFunctions(obj, prop);
+
+            if (!obj.watchers) {
+                defineProp(obj, "watchers", {});
+            }
+
+            if (!obj.watchers[prop]) {
+                obj.watchers[prop] = [];
+            }
+
+
+            obj.watchers[prop].push(watcher); //add the new watcher in the watchers array
+
+
+            var getter = function () {
+                return val;
+            };
+
+
+            var setter = function (newval) {
+                var oldval = val;
+                val = newval;
+
+                if (obj[prop]){
+                    watchAll(obj[prop], watcher);
+                }
+
+                watchFunctions(obj, prop);
+
+                if (!WatchJS.noMore){
+                    if (JSON.stringify(oldval) !== JSON.stringify(newval)) {
+                        callWatchers(obj, prop, "set", newval, oldval);
+                        WatchJS.noMore = false;
+                    }
+                }
+            };
+
+            defineGetAndSet(obj, prop, getter, setter);
+
+        };
+
+        callWatchers = function (obj, prop, action, newval, oldval) {
+
+            for (var wr in obj.watchers[prop]) {
+                if (isInt(wr)){
+                    obj.watchers[prop][wr].call(obj, prop, action, newval, oldval);
+                }
+            }
+        };
+
+        // @todo code related to "watchFunctions" is certainly buggy
+        var methodNames = ['pop', 'push', 'reverse', 'shift', 'sort', 'slice', 'unshift'];
+        var defineArrayMethodWatcher = function (obj, prop, original, methodName) {
+            defineProp(obj[prop], methodName, function () {
+                var response = original.apply(obj[prop], arguments);
+                watchOne(obj, obj[prop]);
+                if (methodName !== 'slice') {
+                    callWatchers(obj, prop, methodName,arguments);
+                }
+                return response;
+            });
+        };
+
+        var watchFunctions = function(obj, prop) {
+
+            if ((!obj[prop]) || (obj[prop] instanceof String) || (!isArray(obj[prop]))) {
+                return;
+            }
+
+            for (var i = methodNames.length, methodName; i--;) {
+                methodName = methodNames[i];
+                defineArrayMethodWatcher(obj, prop, obj[prop][methodName], methodName);
+            }
+
+        };
+
+        unwatchOne = function (obj, prop, watcher) {
+            for(var i in obj.watchers[prop]){
+                var w = obj.watchers[prop][i];
+
+                if(w == watcher) {
+                    obj.watchers[prop].splice(i, 1);
+                }
+            }
+        };
+
+    } else {
+        //this implementation dont work because it cant handle the gap between "settings".
+        //I mean, if you use a setter for an attribute after another setter of the same attribute it will only fire the second
+        //but I think we could think something to fix it
+
+        var subjects = [];
+
+        defineWatcher = function(obj, prop, watcher){
+
+            subjects.push({
+                obj: obj,
+                prop: prop,
+                serialized: JSON.stringify(obj[prop]),
+                watcher: watcher
+            });
+
+        };
+
+        unwatchOne = function (obj, prop, watcher) {
+
+            for (var i in subjects) {
+                var subj = subjects[i];
+
+                if (subj.obj == obj && subj.prop == prop && subj.watcher == watcher) {
+                    subjects.splice(i, 1);
+                }
+
+            }
+
+        };
+
+        callWatchers = function (obj, prop, action, value) {
+
+            for (var i in subjects) {
+                var subj = subjects[i];
+
+                if (subj.obj == obj && subj.prop == prop) {
+                    subj.watcher.call(obj, prop, action, value);
+                }
+
+            }
+
+        };
+
+        var loop = function(){
+
+            for(var i in subjects){
+
+                var subj = subjects[i];
+                var newSer = JSON.stringify(subj.obj[subj.prop]);
+                if(newSer != subj.serialized){
+                    subj.watcher.call(subj.obj, subj.prop, subj.obj[subj.prop], JSON.parse(subj.serialized));
+                    subj.serialized = newSer;
+                }
+
+            }
+
+        };
+
+        setInterval(loop, 50);
+
+    }
+
+    WatchJS.watch = watch;
+    WatchJS.unwatch = unwatch;
+    WatchJS.callWatchers = callWatchers;
+
+    return WatchJS;
+
+}));
+
+},{}],195:[function(require,module,exports){
 (function(self) {
   'use strict';
 

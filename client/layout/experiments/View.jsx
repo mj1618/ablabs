@@ -2,6 +2,122 @@ import React from 'react';
 import {focusInCurrentTarget} from '../../util/helpers';
 import Promise from 'bluebird';
 import 'whatwg-fetch';
+import {watch, unwatch} from 'watchjs';
+
+let baseline;
+
+class BaseLineValue extends React.Component {
+
+    constructor(props){
+        super(props);
+    }
+
+    componentDidMount(){
+        watch(baseline, ()=>this.forceUpdate() );
+    }
+
+    changeBaseline(name){
+        console.log('change baseline: '+name);
+        baseline.value = pageData.values.find(v=>v.variation===name);
+    }
+
+    render(){
+        return <div className="btn-group col-md-12">
+                        <div className="pull-right">
+                            <button aria-expanded="false" data-toggle="dropdown" className="btn btn-info dropdown-toggle waves-effect waves-light" type="button">Baseline: {baseline.value.variation} <span className="caret"></span></button>
+                            <ul role="menu" className="dropdown-menu">
+                                {
+                                    pageData.values.filter(v=>v!==baseline.value.name).map((v,i)=>{
+                                        return <li key={i}><a href="javascript:void(0)" onClick={()=>this.changeBaseline(v.variation)}>{v.variation}</a></li>
+                                    })
+                                }
+                            </ul>
+                        </div>
+                    </div>;
+    }
+}
+
+
+class BaseLineEvent extends React.Component {
+
+    constructor(props){
+        super(props);
+    }
+
+    componentDidMount(){
+        watch(baseline, ()=>this.forceUpdate() );
+    }
+
+    changeBaseline(e){
+        console.log('change baseline: '+e.name);
+        baseline.event = Object.assign({},e);
+    }
+
+    render(){
+        return <div className="btn-group col-md-12">
+                        <div className="pull-right">
+                            <button aria-expanded="false" data-toggle="dropdown" className="btn btn-info dropdown-toggle waves-effect waves-light" type="button">Event: {baseline.event.name} <span className="caret"></span></button>
+                            <ul role="menu" className="dropdown-menu">
+                                {
+                                    pageData.experiment.events.filter(e=>e.id!==baseline.event.id).map((e,i)=>{
+                                        return <li key={i}><a href="javascript:void(0)" onClick={()=>this.changeBaseline(e)}>{e.name}</a></li>
+                                    })
+                                }
+                            </ul>
+                        </div>
+                    </div>;
+    }
+}
+
+let line;
+const colors = ['#00bfc7', '#fdc006', '#9675ce', '#fb9678', '#01c0c8', '#8698b7'];
+class LineGraph extends React.Component {
+    componentDidMount(){
+        line = Morris.Line({
+            parseTime:true,
+            xkey: 'date',
+            element: 'variation-line-chart',
+            data: pageData.lineChartValues['Logged In'],
+            ykeys: pageData.experiment.variations.map(v=>v.name),
+            labels: pageData.experiment.variations.map(v=>v.name),
+            lineColors:colors,
+            hideHover: 'auto',
+            gridLineColor: '#eef0f2',
+            resize: true,
+            hideHover: false
+        });
+        watch(baseline, ()=>this.update() );
+    }
+
+    update(){
+        console.log('name: '+baseline.event.name);
+        line.setData(pageData.lineChartValues[baseline.event.name]);
+    }
+
+    render() {
+        return <div className="row">
+            <div className="col-lg-12">
+                <div className="white-box">
+                    <h3 className="box-title m-b-0">Experiment Report</h3>
+                    <BaseLineEvent />
+                    <p className="text-muted m-b-30 font-13"></p>
+                    <ul className="list-inline text-right">
+                        {
+                            pageData.experiment.variations.map((v,i)=>{
+                                return <li>
+                                    <h5><i className="fa fa-circle m-r-5" style={{color: colors[i%colors.length]}} ></i>{v.name}</h5>
+                                </li>
+                            })
+                        }
+                        
+                    </ul>
+                    <div id="variation-line-chart"></div>
+                </div>
+            </div>
+        </div>;
+    }
+};
+
 
 class BarGraph extends React.Component {
     componentDidMount(){
@@ -35,13 +151,18 @@ class Analysis extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            baseline: pageData.values[0],
             values: pageData.values,
             experiment: pageData.experiment
         };
+        if(!baseline){
+            baseline = {
+                value: pageData.values[0],
+                event: pageData.experiment.events[0]
+            }
+        }
     }
     getPercentage(v,event){
-        const r = Number(100.0 * v[event.name] / this.state.baseline[event.name] - 100).toFixed(1);
+        const r = Number(100.0 * v[event.name] / baseline.value[event.name] - 100).toFixed(1);
         if(r>0){
             return <span className="text-success">+{r}%</span>;
         } else if(r<0){
@@ -50,33 +171,17 @@ class Analysis extends React.Component {
             return <span className="">{r}%</span>;
         }
     }
-    changeBaseline(name){
-        console.log('change baseline: '+name);
-        this.setState({
-            baseline: this.state.values.find(v=>v.variation===name)
-        });
+    componentDidMount(){
+        watch(baseline, ()=>this.forceUpdate() );
     }
     render() {
-        const baseline = this.state.baseline;
+        const base = baseline.value;
         return <div className="row">
             <div className="col-lg-12">
                 <div className="white-box">
                     <h3 className="box-title m-b-0">Experiment Analysis</h3>
                     <p className="text-muted m-b-30 font-13"></p>
-                    <div className="row">
-                    <div className="btn-group col-md-12">
-                        <div className="pull-right">
-                            <button aria-expanded="false" data-toggle="dropdown" className="btn btn-info dropdown-toggle waves-effect waves-light" type="button">Baseline: {this.state.baseline.variation} <span className="caret"></span></button>
-                            <ul role="menu" className="dropdown-menu">
-                                {
-                                    this.state.values.filter(v=>v!==this.state.baseline).map((v,i)=>{
-                                        return <li key={i}><a href="javascript:void(0)" onClick={()=>this.changeBaseline(v.variation)}>{v.variation}</a></li>
-                                    })
-                                }
-                            </ul>
-                        </div>
-                    </div>
-                    </div>
+                    <BaseLineValue />
                     <div className="row">
 
                     <div className="table-responsive col-md-12">
@@ -100,7 +205,7 @@ class Analysis extends React.Component {
                                         </tr>
                                 }
                                 {
-                                    this.state.values.filter(v=>v===this.state.baseline).map((v,i) => <tr key={i}>
+                                    this.state.values.filter(v=>v===base).map((v,i) => <tr key={i}>
                                             <td style={{verticalAlign: 'middle'}}>{v.variation}</td>
                                             {
                                                 pageData.experiment.events.map((event,i) => <td key={i}>
@@ -113,7 +218,7 @@ class Analysis extends React.Component {
                                     )
                                 }
                                 {
-                                    this.state.values.filter(v=>v!==this.state.baseline).map((v,i) => <tr key={i}>
+                                    this.state.values.filter(v=>v!==base).map((v,i) => <tr key={i}>
                                             <td style={{verticalAlign: 'middle'}}>{v.variation}</td>
                                             {
                                                 pageData.experiment.events.map((event,i) => <td key={i}>
@@ -140,8 +245,10 @@ export default class View extends React.Component {
 
     render() {
         return <div>
+                
                 <Analysis />
-                <BarGraph />
+                {/*<BarGraph />*/}
+                <LineGraph />
             </div>
     }
 };
