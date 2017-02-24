@@ -23,17 +23,17 @@ class BaseLineValue extends React.Component {
 
     render(){
         return <div className="btn-group col-md-12">
-                        <div className="pull-right">
-                            <button aria-expanded="false" data-toggle="dropdown" className="btn btn-info dropdown-toggle waves-effect waves-light" type="button">Baseline: {baseline.value.variation} <span className="caret"></span></button>
-                            <ul role="menu" className="dropdown-menu">
-                                {
-                                    pageData.values.filter(v=>v!==baseline.value.name).map((v,i)=>{
-                                        return <li key={i}><a href="javascript:void(0)" onClick={()=>this.changeBaseline(v.variation)}>{v.variation}</a></li>
-                                    })
-                                }
-                            </ul>
-                        </div>
-                    </div>;
+                    <div className="pull-right">
+                        <button aria-expanded="false" data-toggle="dropdown" className="btn btn-info dropdown-toggle waves-effect waves-light" type="button">Baseline: {baseline.value.variation} <span className="caret"></span></button>
+                        <ul role="menu" className="dropdown-menu">
+                            {
+                                pageData.values.filter(v=>v!==baseline.value.name).map((v,i)=>{
+                                    return <li key={i}><a href="javascript:void(0)" onClick={()=>this.changeBaseline(v.variation)}>{v.variation}</a></li>
+                                })
+                            }
+                        </ul>
+                    </div>
+                </div>;
     }
 }
 
