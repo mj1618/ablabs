@@ -84,7 +84,8 @@ class LineGraph extends React.Component {
             hideHover: 'auto',
             gridLineColor: '#eef0f2',
             resize: true,
-            hideHover: false
+            hideHover: false,
+            lineWidth: 1
         });
         watch(baseline, ()=>this.update() );
     }

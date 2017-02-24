@@ -1,6 +1,7 @@
 var Promise = require("bluebird");
 var objection = require('objection');
 var Model = objection.Model;
+var dateFormat = require('dateformat');
 var knex = require('knex')({
     client: 'mysql',
     connection: {
@@ -23,10 +24,10 @@ class User extends Model {
     static get tableName() { return 'user'; }
     
     $beforeInsert(){
-        this.created_at = new Date().toISOString();
+        this.created_at = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
     }
     $beforeUpdate(){
-        this.updated_at = new Date().toISOString();
+        this.updated_at = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
     }
     // This object defines the relations to other models.
     static get relationMappings() {
@@ -51,10 +52,10 @@ class User extends Model {
 class Experiment extends Model {
     static get tableName() { return 'experiment'; }
     $beforeInsert(){
-        this.created_at = new Date().toISOString();
+        this.created_at = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
     }
     $beforeUpdate(){
-        this.updated_at = new Date().toISOString();
+        this.updated_at = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
     }
     // This object defines the relations to other models.
     static get relationMappings() {
@@ -87,10 +88,10 @@ class Experiment extends Model {
 class Variation extends Model {
     static get tableName() { return 'variation'; }
     $beforeInsert(){
-        this.created_at = new Date().toISOString();
+        this.created_at = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
     }
     $beforeUpdate(){
-        this.updated_at = new Date().toISOString();
+        this.updated_at = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
     }
     // This object defines the relations to other models.
     static get relationMappings() {
@@ -127,10 +128,10 @@ class Variation extends Model {
 class Event extends Model {
     static get tableName() { return 'event'; }
     $beforeInsert(){
-        this.created_at = new Date().toISOString();
+        this.created_at = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
     }
     $beforeUpdate(){
-        this.updated_at = new Date().toISOString();
+        this.updated_at = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
     }
     // This object defines the relations to other models.
     static get relationMappings() {
@@ -163,10 +164,10 @@ class Event extends Model {
 class Track extends Model {
     static get tableName() { return 'track'; }
     $beforeInsert(){
-        this.created_at = new Date().toISOString();
+        this.created_at = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
     }
     $beforeUpdate(){
-        this.updated_at = new Date().toISOString();
+        this.updated_at = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
     }
     static get relationMappings() {
         return {
@@ -193,10 +194,10 @@ class Track extends Model {
 class Assign extends Model {
     static get tableName() { return 'assign'; }
     $beforeInsert(){
-        this.created_at = new Date().toISOString();
+        this.created_at = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
     }
     $beforeUpdate(){
-        this.updated_at = new Date().toISOString();
+        this.updated_at = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
     }
     static get relationMappings() {
         return {
@@ -216,10 +217,10 @@ class Assign extends Model {
 class Project extends Model {
     static get tableName() { return 'project'; }
     $beforeInsert(){
-        this.created_at = new Date().toISOString();
+        this.created_at = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
     }
     $beforeUpdate(){
-        this.updated_at = new Date().toISOString();
+        this.updated_at = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
     }
     static create(name, userId){
         return Project.query().insert({name, token:require('crypto').randomBytes(16).toString('hex')}).then(project=>{

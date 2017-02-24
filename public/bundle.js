@@ -2236,9 +2236,10 @@ var LineGraph = function (_React$Component3) {
     _createClass(LineGraph, [{
         key: 'componentDidMount',
         value: function componentDidMount() {
-            var _this8 = this;
+            var _Morris$Line,
+                _this8 = this;
 
-            line = Morris.Line(_defineProperty({
+            line = Morris.Line((_Morris$Line = {
                 parseTime: true,
                 xkey: 'date',
                 element: 'variation-line-chart',
@@ -2253,7 +2254,7 @@ var LineGraph = function (_React$Component3) {
                 hideHover: 'auto',
                 gridLineColor: '#eef0f2',
                 resize: true
-            }, 'hideHover', false));
+            }, _defineProperty(_Morris$Line, 'hideHover', false), _defineProperty(_Morris$Line, 'lineWidth', 1), _Morris$Line));
             (0, _watchjs.watch)(baseline, function () {
                 return _this8.update();
             });
