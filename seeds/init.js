@@ -37,11 +37,11 @@ exports.seed = function(knex, Promise) {
       for(var i = 0; i<200; i++){
           let user = {unique_id: ''+i, variation_id: getRandomInt(1,4)};
           users.push(user);
-          ps.push(knex('assign').insert({unique_id: user.unique_id, variation_id: user.variation_id }));
+          ps.push(knex('assign').insert({unique_id: user.unique_id, experiment_id: 1, variation_id: user.variation_id }));
       }
       for(var i = 0; i<1234; i++){
           let user = users[getRandomInt(0,99)];
-          ps.push(knex('track').insert({unique_id: user.unique_id, event_id: getRandomInt(1,3), variation_id: user.variation_id, created_at: new Date ( 2017, 1, getRandomInt(1,28) ) }));
+          ps.push(knex('track').insert({unique_id: user.unique_id, experiment_id: 1, event_id: getRandomInt(1,3), variation_id: user.variation_id, created_at: new Date ( 2017, 1, getRandomInt(1,28) ) }));
       }
 
       return Promise.all(ps);

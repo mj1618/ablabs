@@ -199,6 +199,9 @@ class Assign extends Model {
     $beforeUpdate(){
         this.updated_at = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
     }
+    static create(exp, v, uniqueId){
+        return Assign.query().insert({unique_id: uniqueId, experiment_id: exp.id, variation_id: v?v.id:null});
+    }
     static get relationMappings() {
         return {
             variation: {

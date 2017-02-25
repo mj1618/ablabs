@@ -2294,7 +2294,7 @@ var LineGraph = function (_React$Component3) {
                             pageData.experiment.variations.map(function (v, i) {
                                 return _react2.default.createElement(
                                     'li',
-                                    null,
+                                    { key: i },
                                     _react2.default.createElement(
                                         'h5',
                                         null,

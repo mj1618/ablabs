@@ -55,17 +55,17 @@ class BaseLineEvent extends React.Component {
 
     render(){
         return <div className="btn-group col-md-12">
-                        <div className="pull-right">
-                            <button aria-expanded="false" data-toggle="dropdown" className="btn btn-info dropdown-toggle waves-effect waves-light" type="button">Event: {baseline.event.name} <span className="caret"></span></button>
-                            <ul role="menu" className="dropdown-menu">
-                                {
-                                    pageData.experiment.events.filter(e=>e.id!==baseline.event.id).map((e,i)=>{
-                                        return <li key={i}><a href="javascript:void(0)" onClick={()=>this.changeBaseline(e)}>{e.name}</a></li>
-                                    })
-                                }
-                            </ul>
-                        </div>
-                    </div>;
+                    <div className="pull-right">
+                        <button aria-expanded="false" data-toggle="dropdown" className="btn btn-info dropdown-toggle waves-effect waves-light" type="button">Event: {baseline.event.name} <span className="caret"></span></button>
+                        <ul role="menu" className="dropdown-menu">
+                            {
+                                pageData.experiment.events.filter(e=>e.id!==baseline.event.id).map((e,i)=>{
+                                    return <li key={i}><a href="javascript:void(0)" onClick={()=>this.changeBaseline(e)}>{e.name}</a></li>
+                                })
+                            }
+                        </ul>
+                    </div>
+                </div>;
     }
 }
 
@@ -105,7 +105,7 @@ class LineGraph extends React.Component {
                     <ul className="list-inline text-right">
                         {
                             pageData.experiment.variations.map((v,i)=>{
-                                return <li>
+                                return <li key={i}>
                                     <h5><i className="fa fa-circle m-r-5" style={{color: colors[i%colors.length]}} ></i>{v.name}</h5>
                                 </li>
                             })
@@ -188,59 +188,58 @@ class Analysis extends React.Component {
                     <p className="text-muted m-b-30 font-13"></p>
                     <BaseLineValue />
                     <div className="row">
-
-                    <div className="table-responsive col-md-12">
-                        <table className="table">
-                            <thead>
-                            <tr>
-                                <th>Variation</th>
-                                <th># Users</th>
-                                {
-                                    pageData.experiment.events.map((e,i)=>{
-                                        return <th key={i}>{e.name}</th>
-                                    })
-                                }
-                            </tr>
-                            </thead>
-                            <tbody>
-                                {
-                                    this.state.values.length===0 && <tr>
-                                            <td colSpan={5} style={{textAlign:'center'}}>
-                                                You have no data
-                                            </td>
-                                        </tr>
-                                }
-                                {
-                                    this.state.values.filter(v=>v===base).map((v,i) => <tr key={i}>
-                                            <td style={{verticalAlign: 'middle'}}>{v.variation}</td>
-                                            <td style={{verticalAlign: 'middle'}}>{pageData.assigns[v.variation]}</td>
-                                            {
-                                                pageData.experiment.events.map((event,i) => <td key={i}>
-                                                        -
-                                                        <br/><span>{v[event.name]}, {this.getPercentage(v,event)}%</span>
-                                                    </td>
-                                                )
-                                            }
-                                        </tr>
-                                    )
-                                }
-                                {
-                                    this.state.values.filter(v=>v!==base).map((v,i) => <tr key={i}>
-                                            <td style={{verticalAlign: 'middle'}}>{v.variation}</td>
-                                            <td style={{verticalAlign: 'middle'}}>{pageData.assigns[v.variation]}</td>
-                                            {
-                                                pageData.experiment.events.map((event,i) => <td key={i}>
-                                                        {this.getDiffPercentage(v,event)}
-                                                        <br/><span>{v[event.name]}, {this.getPercentage(v,event)}%</span>
-                                                    </td>
-                                                )
-                                            }
-                                        </tr>
-                                    )
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                        <div className="table-responsive col-md-12">
+                            <table className="table">
+                                <thead>
+                                <tr>
+                                    <th>Variation</th>
+                                    <th># Users</th>
+                                    {
+                                        pageData.experiment.events.map((e,i)=>{
+                                            return <th key={i}>{e.name}</th>
+                                        })
+                                    }
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                        this.state.values.length===0 && <tr>
+                                                <td colSpan={5} style={{textAlign:'center'}}>
+                                                    You have no data
+                                                </td>
+                                            </tr>
+                                    }
+                                    {
+                                        this.state.values.filter(v=>v===base).map((v,i) => <tr key={i}>
+                                                <td style={{verticalAlign: 'middle'}}>{v.variation}</td>
+                                                <td style={{verticalAlign: 'middle'}}>{pageData.assigns[v.variation]}</td>
+                                                {
+                                                    pageData.experiment.events.map((event,i) => <td key={i}>
+                                                            -
+                                                            <br/><span>{v[event.name]}, {this.getPercentage(v,event)}%</span>
+                                                        </td>
+                                                    )
+                                                }
+                                            </tr>
+                                        )
+                                    }
+                                    {
+                                        this.state.values.filter(v=>v!==base).map((v,i) => <tr key={i}>
+                                                <td style={{verticalAlign: 'middle'}}>{v.variation}</td>
+                                                <td style={{verticalAlign: 'middle'}}>{pageData.assigns[v.variation]}</td>
+                                                {
+                                                    pageData.experiment.events.map((event,i) => <td key={i}>
+                                                            {this.getDiffPercentage(v,event)}
+                                                            <br/><span>{v[event.name]}, {this.getPercentage(v,event)}%</span>
+                                                        </td>
+                                                    )
+                                                }
+                                            </tr>
+                                        )
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -57,6 +57,7 @@ exports.up = function(knex, Promise) {
       }).createTable('track', function(table) {
         table.bigIncrements('id').primary();
         table.string('unique_id');
+        table.bigInteger('experiment_id').unsigned().index().references('id').inTable('experiment').onDelete('CASCADE');
         table.bigInteger('event_id').unsigned().index().references('id').inTable('event').onDelete('CASCADE');
         table.bigInteger('variation_id').unsigned().index().references('id').inTable('variation').onDelete('CASCADE');
         table.integer('amount').defaultTo(1);
@@ -65,6 +66,7 @@ exports.up = function(knex, Promise) {
       }).createTable('assign', function(table) {
         table.bigIncrements('id').primary();
         table.string('unique_id');
+        table.bigInteger('experiment_id').unsigned().index().references('id').inTable('experiment').onDelete('CASCADE');
         table.bigInteger('variation_id').unsigned().index().references('id').inTable('variation').onDelete('CASCADE');
         table.timestamps(false,true);
       });

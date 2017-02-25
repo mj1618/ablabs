@@ -95,6 +95,73 @@ app.get('/', authMiddleware, (req, res) => {
     res.redirect('/experiments');
 });
 
+const chooseVariation = (variations) => {
+    let rand = Math.random();
+    return variations.find(v=>{
+        let x = v.cohort / 100.0;
+        if(rand < x){
+            return true;
+        } else {
+            rand -= x;
+            return false;
+        }
+    });
+}
+
+const slugify = (n) => {
+    return n.toLowerCase()
+        .replace(/[^a-z0-9-]/gi, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
+}
+
+const compareSlug = (n1,n2) => {
+    console.log(slugify(n1) +' '+ slugify(n2));
+    return slugify(n1) == slugify(n2);
+};
+
+app.get('/api/experiment/:name/assign', (req, res) => {
+    const token = req.query.token;
+    const name = req.params.name;
+    const uniqueId = req.query.user;
+    let project;
+    let experiment;
+
+    if(token==null){
+        res.json({result:'fail', error: 'no token'});
+    } else {
+        Project.query().where('token',token).eager('experiments.variations').then(ps=>{ 
+            if(ps.length===0){
+                throw 'invalid token';
+            } else if(!ps[0].experiments.find(e=>compareSlug(e.name, name))){
+                throw 'invalid experiment';
+            } else if(!uniqueId){
+                throw 'no user';
+            } else {
+                project = ps[0];
+                experiment = project.experiments.find(e=>compareSlug(e.name, name));
+                if(experiment!=null){
+                    return Assign.query().where('experiment_id',experiment.id).where('unique_id',uniqueId);
+                } else {
+                    throw 'Experiment not found';
+                }
+            }
+        }).then(as=>{
+            if(as.length===0){
+                const v = chooseVariation(experiment.variations);
+                return Assign.create(experiment, v, uniqueId);
+            } else {
+                return as[0];
+            }
+        }).then(a=>{
+            res.json({result:'success', experiment: experiment.name, variation: a.variation_id!=null ? experiment.variations.find(v=>v.id===a.variation_id).name : 'none'});
+        }).catch(e=>{
+            res.json({result:'fail', error: e});
+            console.error(e);
+        });
+    }
+});
+
 app.get('/login', (req, res) => {
     if(autoLogin){
         User.query().where('email','matthew.stephen.james@gmail.com').then(users=>{

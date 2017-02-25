@@ -42,6 +42,59 @@ promises.push(
     })
 )
 
+const slugify = (n) => {
+    return n.toLowerCase()
+        .replace(/[^a-z0-9-]/gi, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
+}
+
+const compareSlug = (n1,n2) => {
+    return slugify(n1) == slugify(n2);
+};
+
+console.log(slugify('Facebook Redirect'));
+
+
+const chooseVariation = (variations) => {
+    let rand = Math.random();
+    return variations.find(v=>{
+        let x = v.cohort / 100.0;
+        if(rand < x){
+            return true;
+        } else {
+            rand -= x;
+            return false;
+        }
+    });
+}
+
+let res = [0,0,0,0];
+for(var i = 0; i < 10000; i++){
+    let v = chooseVariation([
+        {
+            cohort: 33,
+            id: 0
+        },
+        {
+            cohort: 33,
+            id: 1
+        },
+        {
+            cohort: 33,
+            id: 2
+        }
+    ]);
+    if(!v){
+        res[res.length-1] += 1;
+    } else {
+        res[v.id] += 1;
+    }
+    
+}
+
+console.log(res.map(r=>100.0 * r / 10000));
+
 
 promises.push(
     Assign.query().findById(1).eager('variation').then(assign=>{
