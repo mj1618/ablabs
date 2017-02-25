@@ -163,13 +163,17 @@ class Analysis extends React.Component {
         }
     }
     getPercentage(v,event){
-        const r = Number(100.0 * v[event.name] / baseline.value[event.name] - 100).toFixed(1);
+        return Number( 100.0 * v[event.name] / pageData.assigns[v.variation] ).toFixed(1);
+    }
+
+    getDiffPercentage(v,event){
+        const r = Number( 100.0 * (this.getPercentage(v,event)-this.getPercentage(baseline.value, event)) / this.getPercentage(baseline.value, event)).toFixed(1);
         if(r>0){
             return <span className="text-success">+{r}%</span>;
         } else if(r<0){
             return <span className="text-danger">{r}%</span>;
         } else {
-            return <span className="">{r}%</span>;
+            return <span className="">+{r}%</span>;
         }
     }
     componentDidMount(){
@@ -190,6 +194,7 @@ class Analysis extends React.Component {
                             <thead>
                             <tr>
                                 <th>Variation</th>
+                                <th># Users</th>
                                 {
                                     pageData.experiment.events.map((e,i)=>{
                                         return <th key={i}>{e.name}</th>
@@ -208,10 +213,11 @@ class Analysis extends React.Component {
                                 {
                                     this.state.values.filter(v=>v===base).map((v,i) => <tr key={i}>
                                             <td style={{verticalAlign: 'middle'}}>{v.variation}</td>
+                                            <td style={{verticalAlign: 'middle'}}>{pageData.assigns[v.variation]}</td>
                                             {
                                                 pageData.experiment.events.map((event,i) => <td key={i}>
-                                                        {this.getPercentage(v,event)}
-                                                        <br/><span>{v[event.name]}</span>
+                                                        -
+                                                        <br/><span>{v[event.name]}, {this.getPercentage(v,event)}%</span>
                                                     </td>
                                                 )
                                             }
@@ -221,10 +227,11 @@ class Analysis extends React.Component {
                                 {
                                     this.state.values.filter(v=>v!==base).map((v,i) => <tr key={i}>
                                             <td style={{verticalAlign: 'middle'}}>{v.variation}</td>
+                                            <td style={{verticalAlign: 'middle'}}>{pageData.assigns[v.variation]}</td>
                                             {
                                                 pageData.experiment.events.map((event,i) => <td key={i}>
-                                                        {this.getPercentage(v,event)}
-                                                        <br/><span>{v[event.name]}</span>
+                                                        {this.getDiffPercentage(v,event)}
+                                                        <br/><span>{v[event.name]}, {this.getPercentage(v,event)}%</span>
                                                     </td>
                                                 )
                                             }

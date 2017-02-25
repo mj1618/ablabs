@@ -34,7 +34,7 @@ exports.seed = function(knex, Promise) {
     }).then(()=>{
       let ps = [];
       let users = [];
-      for(var i = 0; i<100; i++){
+      for(var i = 0; i<200; i++){
           let user = {unique_id: ''+i, variation_id: getRandomInt(1,4)};
           users.push(user);
           ps.push(knex('assign').insert({unique_id: user.unique_id, variation_id: user.variation_id }));

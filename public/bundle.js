@@ -1285,8 +1285,12 @@ var Create = function (_React$Component) {
                 cohort: 0
             });
 
-            variations.forEach(function (v) {
+            variations.forEach(function (v, i) {
+                // if(i===variations.length-1){
+                //     v.cohort = 100 - (variations.length-1) * Math.floor( 100 / variations.length );
+                // } else {
                 v.cohort = Math.floor(100 / variations.length);
+                // }
             });
 
             this.setState({
@@ -2394,7 +2398,12 @@ var Analysis = function (_React$Component5) {
     _createClass(Analysis, [{
         key: 'getPercentage',
         value: function getPercentage(v, event) {
-            var r = Number(100.0 * v[event.name] / baseline.value[event.name] - 100).toFixed(1);
+            return Number(100.0 * v[event.name] / pageData.assigns[v.variation]).toFixed(1);
+        }
+    }, {
+        key: 'getDiffPercentage',
+        value: function getDiffPercentage(v, event) {
+            var r = Number(100.0 * (this.getPercentage(v, event) - this.getPercentage(baseline.value, event)) / this.getPercentage(baseline.value, event)).toFixed(1);
             if (r > 0) {
                 return _react2.default.createElement(
                     'span',
@@ -2414,6 +2423,7 @@ var Analysis = function (_React$Component5) {
                 return _react2.default.createElement(
                     'span',
                     { className: '' },
+                    '+',
                     r,
                     '%'
                 );
@@ -2470,6 +2480,11 @@ var Analysis = function (_React$Component5) {
                                                 null,
                                                 'Variation'
                                             ),
+                                            _react2.default.createElement(
+                                                'th',
+                                                null,
+                                                '# Users'
+                                            ),
                                             pageData.experiment.events.map(function (e, i) {
                                                 return _react2.default.createElement(
                                                     'th',
@@ -2502,16 +2517,24 @@ var Analysis = function (_React$Component5) {
                                                     { style: { verticalAlign: 'middle' } },
                                                     v.variation
                                                 ),
+                                                _react2.default.createElement(
+                                                    'td',
+                                                    { style: { verticalAlign: 'middle' } },
+                                                    pageData.assigns[v.variation]
+                                                ),
                                                 pageData.experiment.events.map(function (event, i) {
                                                     return _react2.default.createElement(
                                                         'td',
                                                         { key: i },
-                                                        _this12.getPercentage(v, event),
+                                                        '-',
                                                         _react2.default.createElement('br', null),
                                                         _react2.default.createElement(
                                                             'span',
                                                             null,
-                                                            v[event.name]
+                                                            v[event.name],
+                                                            ', ',
+                                                            _this12.getPercentage(v, event),
+                                                            '%'
                                                         )
                                                     );
                                                 })
@@ -2528,16 +2551,24 @@ var Analysis = function (_React$Component5) {
                                                     { style: { verticalAlign: 'middle' } },
                                                     v.variation
                                                 ),
+                                                _react2.default.createElement(
+                                                    'td',
+                                                    { style: { verticalAlign: 'middle' } },
+                                                    pageData.assigns[v.variation]
+                                                ),
                                                 pageData.experiment.events.map(function (event, i) {
                                                     return _react2.default.createElement(
                                                         'td',
                                                         { key: i },
-                                                        _this12.getPercentage(v, event),
+                                                        _this12.getDiffPercentage(v, event),
                                                         _react2.default.createElement('br', null),
                                                         _react2.default.createElement(
                                                             'span',
                                                             null,
-                                                            v[event.name]
+                                                            v[event.name],
+                                                            ', ',
+                                                            _this12.getPercentage(v, event),
+                                                            '%'
                                                         )
                                                     );
                                                 })

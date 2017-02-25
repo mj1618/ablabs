@@ -138,21 +138,34 @@ app.get('/experiments/:experimentId/view', authMiddleware, (req, res) => {
     .then(exp=>{
         experiment = exp;
         return Promise.join(
+            Assign.query()
+                .select('variation_id')
+                .whereIn('variation_id',experiment.variations.map(v=>v.id))
+                .groupBy('variation_id')
+                .countDistinct('unique_id')
+                .then(res=>{
+                    let as = {};
+                    exp.variations.forEach(v=>{
+                        as[v.name] = res.find(r=>r.variation_id===v.id)['count(distinct `unique_id`)'];
+                    });
+                    return as;
+                }),
             Track.query()
                 .select('event_id','variation_id')
                 .whereIn('event_id',experiment.events.map(e=>e.id))
                 .whereIn('variation_id',experiment.variations.map(v=>v.id))
                 .groupBy('event_id')
                 .groupBy('variation_id')
-                .count()
+                .countDistinct('unique_id')
                 .then(ns=>{
                     return exp.variations.map(v=>{
                         let res = {
-                            variation: v.name
+                            variation: v.name,
+                            variation_id: v.id
                         };
                         ns.filter(n => n.variation_id===v.id).forEach(n=>{
                             let eventName = experiment.events.find(e=>e.id===n.event_id).name;
-                            res[eventName] = n['count(*)'];
+                            res[eventName] = n['count(distinct `unique_id`)'];
                         });
                         return res;
                     });
@@ -165,7 +178,7 @@ app.get('/experiments/:experimentId/view', authMiddleware, (req, res) => {
                 .groupBy('event_id')
                 .groupBy('variation_id')
                 .orderBy('created_at')
-                .count()
+                .countDistinct('unique_id')
                 .then(lvs=>{
                     const results = {};
                     exp.events.forEach(e=>{
@@ -179,18 +192,19 @@ app.get('/experiments/:experimentId/view', authMiddleware, (req, res) => {
                                     data[df(v.created_at,'yyyy-mm-dd')][va.name] = 0;
                                 })
                             }
-                            data[df(v.created_at,'yyyy-mm-dd')][experiment.variations.find(va=>va.id===v.variation_id).name] += v['count(*)'];
+                            data[df(v.created_at,'yyyy-mm-dd')][experiment.variations.find(va=>va.id===v.variation_id).name] += v['count(distinct `unique_id`)'];
                         })
                         results[e.name] = Object.values(data);
                     });
                     return results;
                 }),
-            (ns,lvs) => {
+            (as,ns,lvs) => {
                 return createPageData(req, {
                     routeId: 'view-experiment',
                     title: experiment.name,
                     experiment,
                     values: ns,
+                    assigns: as,
                     lineChartValues: lvs
                 });
             })

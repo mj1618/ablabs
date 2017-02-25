@@ -50,8 +50,12 @@ export default class Create extends React.Component {
             cohort: 0
         });
 
-        variations.forEach(v=>{
-            v.cohort = Math.floor( 100 / variations.length )
+        variations.forEach((v,i)=>{
+            // if(i===variations.length-1){
+            //     v.cohort = 100 - (variations.length-1) * Math.floor( 100 / variations.length );
+            // } else {
+                v.cohort = Math.floor( 100 / variations.length );
+            // }
         });
 
         this.setState({
