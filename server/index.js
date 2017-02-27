@@ -135,10 +135,10 @@ const apiMiddleware = (req,res,next)=>{
     }
 }
 
-// http://localhost:3000/api/event/logged-in/track?token=164896c8b1a5eafc84dc02230951974a&user=100009&experiments=facebook-redirect
-app.get('/api/event/:slug/track', apiMiddleware, (req, res) => {
+// http://localhost:3000/api/track?event=logged-in&user=100009&experiments=facebook-redirect&token=164896c8b1a5eafc84dc02230951974a
+app.get('/api/track', apiMiddleware, (req, res) => {
     const token = req.query.token;
-    const slug = req.params.slug;
+    const slug = req.query.event;
     const uniqueId = req.query.user;
     const amount = req.query.amount ? req.query.amount : 1;
     const experimentSlugs = req.query.experiments ? req.query.experiments.split(',') : [];
@@ -183,10 +183,10 @@ app.get('/api/event/:slug/track', apiMiddleware, (req, res) => {
         });
     }
 });
-
-app.get('/api/experiment/:name/assign', apiMiddleware, (req, res) => {
+// localhost:3000/api/assign?experiment=facebook-redirect&user=100009&token=164896c8b1a5eafc84dc02230951974a
+app.get('/api/assign', apiMiddleware, (req, res) => {
     const token = req.query.token;
-    const slug = req.params.slug;
+    const slug = req.query.experiment;
     const uniqueId = req.query.user;
     let project;
     let experiment;
@@ -486,16 +486,23 @@ app.get('/experiments/create', authMiddleware, (req, res) => {
     })
 });
 
-
 app.get('/developer', authMiddleware, (req, res) => {
-    createPageData(req,{
-        routeId: 'developer',
-        title:'Developer Guide'
-    }).then((pageData)=>{
-        res.render('dashboard',{
-            pageData
-        });
-    })
+    Promise.join(
+        Event.query().where('project_id',req.session.project),
+        Experiment.query().where('project_id',req.session.project).eager('variations'),
+        (events,experiments) => {
+            createPageData(req,{
+                routeId: 'developer',
+                title:'Developer Guide',
+                events,
+                experiments
+            }).then((pageData)=>{
+                res.render('dashboard',{
+                    pageData
+                });
+            })
+        }
+    );
 });
 
 app.get('/experiments/:experimentId/edit', authMiddleware, (req, res) => {

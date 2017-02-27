@@ -140,6 +140,7 @@ exports.default = Dashboard;
 ;
 
 },{"./layout/Developer.jsx":3,"./layout/Menu.jsx":4,"./layout/Title.jsx":5,"./layout/TopBar.jsx":6,"./layout/auth/Login.jsx":7,"./layout/auth/LoginEmail.jsx":8,"./layout/events/Table.jsx":10,"./layout/experiments/Create.jsx":11,"./layout/experiments/Table.jsx":12,"./layout/experiments/View.jsx":13,"./layout/projects/Create.jsx":14,"./layout/projects/Settings.jsx":15,"react":193}],2:[function(require,module,exports){
+(function (global){
 'use strict';
 
 var _react = require('react');
@@ -154,8 +155,18 @@ var _Dashboard2 = _interopRequireDefault(_Dashboard);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+global.slugify = function (n) {
+    return n.toLowerCase().replace(/[^a-z0-9-]/gi, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+};
+
+global.compareSlug = function (n1, n2) {
+    console.log(slugify(n1) + ' ' + slugify(n2));
+    return slugify(n1) == slugify(n2);
+};
+
 (0, _reactDom.render)(_react2.default.createElement(_Dashboard2.default, null), document.querySelector('#app'));
 
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./Dashboard.jsx":1,"react":193,"react-dom":50}],3:[function(require,module,exports){
 'use strict';
 
@@ -180,47 +191,107 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Developer = function (_React$Component) {
     _inherits(Developer, _React$Component);
 
-    function Developer() {
+    function Developer(props) {
         _classCallCheck(this, Developer);
 
-        return _possibleConstructorReturn(this, (Developer.__proto__ || Object.getPrototypeOf(Developer)).apply(this, arguments));
+        var _this = _possibleConstructorReturn(this, (Developer.__proto__ || Object.getPrototypeOf(Developer)).call(this, props));
+
+        _this.state = {
+            user: '1234',
+            experiment: pageData.experiments[0] ? slugify(pageData.experiments[0].name) : 'your-experiment',
+            experiments: [pageData.experiments[0] ? slugify(pageData.experiments[0].name) : 'your-experiment'],
+            event: pageData.events[0] ? slugify(pageData.events[0].name) : 'your-experiment'
+        };
+        return _this;
     }
 
+    // componentDidMount(){
+    //     $(document).ready(function() {
+    //         hljs.initHighlightingOnLoad();
+    //         $('pre code').each(function(i, block) {
+    //             hljs.highlightBlock(block);
+    //         });
+    //     });
+    // }
+
     _createClass(Developer, [{
-        key: 'componentDidMount',
-        value: function componentDidMount() {
-            $(document).ready(function () {
-                hljs.initHighlightingOnLoad();
-                $('pre code').each(function (i, block) {
-                    hljs.highlightBlock(block);
-                });
-            });
-        }
-    }, {
         key: 'render',
         value: function render() {
+            var experiment = this.state.experiment;
+            var token = pageData.token;
+            var user = this.state.user;
+            var event = this.state.event;
+            var experiments = this.state.experiments.join(',');
+
             return _react2.default.createElement(
                 'div',
-                { className: 'row' },
+                null,
                 _react2.default.createElement(
                     'div',
-                    { className: 'col-md-12' },
+                    { className: 'row' },
                     _react2.default.createElement(
                         'div',
-                        { className: 'white-box' },
+                        { className: 'col-md-12' },
                         _react2.default.createElement(
-                            'h3',
-                            { className: 'box-title m-b-0' },
-                            'Developer Guide '
-                        ),
-                        _react2.default.createElement('p', { className: 'text-muted m-b-20' }),
-                        _react2.default.createElement(
-                            'pre',
-                            null,
+                            'div',
+                            { className: 'white-box' },
                             _react2.default.createElement(
-                                'code',
-                                { className: 'hljs' },
-                                'curl -X "https://ablabs.io/api/expeirments?token=' + pageData.token + '"'
+                                'h3',
+                                { className: 'box-title m-b-0' },
+                                'Developer Guide '
+                            ),
+                            _react2.default.createElement('p', { className: 'text-muted m-b-20' })
+                        )
+                    )
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'row' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'col-md-12' },
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'white-box' },
+                            _react2.default.createElement(
+                                'h3',
+                                { className: 'box-title m-b-0' },
+                                'Assign API'
+                            ),
+                            _react2.default.createElement(
+                                'pre',
+                                null,
+                                _react2.default.createElement(
+                                    'code',
+                                    { className: 'language-markup' },
+                                    'curl -X POST /api/assign?experiment=' + experiment + '&user=' + user + '&token=' + token
+                                )
+                            )
+                        )
+                    )
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'row' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'col-md-12' },
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'white-box' },
+                            _react2.default.createElement(
+                                'h3',
+                                { className: 'box-title m-b-0' },
+                                'Track API'
+                            ),
+                            _react2.default.createElement(
+                                'pre',
+                                null,
+                                _react2.default.createElement(
+                                    'code',
+                                    { className: 'language-markup' },
+                                    'curl -X POST /api/track?event=' + event + '&user=' + user + '&experiments=' + experiments + '&token=' + token
+                                )
                             )
                         )
                     )
@@ -1240,15 +1311,6 @@ var TextError = function TextError(props) {
             props.error
         )
     );
-};
-
-var slugify = function slugify(n) {
-    return n.toLowerCase().replace(/[^a-z0-9-]/gi, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
-};
-
-var compareSlug = function compareSlug(n1, n2) {
-    console.log(slugify(n1) + ' ' + slugify(n2));
-    return slugify(n1) == slugify(n2);
 };
 
 var Create = function (_React$Component) {

@@ -10,19 +10,6 @@ const TextError = (props)=><div className="row">
                             </div>
                         </div>;
 
-
-const slugify = (n) => {
-    return n.toLowerCase()
-        .replace(/[^a-z0-9-]/gi, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '');
-}
-
-const compareSlug = (n1,n2) => {
-    console.log(slugify(n1) +' '+ slugify(n2));
-    return slugify(n1) == slugify(n2);
-};
-
 export default class Create extends React.Component {
 
     constructor(props){
