@@ -79,6 +79,8 @@ var getPage = function getPage() {
             return _react2.default.createElement(_Table4.default, null);
         case 'create-experiment':
             return _react2.default.createElement(_Create4.default, null);
+        case 'edit-experiment':
+            return _react2.default.createElement(_Create4.default, null);
         case 'view-experiment':
             return _react2.default.createElement(_View2.default, null);
         case 'create-project':
@@ -1240,6 +1242,15 @@ var TextError = function TextError(props) {
     );
 };
 
+var slugify = function slugify(n) {
+    return n.toLowerCase().replace(/[^a-z0-9-]/gi, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+};
+
+var compareSlug = function compareSlug(n1, n2) {
+    console.log(slugify(n1) + ' ' + slugify(n2));
+    return slugify(n1) == slugify(n2);
+};
+
 var Create = function (_React$Component) {
     _inherits(Create, _React$Component);
 
@@ -1249,12 +1260,11 @@ var Create = function (_React$Component) {
         var _this = _possibleConstructorReturn(this, (Create.__proto__ || Object.getPrototypeOf(Create)).call(this, props));
 
         _this.state = {
-            name: pageData.experimentName || "",
-            description: pageData.experimentDescription || "",
+            name: pageData.experiment.name || "",
+            description: pageData.experiment.description || "",
             showEventsDropdown: false,
-            cohort: pageData.cohort || 90,
             filteredEvents: [],
-            variations: pageData.variations || [{
+            variations: pageData.experiment.variations || [{
                 name: "Variation 1",
                 description: "",
                 cohort: 50
@@ -1264,7 +1274,11 @@ var Create = function (_React$Component) {
                 cohort: 50
             }],
             events: pageData.events,
-            selectedEvents: pageData.selectedEvents || [],
+            selectedEvents: pageData.events.filter(function (e) {
+                return pageData.experiment.events.some(function (e2) {
+                    return e2.id === e.id;
+                });
+            }) || [],
             errorsTriggered: false
         };
         return _this;
@@ -1407,7 +1421,7 @@ var Create = function (_React$Component) {
                 errors.variations = 'Please enter a name and a cohort percentage for all your variations';
             } else if (this.state.variations.some(function (v) {
                 return _this4.state.variations.some(function (v2) {
-                    return v !== v2 && v2.name === v.name;
+                    return v !== v2 && compareSlug(v2.name, v.name);
                 });
             })) {
                 errors.variations = 'Each variation must have a unique name';
@@ -1432,7 +1446,7 @@ var Create = function (_React$Component) {
             var errors = this.checkErrors();
             this.setState({ errorsTriggered: true });
             if (Object.keys(errors).length === 0) {
-                fetch('/experiments/create', {
+                fetch(window.location.pathname, {
                     method: 'POST',
                     credentials: 'same-origin',
                     headers: {
@@ -1477,7 +1491,7 @@ var Create = function (_React$Component) {
                         _react2.default.createElement(
                             'h3',
                             { className: 'box-title m-b-0' },
-                            'Create a New Experiment '
+                            pageData.routeId === 'create-experiment' ? 'Create a New Experiment' : 'Edit Experiment: ' + pageData.experiment.name
                         ),
                         _react2.default.createElement(
                             'p',
@@ -1487,7 +1501,7 @@ var Create = function (_React$Component) {
                         _react2.default.createElement(
                             'div',
                             { className: 'form-horizontal' },
-                            _react2.default.createElement(
+                            pageData.routeId === 'create-experiment' && _react2.default.createElement(
                                 'div',
                                 { className: 'form-group' },
                                 _react2.default.createElement(

@@ -134,6 +134,7 @@ const apiMiddleware = (req,res,next)=>{
         });
     }
 }
+
 // http://localhost:3000/api/event/logged-in/track?token=164896c8b1a5eafc84dc02230951974a&user=100009&experiments=facebook-redirect
 app.get('/api/event/:slug/track', apiMiddleware, (req, res) => {
     const token = req.query.token;
@@ -150,18 +151,18 @@ app.get('/api/event/:slug/track', apiMiddleware, (req, res) => {
        Project.query().where('token',token).eager('[experiments.variations]').then(ps=>{
            project = ps[0];
            return Event.query().where('project_id',project.id);
-       }).then(es=>{
+       }).then(es => {
            event = es.find(e=>compareSlug(e.name, slug));
            if(event==null){
                throw 'invalid event';
            }
            let exps = project.experiments.filter(e=>experimentSlugs.some(s=>compareSlug(s,e.name)));
-           if(exps.length === 0){
+           if(exps.length === 0) {
                throw 'no experiments given';
            }
 
            return Promise.all(
-               exps.map(exp=>{
+               exps.map(exp => {
                    Assign.query().where('unique_id',uniqueId).where('experiment_id',exp.id).then(as=>{
                         if(as.length===0){
                             const v = chooseVariation(exp.variations);
@@ -169,8 +170,7 @@ app.get('/api/event/:slug/track', apiMiddleware, (req, res) => {
                         } else {
                             return as[0];
                         }
-                   }).then(a=>{
-                       console.log([project.id, exp.id, a.variation_id, event.id, uniqueId, amount])
+                   }).then(a => {
                        return Track.create(project.id, exp.id, a.variation_id, event.id, uniqueId, amount);
                    })
                })
@@ -385,13 +385,19 @@ app.post('/projects/create', loginMiddleware, (req, res) => {
 });
 
 app.post('/events/create', authMiddleware, (req, res) => {
-    Event.query().insert({name:req.body.name, project_id: req.session.project}).then(event=>{
-        res.json({result:'success', event:{
-            id: event.id,
-            name: event.name,
-            nTracks: 0,
-            nExperiments: 0
-        }});
+    Event.query().where('project_id',req.session.project).then(es=>{
+        if(es.some(e=>compareSlug(e.name,req.body.name))){
+            res.json({result:'fail',error:'An event with that name already exists'});
+        } else {
+            Event.query().insert({name:req.body.name, project_id: req.session.project}).then(event=>{
+                res.json({result:'success', event:{
+                    id: event.id,
+                    name: event.name,
+                    nTracks: 0,
+                    nExperiments: 0
+                }});
+            });
+        }
     });
 });
 

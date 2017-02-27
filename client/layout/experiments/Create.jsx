@@ -10,17 +10,29 @@ const TextError = (props)=><div className="row">
                             </div>
                         </div>;
 
+
+const slugify = (n) => {
+    return n.toLowerCase()
+        .replace(/[^a-z0-9-]/gi, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
+}
+
+const compareSlug = (n1,n2) => {
+    console.log(slugify(n1) +' '+ slugify(n2));
+    return slugify(n1) == slugify(n2);
+};
+
 export default class Create extends React.Component {
 
     constructor(props){
         super(props);
         this.state = {
-            name: pageData.experimentName || "",
-            description: pageData.experimentDescription || "",
+            name: pageData.experiment.name || "",
+            description: pageData.experiment.description || "",
             showEventsDropdown: false,
-            cohort: pageData.cohort || 90,
             filteredEvents:[],
-            variations: pageData.variations || [
+            variations: pageData.experiment.variations || [
                 {
                     name: "Variation 1",
                     description: "",
@@ -33,7 +45,7 @@ export default class Create extends React.Component {
                 }
             ],
             events: pageData.events,
-            selectedEvents: pageData.selectedEvents ||  [],
+            selectedEvents: pageData.events.filter(e=>pageData.experiment.events.some(e2=>e2.id===e.id)) ||  [],
             errorsTriggered: false
         };
     }
@@ -146,7 +158,7 @@ export default class Create extends React.Component {
             errors.variations='You must have at least two variations: A and B';
         } else if (this.state.variations.some(v=>v.name.length===0 || v.cohort<=0 || v.cohort>100)){
             errors.variations='Please enter a name and a cohort percentage for all your variations';
-        } else if (this.state.variations.some(v => this.state.variations.some(v2=>v!==v2 && v2.name===v.name) )){
+        } else if (this.state.variations.some(v => this.state.variations.some(v2=>v!==v2 && compareSlug(v2.name,v.name)) )){
             errors.variations='Each variation must have a unique name';
         } else if(this.state.variations.reduce((a,v)=>a+v.cohort,0) > 100){
             errors.variations='Variations must add up to less than or equal to 100';
@@ -164,7 +176,7 @@ export default class Create extends React.Component {
         const errors = this.checkErrors();
         this.setState({errorsTriggered:true});
         if(Object.keys(errors).length===0){
-            fetch('/experiments/create', {
+            fetch(window.location.pathname, {
                 method: 'POST',
                 credentials: 'same-origin',
                 headers: {
@@ -196,28 +208,34 @@ export default class Create extends React.Component {
         return <div className="row">
             <div className="col-lg-8 col-lg-push-2">
                 <div className="white-box">
-                    <h3 className="box-title m-b-0">Create a New Experiment </h3>
+                    <h3 className="box-title m-b-0">
+                        { pageData.routeId==='create-experiment' ?
+                            'Create a New Experiment' :
+                            'Edit Experiment: '+pageData.experiment.name
+                         } 
+                    </h3>
                     <p className="text-muted m-b-30 font-13">An experiment is the basis for an AB test. You define what your variations are and what percentage of users to target.</p>
                     <div className="form-horizontal">
-                        <div className="form-group">
-                            <label className="col-md-12">Experiment Name</label>
-                            <div className="col-md-12">
-                                <input 
-                                    onChange={e=>this.setState({name:e.target.value})}
-                                    value={this.state.name} 
-                                    type="text" 
-                                    name="name" 
-                                    className="form-control" />
-                                {
-                                    this.state.errorsTriggered && 
-                                    errors.name && 
-                                    <TextError error={errors.name} />
-                                }
+                        {
+                            pageData.routeId==='create-experiment' && 
+                            <div className="form-group">
+                                <label className="col-md-12">Experiment Name</label>
+                                <div className="col-md-12">
+                                    <input 
+                                        onChange={e=>this.setState({name:e.target.value})}
+                                        value={this.state.name}
+                                        type="text"
+                                        name="name"
+                                        className="form-control" />
+                                    {
+                                        this.state.errorsTriggered && 
+                                        errors.name && 
+                                        <TextError error={errors.name} />
+                                    }
+                                </div>
                             </div>
-
-                            
-                        </div>
-
+                        }
+                        
                         <div className="form-group">
                             <label className="col-md-12">Description</label>
                             <div className="col-md-12">
@@ -227,7 +245,6 @@ export default class Create extends React.Component {
                                     className="form-control" 
                                     rows="5"></textarea>
                             </div>
-
                             {
                                 
                                 this.state.errorsTriggered && 
@@ -333,7 +350,6 @@ export default class Create extends React.Component {
                                 <button type="button" data-toggle="modal" data-target="#createEventModal" className="btn btn-success btn-outline waves-effect pull-right m-b-10">New Event</button>
                                 <CreateEventModal success={e=>this.eventCreated(e)} fail={()=>this.eventCreationFailed()} />
                             </div>
-
                             {
                                 this.state.events.length>0 &&
                                     <div className="row">

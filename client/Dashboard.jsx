@@ -24,6 +24,8 @@ const getPage = ()=>{
             return <EventsTable/>;
         case 'create-experiment':
             return <ExperimentsCreate/>;
+        case 'edit-experiment':
+            return <ExperimentsCreate/>;
         case 'view-experiment':
             return <ExperimentsView/>;
         case 'create-project':
