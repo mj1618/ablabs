@@ -120,46 +120,107 @@ const compareSlug = (n1,n2) => {
     return slugify(n1) == slugify(n2);
 };
 
-app.get('/api/experiment/:name/assign', (req, res) => {
+const apiMiddleware = (req,res,next)=>{
     const token = req.query.token;
-    const name = req.params.name;
-    const uniqueId = req.query.user;
-    let project;
-    let experiment;
-
     if(token==null){
         res.json({result:'fail', error: 'no token'});
     } else {
-        Project.query().where('token',token).eager('experiments.variations').then(ps=>{ 
+        Project.query().where('token',token).then(ps=>{ 
             if(ps.length===0){
-                throw 'invalid token';
-            } else if(!ps[0].experiments.find(e=>compareSlug(e.name, name))){
-                throw 'invalid experiment';
-            } else if(!uniqueId){
-                throw 'no user';
+                res.json({result:'fail', error: 'invalid token'});
             } else {
-                project = ps[0];
-                experiment = project.experiments.find(e=>compareSlug(e.name, name));
-                if(experiment!=null){
-                    return Assign.query().where('experiment_id',experiment.id).where('unique_id',uniqueId);
-                } else {
-                    throw 'Experiment not found';
-                }
+                next();
             }
-        }).then(as=>{
-            if(as.length===0){
-                const v = chooseVariation(experiment.variations);
-                return Assign.create(experiment, v, uniqueId);
-            } else {
-                return as[0];
-            }
-        }).then(a=>{
-            res.json({result:'success', experiment: experiment.name, variation: a.variation_id!=null ? experiment.variations.find(v=>v.id===a.variation_id).name : 'none'});
-        }).catch(e=>{
+        });
+    }
+}
+// http://localhost:3000/api/event/logged-in/track?token=164896c8b1a5eafc84dc02230951974a&user=100009&experiments=facebook-redirect
+app.get('/api/event/:slug/track', apiMiddleware, (req, res) => {
+    const token = req.query.token;
+    const slug = req.params.slug;
+    const uniqueId = req.query.user;
+    const amount = req.query.amount ? req.query.amount : 1;
+    const experimentSlugs = req.query.experiments ? req.query.experiments.split(',') : [];
+    let project;
+    let event;
+
+    if(uniqueId==null){
+        res.json({result:'fail', error: 'no user'});
+    } else {
+       Project.query().where('token',token).eager('[experiments.variations]').then(ps=>{
+           project = ps[0];
+           return Event.query().where('project_id',project.id);
+       }).then(es=>{
+           event = es.find(e=>compareSlug(e.name, slug));
+           if(event==null){
+               throw 'invalid event';
+           }
+           let exps = project.experiments.filter(e=>experimentSlugs.some(s=>compareSlug(s,e.name)));
+           if(exps.length === 0){
+               throw 'no experiments given';
+           }
+
+           return Promise.all(
+               exps.map(exp=>{
+                   Assign.query().where('unique_id',uniqueId).where('experiment_id',exp.id).then(as=>{
+                        if(as.length===0){
+                            const v = chooseVariation(exp.variations);
+                            return Assign.create(exp, v, uniqueId);
+                        } else {
+                            return as[0];
+                        }
+                   }).then(a=>{
+                       console.log([project.id, exp.id, a.variation_id, event.id, uniqueId, amount])
+                       return Track.create(project.id, exp.id, a.variation_id, event.id, uniqueId, amount);
+                   })
+               })
+           );
+       }).then(()=>{
+           res.json({result:'success'});
+       }).catch(e=>{
             res.json({result:'fail', error: e});
             console.error(e);
         });
     }
+});
+
+app.get('/api/experiment/:name/assign', apiMiddleware, (req, res) => {
+    const token = req.query.token;
+    const slug = req.params.slug;
+    const uniqueId = req.query.user;
+    let project;
+    let experiment;
+
+    Project.query().where('token',token).eager('experiments.variations').then(ps=>{ 
+        if(ps.length===0){
+            throw 'invalid token';
+        } else if(!ps[0].experiments.find(e=>compareSlug(e.name, slug))){
+            throw 'invalid experiment';
+        } else if(!uniqueId){
+            throw 'no user';
+        } else {
+            project = ps[0];
+            experiment = project.experiments.find(e=>compareSlug(e.name, slug));
+            if(experiment!=null){
+                return Assign.query().where('experiment_id',experiment.id).where('unique_id',uniqueId);
+            } else {
+                throw 'Experiment not found';
+            }
+        }
+    }).then(as=>{
+        if(as.length===0){
+            const v = chooseVariation(experiment.variations);
+            return Assign.create(experiment, v, uniqueId);
+        } else {
+            return as[0];
+        }
+    }).then(a=>{
+        res.json({result:'success', experiment: experiment.name, variation: a.variation_id!=null ? experiment.variations.find(v=>v.id===a.variation_id).name : 'none'});
+    }).catch(e=>{
+        res.json({result:'fail', error: e});
+        console.error(e);
+    });
+
 });
 
 app.get('/login', (req, res) => {

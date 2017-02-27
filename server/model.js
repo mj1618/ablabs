@@ -169,6 +169,16 @@ class Track extends Model {
     $beforeUpdate(){
         this.updated_at = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
     }
+    static create(projectId, expId, variationId, eventId, uniqueId, amount){
+        return Track.query().insert({
+            project_id: projectId, 
+            experiment_id: expId, 
+            variation_id: variationId, 
+            event_id: eventId, 
+            unique_id: uniqueId, 
+            amount
+        });
+    }
     static get relationMappings() {
         return {
             variation: {
