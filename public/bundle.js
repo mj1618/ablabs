@@ -1313,6 +1313,18 @@ var TextError = function TextError(props) {
     );
 };
 
+var isEdit = pageData.routeId === 'edit-experiment';
+var isCreate = pageData.routeId === 'create-experiment';
+var balanceCohorts = function balanceCohorts(variations) {
+    variations.forEach(function (v, i) {
+        if (i === variations.length - 1) {
+            v.cohort = 100 - (variations.length - 1) * Math.floor(100 / variations.length);
+        } else {
+            v.cohort = Math.floor(100 / variations.length);
+        }
+    });
+};
+
 var Create = function (_React$Component) {
     _inherits(Create, _React$Component);
 
@@ -1361,13 +1373,7 @@ var Create = function (_React$Component) {
                 cohort: 0
             });
 
-            variations.forEach(function (v, i) {
-                // if(i===variations.length-1){
-                //     v.cohort = 100 - (variations.length-1) * Math.floor( 100 / variations.length );
-                // } else {
-                v.cohort = Math.floor(100 / variations.length);
-                // }
-            });
+            balanceCohorts(variations);
 
             this.setState({
                 variations: variations
@@ -1378,10 +1384,12 @@ var Create = function (_React$Component) {
         key: 'removeVariation',
         value: function removeVariation(i) {
             if (this.state.variations.length > 2) {
+                var variations = this.state.variations.filter(function (v, j) {
+                    return j !== i;
+                });
+                balanceCohorts(variations);
                 this.setState({
-                    variations: this.state.variations.filter(function (v, j) {
-                        return j !== i;
-                    })
+                    variations: variations
                 });
             }
             return false;
@@ -1505,9 +1513,16 @@ var Create = function (_React$Component) {
     }, {
         key: 'submit',
         value: function submit() {
+            var _this5 = this;
+
             var errors = this.checkErrors();
-            this.setState({ errorsTriggered: true });
+            this.setState({
+                errorsTriggered: true
+            });
             if (Object.keys(errors).length === 0) {
+                this.setState({
+                    submitting: true
+                });
                 fetch(window.location.pathname, {
                     method: 'POST',
                     credentials: 'same-origin',
@@ -1518,7 +1533,33 @@ var Create = function (_React$Component) {
                 }).then(function (res) {
                     return res.json();
                 }).then(function (json) {
-                    console.log(json);
+                    if (json.result === 'success') {
+                        window.location = '/experiments';
+                    } else {
+                        _this5.setState({
+                            submitting: false
+                        });
+                        $.toast({
+                            heading: 'Experiment failed to create',
+                            text: '',
+                            position: 'top-right',
+                            icon: 'warning',
+                            hideAfter: 2000,
+                            stack: 6
+                        });
+                    }
+                }).catch(function (e) {
+                    _this5.setState({
+                        submitting: false
+                    });
+                    $.toast({
+                        heading: 'Unable to connect to the server',
+                        text: '',
+                        position: 'top-right',
+                        icon: 'warning',
+                        hideAfter: 2000,
+                        stack: 6
+                    });
                 });
             }
         }
@@ -1538,7 +1579,7 @@ var Create = function (_React$Component) {
     }, {
         key: 'render',
         value: function render() {
-            var _this5 = this;
+            var _this6 = this;
 
             var errors = this.checkErrors();
             return _react2.default.createElement(
@@ -1553,7 +1594,7 @@ var Create = function (_React$Component) {
                         _react2.default.createElement(
                             'h3',
                             { className: 'box-title m-b-0' },
-                            pageData.routeId === 'create-experiment' ? 'Create a New Experiment' : 'Edit Experiment: ' + pageData.experiment.name
+                            isCreate ? 'Create a New Experiment' : pageData.experiment.name
                         ),
                         _react2.default.createElement(
                             'p',
@@ -1563,7 +1604,7 @@ var Create = function (_React$Component) {
                         _react2.default.createElement(
                             'div',
                             { className: 'form-horizontal' },
-                            pageData.routeId === 'create-experiment' && _react2.default.createElement(
+                            isCreate && _react2.default.createElement(
                                 'div',
                                 { className: 'form-group' },
                                 _react2.default.createElement(
@@ -1576,7 +1617,7 @@ var Create = function (_React$Component) {
                                     { className: 'col-md-12' },
                                     _react2.default.createElement('input', {
                                         onChange: function onChange(e) {
-                                            return _this5.setState({ name: e.target.value });
+                                            return _this6.setState({ name: e.target.value });
                                         },
                                         value: this.state.name,
                                         type: 'text',
@@ -1598,7 +1639,7 @@ var Create = function (_React$Component) {
                                     { className: 'col-md-12' },
                                     _react2.default.createElement('textarea', {
                                         onChange: function onChange(e) {
-                                            return _this5.setState({ description: e.target.value });
+                                            return _this6.setState({ description: e.target.value });
                                         },
                                         value: this.state.description,
                                         className: 'form-control',
@@ -1675,7 +1716,7 @@ var Create = function (_React$Component) {
                                                             _react2.default.createElement('input', (_React$createElement = {
                                                                 value: v.name,
                                                                 onChange: function onChange(e) {
-                                                                    return _this5.setVariationData(i, {
+                                                                    return _this6.setVariationData(i, {
                                                                         'name': e.target.value
                                                                     });
                                                                 },
@@ -1688,7 +1729,7 @@ var Create = function (_React$Component) {
                                                             _react2.default.createElement('input', (_React$createElement2 = {
                                                                 value: v.name,
                                                                 onChange: function onChange(e) {
-                                                                    return _this5.setVariationData(i, {
+                                                                    return _this6.setVariationData(i, {
                                                                         'description': e.target.value
                                                                     });
                                                                 },
@@ -1701,7 +1742,7 @@ var Create = function (_React$Component) {
                                                             _react2.default.createElement('input', (_React$createElement3 = {
                                                                 value: v.name,
                                                                 onChange: function onChange(e) {
-                                                                    return _this5.setVariationData(i, {
+                                                                    return _this6.setVariationData(i, {
                                                                         cohort: Math.max(1, Math.min(100, e.target.value))
                                                                     });
                                                                 },
@@ -1714,7 +1755,7 @@ var Create = function (_React$Component) {
                                                             _react2.default.createElement(
                                                                 'button',
                                                                 { type: 'button', onClick: function onClick() {
-                                                                        return _this5.removeVariation(i);
+                                                                        return _this6.removeVariation(i);
                                                                     }, className: 'btn btn-danger btn-circle waves-effect' },
                                                                 _react2.default.createElement('i', { className: 'fa fa-minus' }),
                                                                 ' '
@@ -1727,7 +1768,7 @@ var Create = function (_React$Component) {
                                         _react2.default.createElement(
                                             'button',
                                             { type: 'button', className: 'btn btn-success waves-effect btn-outline pull-right', onClick: function onClick() {
-                                                    return _this5.addVariation();
+                                                    return _this6.addVariation();
                                                 } },
                                             'Add Variation'
                                         )
@@ -1753,9 +1794,9 @@ var Create = function (_React$Component) {
                                         'New Event'
                                     ),
                                     _react2.default.createElement(_CreateModal2.default, { success: function success(e) {
-                                            return _this5.eventCreated(e);
+                                            return _this6.eventCreated(e);
                                         }, fail: function fail() {
-                                            return _this5.eventCreationFailed();
+                                            return _this6.eventCreationFailed();
                                         } })
                                 ),
                                 this.state.events.length > 0 && _react2.default.createElement(
@@ -1764,14 +1805,14 @@ var Create = function (_React$Component) {
                                     _react2.default.createElement(
                                         'div',
                                         { className: 'col-md-6', onFocus: function onFocus() {
-                                                return _this5.onSearchEventsFocus();
+                                                return _this6.onSearchEventsFocus();
                                             }, onBlur: function onBlur(e) {
-                                                return _this5.onSearchEventsBlur(e);
+                                                return _this6.onSearchEventsBlur(e);
                                             } },
                                         _react2.default.createElement('input', { onChange: function onChange() {
-                                                return _this5.filterEvents();
+                                                return _this6.filterEvents();
                                             }, ref: function ref(input) {
-                                                _this5.searchEvents = input;
+                                                _this6.searchEvents = input;
                                             }, type: 'text', className: 'form-control', placeholder: 'Search events...' }),
                                         _react2.default.createElement(
                                             'div',
@@ -1782,12 +1823,12 @@ var Create = function (_React$Component) {
                                                     {
                                                         key: i,
                                                         onClick: function onClick() {
-                                                            return _this5.toggleEvent(e);
+                                                            return _this6.toggleEvent(e);
                                                         },
                                                         href: 'javascript:void(0)',
-                                                        className: "list-group-item " + (_this5.state.selectedEvents.indexOf(e) >= 0 ? 'active' : '') },
+                                                        className: "list-group-item " + (_this6.state.selectedEvents.indexOf(e) >= 0 ? 'active' : '') },
                                                     e.name,
-                                                    _react2.default.createElement('i', { className: "pull-right fa " + (_this5.state.selectedEvents.indexOf(e) >= 0 ? 'fa-minus' : 'fa-plus') })
+                                                    _react2.default.createElement('i', { className: "pull-right fa " + (_this6.state.selectedEvents.indexOf(e) >= 0 ? 'fa-minus' : 'fa-plus') })
                                                 );
                                             })
                                         )
@@ -1806,7 +1847,7 @@ var Create = function (_React$Component) {
                                             return _react2.default.createElement(
                                                 'button',
                                                 { style: { margin: '5px' }, key: i, type: 'button', onClick: function onClick() {
-                                                        return _this5.toggleEvent(e);
+                                                        return _this6.toggleEvent(e);
                                                     }, className: 'btn btn-outline btn-rounded btn-info waves-effect' },
                                                 e.name,
                                                 ' ',
@@ -1838,8 +1879,8 @@ var Create = function (_React$Component) {
                                     _react2.default.createElement(
                                         'button',
                                         { onClick: function onClick() {
-                                                return _this5.submit();
-                                            }, type: 'button', className: 'btn fcbtn btn-1e btn-lg btn-block btn-outline btn-primary waves-effect' },
+                                                return _this6.submit();
+                                            }, type: 'button', disabled: this.state.submitting, className: 'btn fcbtn btn-1e btn-lg btn-block btn-outline btn-primary waves-effect' },
                                         'Save Experiment'
                                     )
                                 )

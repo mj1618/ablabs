@@ -556,6 +556,60 @@ app.post('/experiments/create', authMiddleware, (req,res) => {
     });
 });
 
+
+app.post('/experiments/:experimentId/edit', authMiddleware, (req,res) => {
+    let experiment;
+    console.log(JSON.stringify(req.body));
+
+    Experiment.query().where('project_id',req.session.project).where('id',req.params.experimentId).then(es=>{
+        if(es.length===0){
+            throw 'invalid experiment id';
+        }
+        experiment = es[0];
+        return experiment;
+    }).then(e=>{
+        return Experiment.query().update({
+            description: req.body.description
+        }).where('id',experiment.id);
+    }).then(()=>{
+        console.log('whereNotIn');
+        console.log(req.body.variations.filter(v=>v.id!=null).map(v=>v.id));
+        Variation.query().whereNotIn('id',req.body.variations.filter(v=>v.id!=null).map(v=>v.id)).where('experiment_id',experiment.id).then(vs=>{
+            return Variation.query().update({
+                experiment_id:null
+            }).whereIn('id',vs.map(v=>v.id));
+        });
+    }).then(()=>{
+        return Promise.all(req.body.variations.filter(v=>v.id!=null).map(variation => {
+            return Variation.query().update({
+                name: variation.name,
+                description: variation.description,
+                cohort: variation.cohort
+            }).where('experiment_id',experiment.id).where('id',variation.id);
+        }));
+    }).then(()=>{
+        return Promise.all(req.body.variations.filter(v=>v.id==null).map(variation => {
+            return Variation.query().insert({
+                name: variation.name,
+                description: variation.description,
+                cohort: variation.cohort,
+                experiment_id: experiment.id
+            })
+        }));
+    }).then(()=>{
+        experiment.$relatedQuery('events').unrelate().then(()=>null);
+    }).then(()=>{
+        return Promise.all(req.body.selectedEvents.map(event=>{
+            return experiment.$relatedQuery('events').relate(event.id)
+        }));
+    }).then(()=>{
+        res.json({result:'success'});
+    }).catch(e=>{
+        console.error(e);
+        res.json({result:'error',error:e});
+    });
+});
+
 app.listen(3000, function () {
     console.log('Listening on port 3000!');
 });

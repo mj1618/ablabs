@@ -10,6 +10,17 @@ const TextError = (props)=><div className="row">
                             </div>
                         </div>;
 
+const isEdit = pageData.routeId==='edit-experiment';
+const isCreate = pageData.routeId==='create-experiment';
+const balanceCohorts = variations => {
+    variations.forEach((v,i)=>{
+        if(i===variations.length-1){
+            v.cohort = 100 - (variations.length-1) * Math.floor( 100 / variations.length );
+        } else {
+            v.cohort = Math.floor( 100 / variations.length );
+        }
+    });
+}
 export default class Create extends React.Component {
 
     constructor(props){
@@ -49,13 +60,7 @@ export default class Create extends React.Component {
             cohort: 0
         });
 
-        variations.forEach((v,i)=>{
-            // if(i===variations.length-1){
-            //     v.cohort = 100 - (variations.length-1) * Math.floor( 100 / variations.length );
-            // } else {
-                v.cohort = Math.floor( 100 / variations.length );
-            // }
-        });
+        balanceCohorts(variations);
 
         this.setState({
             variations
@@ -65,8 +70,10 @@ export default class Create extends React.Component {
 
     removeVariation(i){
         if(this.state.variations.length>2){
+            const variations = this.state.variations.filter((v,j)=>j!==i);
+            balanceCohorts(variations);
             this.setState({
-                variations: this.state.variations.filter((v,j)=>j!==i)
+                variations
             });
         }
         return false;
@@ -161,8 +168,13 @@ export default class Create extends React.Component {
 
     submit(){
         const errors = this.checkErrors();
-        this.setState({errorsTriggered:true});
+        this.setState({
+            errorsTriggered:true
+        });
         if(Object.keys(errors).length===0){
+            this.setState({
+                submitting: true
+            })
             fetch(window.location.pathname, {
                 method: 'POST',
                 credentials: 'same-origin',
@@ -173,7 +185,33 @@ export default class Create extends React.Component {
             })
             .then(res=>res.json())
             .then(json=>{
-                console.log(json);
+                if(json.result==='success'){
+                    window.location = '/experiments'
+                } else {
+                    this.setState({
+                        submitting:false
+                    })
+                    $.toast({
+                        heading: 'Experiment failed to create',
+                        text: '',
+                        position: 'top-right',
+                        icon: 'warning',
+                        hideAfter: 2000,
+                        stack: 6
+                    });
+                }
+            }).catch(e=>{
+                this.setState({
+                    submitting:false
+                })
+                $.toast({
+                    heading: 'Unable to connect to the server',
+                    text: '',
+                    position: 'top-right',
+                    icon: 'warning',
+                    hideAfter: 2000,
+                    stack: 6
+                });
             })
         }
     }
@@ -196,15 +234,15 @@ export default class Create extends React.Component {
             <div className="col-lg-8 col-lg-push-2">
                 <div className="white-box">
                     <h3 className="box-title m-b-0">
-                        { pageData.routeId==='create-experiment' ?
+                        { isCreate ?
                             'Create a New Experiment' :
-                            'Edit Experiment: '+pageData.experiment.name
+                            pageData.experiment.name
                          } 
                     </h3>
                     <p className="text-muted m-b-30 font-13">An experiment is the basis for an AB test. You define what your variations are and what percentage of users to target.</p>
                     <div className="form-horizontal">
                         {
-                            pageData.routeId==='create-experiment' && 
+                            isCreate && 
                             <div className="form-group">
                                 <label className="col-md-12">Experiment Name</label>
                                 <div className="col-md-12">
@@ -390,7 +428,7 @@ export default class Create extends React.Component {
                         <div className="row">
 
                             <div className="col-md-4 col-md-push-4">
-                                <button onClick={()=>this.submit()} type="button" className="btn fcbtn btn-1e btn-lg btn-block btn-outline btn-primary waves-effect">Save Experiment</button>
+                                <button onClick={()=>this.submit()} type="button" disabled={this.state.submitting} className="btn fcbtn btn-1e btn-lg btn-block btn-outline btn-primary waves-effect">Save Experiment</button>
                             </div>
                         </div>
 
