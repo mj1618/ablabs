@@ -198,9 +198,10 @@ var Developer = function (_React$Component) {
 
         _this.state = {
             user: '1234',
-            experiment: pageData.experiments[0] ? slugify(pageData.experiments[0].name) : 'your-experiment',
-            experiments: [pageData.experiments[0] ? slugify(pageData.experiments[0].name) : 'your-experiment'],
-            event: pageData.events[0] ? slugify(pageData.events[0].name) : 'your-experiment'
+            experiment: pageData.experiments[0] ? slugify(pageData.experiments[0].name) : 'popup-tutorial',
+            experiments: [pageData.experiments[0] ? slugify(pageData.experiments[0].name) : 'popup-tutorial'],
+            event: pageData.events[0] ? slugify(pageData.events[0].name) : 'registered',
+            variation: pageData.experiments[0] ? pageData.experiments[0].variations[0].name : 'show-tutorial'
         };
         return _this;
     }
@@ -222,6 +223,7 @@ var Developer = function (_React$Component) {
             var user = this.state.user;
             var event = this.state.event;
             var experiments = this.state.experiments.join(',');
+            var variation = this.state.variation;
 
             return _react2.default.createElement(
                 'div',
@@ -240,7 +242,74 @@ var Developer = function (_React$Component) {
                                 { className: 'box-title m-b-0' },
                                 'Developer Guide '
                             ),
-                            _react2.default.createElement('p', { className: 'text-muted m-b-20' })
+                            _react2.default.createElement('p', { className: 'text-muted m-b-20' }),
+                            'Let\'s say you have written a tutorial popup on your website that explains to users how the site works. You aren\'t sure if this tutorial will be too annoying and hinder your sites performance, or if people will appreciate the explanation and use the site better. So you decided to create the ',
+                            _react2.default.createElement(
+                                'mark',
+                                null,
+                                'Popup Tutorial'
+                            ),
+                            ' experiment. The experiment has 2 variations that users are randomly grouped into:',
+                            _react2.default.createElement(
+                                'ul',
+                                null,
+                                _react2.default.createElement(
+                                    'li',
+                                    null,
+                                    'No Tutorial - 50%'
+                                ),
+                                _react2.default.createElement(
+                                    'li',
+                                    null,
+                                    'Show Tutorial - 50%'
+                                )
+                            ),
+                            'And 2 Events that you track for the user:',
+                            _react2.default.createElement(
+                                'ul',
+                                null,
+                                _react2.default.createElement(
+                                    'li',
+                                    null,
+                                    'Registered'
+                                ),
+                                _react2.default.createElement(
+                                    'li',
+                                    null,
+                                    'Purchased'
+                                )
+                            ),
+                            'A typical user flow using this experiment would work as follows:',
+                            _react2.default.createElement(
+                                'ol',
+                                null,
+                                _react2.default.createElement(
+                                    'li',
+                                    null,
+                                    'User accesses the home page of your website'
+                                ),
+                                _react2.default.createElement(
+                                    'li',
+                                    null,
+                                    'The \'Assign API\' is used to assign the user to a variation'
+                                ),
+                                _react2.default.createElement(
+                                    'li',
+                                    null,
+                                    'If the user is in the \'No Tutorial\' variation your code will not show the tutorial. Conversley if they are in the \'Show Tutorial\' variation you will run your code that shows the tutorial'
+                                ),
+                                _react2.default.createElement(
+                                    'li',
+                                    null,
+                                    'If the user registers, you track the user against the \'Registered\' event'
+                                ),
+                                _react2.default.createElement(
+                                    'li',
+                                    null,
+                                    'If the user makes a purchase, you track the user against the \'Purchase\' event with the amount of the purchase'
+                                )
+                            ),
+                            'Simple! You now have your first experiment. Once you have had enough users enter the experiment you will be able to see the results by viewing the Experiment Report. It will be able to tell if the Tutorial Popup helped improve registrations and purchases on your site, and thereby determine if you should go live with the experiment.'
                         )
                     )
                 ),
@@ -258,6 +327,13 @@ var Developer = function (_React$Component) {
                                 { className: 'box-title m-b-0' },
                                 'Assign API'
                             ),
+                            'The Assign API is used to randomly assign a user to a variation based on the \'cohort %\' weightings. The experiment must be in \'slug\' form, i.e. all lower case and spaces replaced with dashes.',
+                            _react2.default.createElement('br', null),
+                            _react2.default.createElement(
+                                'strong',
+                                null,
+                                'Example Request'
+                            ),
                             _react2.default.createElement(
                                 'pre',
                                 null,
@@ -265,6 +341,20 @@ var Developer = function (_React$Component) {
                                     'code',
                                     { className: 'language-markup' },
                                     'curl -X POST /api/assign?experiment=' + experiment + '&user=' + user + '&token=' + token
+                                )
+                            ),
+                            _react2.default.createElement(
+                                'strong',
+                                null,
+                                'Example Response'
+                            ),
+                            _react2.default.createElement(
+                                'pre',
+                                null,
+                                _react2.default.createElement(
+                                    'code',
+                                    { className: 'language-json' },
+                                    '{\n\t"result": "success",\n\t"experiment": "' + experiment + '",\n\t"variation": "' + variation + '"\n}'
                                 )
                             )
                         )
@@ -284,6 +374,13 @@ var Developer = function (_React$Component) {
                                 { className: 'box-title m-b-0' },
                                 'Track API'
                             ),
+                            'The track API is used to track events against experiments. Note that the experiments must be comma separated if you are tracking more than one. The events and experiments must also be in \'slug\' form, i.e. all lower case and spaces replaced with dashes.',
+                            _react2.default.createElement('br', null),
+                            _react2.default.createElement(
+                                'strong',
+                                null,
+                                'Example Request'
+                            ),
                             _react2.default.createElement(
                                 'pre',
                                 null,
@@ -291,6 +388,20 @@ var Developer = function (_React$Component) {
                                     'code',
                                     { className: 'language-markup' },
                                     'curl -X POST /api/track?event=' + event + '&user=' + user + '&experiments=' + experiments + '&token=' + token
+                                )
+                            ),
+                            _react2.default.createElement(
+                                'strong',
+                                null,
+                                'Example Response'
+                            ),
+                            _react2.default.createElement(
+                                'pre',
+                                null,
+                                _react2.default.createElement(
+                                    'code',
+                                    { className: 'language-json' },
+                                    '{\n\t"result": "success"\n}'
                                 )
                             )
                         )
