@@ -1,7 +1,7 @@
 import express from 'express';
 import request from 'request';
 import fetch from 'node-fetch';
-import {User,Experiment,Project,Event,Variation,Assign,Track} from './model';
+import {User,Experiment,Project,Event,Variation,Assign,Track,UserProject,roles} from './model';
 import auth from './auth';
 import Promise from 'bluebird';
 import df from 'dateformat';
@@ -121,7 +121,8 @@ const compareSlug = (n1,n2) => {
 };
 
 const apiMiddleware = (req,res,next)=>{
-    const token = req.query.token;
+    console.log(req.body)
+    const token = req.query.token ? req.query.token : req.body.token;
     if(token==null){
         res.json({result:'fail', error: 'no token'});
     } else {
@@ -136,12 +137,24 @@ const apiMiddleware = (req,res,next)=>{
 }
 
 // http://localhost:3000/api/track?event=logged-in&user=100009&experiments=facebook-redirect&token=164896c8b1a5eafc84dc02230951974a
-app.get('/api/track', apiMiddleware, (req, res) => {
-    const token = req.query.token;
-    const slug = req.query.event;
-    const uniqueId = req.query.user;
-    const amount = req.query.amount ? req.query.amount : 1;
-    const experimentSlugs = req.query.experiments ? req.query.experiments.split(',') : [];
+/*
+curl -X POST \
+     -H "Content-Type: application/json" \
+     -d '{
+           "event": "logged-in",
+           "user": "1234",
+           "experiments": ["facebook-redirect"],
+           "token": "164896c8b1a5eafc84dc02230951974a"
+         }' \
+     http://localhost:3000/api/track
+*/
+app.post('/api/track', apiMiddleware, (req, res) => {
+    console.log(req.body);
+    const token = req.body.token;
+    const slug = req.body.event;
+    const uniqueId = req.body.user;
+    const amount = req.body.amount ? req.body.amount : 1;
+    const experimentSlugs = req.body.experiments ? req.body.experiments : [];
     let project;
     let event;
 
@@ -184,10 +197,21 @@ app.get('/api/track', apiMiddleware, (req, res) => {
     }
 });
 // localhost:3000/api/assign?experiment=facebook-redirect&user=100009&token=164896c8b1a5eafc84dc02230951974a
-app.get('/api/assign', apiMiddleware, (req, res) => {
-    const token = req.query.token;
-    const slug = req.query.experiment;
-    const uniqueId = req.query.user;
+/*
+curl -X POST \
+     -H "Content-Type: application/json" \
+     -d '{ 
+           "experiment": "facebook-redirect", 
+           "user": "1234", 
+           "token": "164896c8b1a5eafc84dc02230951974a" 
+         }' \
+     http://localhost:3000/api/assign
+*/
+app.post('/api/assign', apiMiddleware, (req, res) => {
+    console.log(req.body);
+    const token = req.body.token;
+    const slug = req.body.experiment;
+    const uniqueId = req.body.user;
     let project;
     let experiment;
 
@@ -363,11 +387,11 @@ app.get('/switch-project/:projectId', loginMiddleware, (req, res) => {
 });
 
 app.get('/settings', authMiddleware, (req, res) => {
-    Project.query().findById(1).eager('users').then(project=>{
+    UserProject.query().where('project_id',req.session.project).then(collaborators=>{
         return createPageData(req, {
             routeId: 'project-settings',
             title: 'Project Settings',
-            users: project.users
+            collaborators: collaborators
         });
     })
     .then(pageData=>{
@@ -378,9 +402,11 @@ app.get('/settings', authMiddleware, (req, res) => {
 });
 
 app.post('/projects/create', loginMiddleware, (req, res) => {
-    Project.create(req.body.name, req.session.user).then(project=>{
-        req.session.project = project.id;
-        res.redirect('/experiments');
+    User.query().findById(req.session.user).then(user=>{
+        Project.create(req.body.name, user.email).then(project=>{
+            req.session.project = project.id;
+            res.redirect('/experiments');
+        });    
     });
 });
 
@@ -398,6 +424,68 @@ app.post('/events/create', authMiddleware, (req, res) => {
                 }});
             });
         }
+    });
+});
+
+app.post('/collaborators/add', authMiddleware, (req, res) => {
+    const email = req.body.email;
+    const role = roles[req.body.role.toLowerCase()];
+
+    Project.query().findById(req.session.project).eager('users').then(project=>{
+        if(!role){
+            throw 'invalid role';
+        } else if(project.users.some(u=>u.email===req.body.email)){
+            throw 'user exists';
+        } else {
+            return project.$relatedQuery('users').relate({
+                email,
+                role
+            })
+        }
+    }).then(()=>{
+        res.json({result:'success', email, role});
+    }).catch(e=>{
+        console.error(e);
+        res.json({result:'fail', error: e});
+    });
+});
+
+
+app.post('/collaborators/edit', authMiddleware, (req, res) => {
+    const email = req.body.email;
+    const role = roles[req.body.role.toLowerCase()];
+
+    Project.query().findById(req.session.project).eager('users').then(project=>{
+        if(!role){
+            throw 'invalid role';
+        } else if(project.users.some(u=>u.email===req.body.email)){
+            throw 'user exists';
+        } else {
+            return project.$relatedQuery('users').unrelate({
+                email
+            })
+        }
+    }).then(()=>{
+        return project.$relatedQuery('users').relate({
+            email,
+            role
+        })
+    }).then(()=>{
+        res.json({result:'success', email, role});
+    }).catch(e=>{
+        res.json({result:'fail', error: e});
+    });
+});
+
+
+app.post('/collaborators/remove', authMiddleware, (req, res) => {
+    const email = req.body.email;
+    Project.query().findById(req.session.project).then(project=>{
+        return project.$relatedQuery('users').unrelate({
+            email
+        });
+    }).then(()=>{
+        res.json({result:'success'});
     });
 });
 

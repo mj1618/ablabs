@@ -19,9 +19,10 @@ exports.up = function(knex, Promise) {
 
       }).createTable('user_project', function(table) {
         table.bigIncrements('id').primary();
-        table.bigInteger('user_id').unsigned().index().references('id').inTable('user').onDelete('CASCADE');
+        table.string('email').index(); //.references('email').inTable('user').onDelete('CASCADE');
         table.bigInteger('project_id').unsigned().index().references('id').inTable('project').onDelete('CASCADE');
         table.string('role');
+        table.unique(['email','role']);
         table.timestamps(false,true);
 
       }).createTable('experiment', function(table) {

@@ -36,10 +36,10 @@ class User extends Model {
                 relation: Model.ManyToManyRelation,
                 modelClass: Project,
                 join: {
-                    from: 'user.id',
+                    from: 'user.email',
                     to: 'project.id',
                     through: {
-                        from: 'user_project.user_id',
+                        from: 'user_project.email',
                         to: 'user_project.project_id'
                     }
                 }
@@ -226,7 +226,15 @@ class Assign extends Model {
     }
 }
 
-
+class UserProject extends Model {
+    static get tableName() { return 'user_project'; }
+    $beforeInsert(){
+        this.created_at = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
+    }
+    $beforeUpdate(){
+        this.updated_at = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
+    }
+}
 class Project extends Model {
     static get tableName() { return 'project'; }
     $beforeInsert(){
@@ -235,9 +243,9 @@ class Project extends Model {
     $beforeUpdate(){
         this.updated_at = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
     }
-    static create(name, userId){
+    static create(name, email){
         return Project.query().insert({name, token:require('crypto').randomBytes(16).toString('hex')}).then(project=>{
-            return project.$relatedQuery('users').relate(userId);
+            return project.$relatedQuery('users').relate(email);
         });
     }
     static get relationMappings() {
@@ -247,10 +255,10 @@ class Project extends Model {
                 modelClass: User,
                 join: {
                     from: 'project.id',
-                    to: 'user.id',
+                    to: 'user.email',
                     through: {
                         from: 'user_project.project_id',
-                        to: 'user_project.user_id',
+                        to: 'user_project.email',
                         extra: ['role']
                     }
                 }
@@ -276,9 +284,9 @@ class Project extends Model {
 }
 
 const roles = {
-    OWNER: 'owner',
-    EDITOR: 'editor',
-    VIEWER: 'viewer'
+    owner: 'owner',
+    editor: 'editor',
+    viewer: 'viewer'
 }
 
 export {
@@ -289,5 +297,6 @@ export {
     Track,
     Project,
     Assign,
-    roles
+    roles,
+    UserProject
 }

@@ -76,7 +76,14 @@ export default class Developer extends React.Component {
                         The experiment must be in 'slug' form, i.e. all lower case and spaces replaced with dashes.
                         <br/>
                         <strong>Example Request</strong>
-                        <pre><code className="language-markup">{`curl -X POST /api/assign?experiment=${experiment}&user=${user}&token=${token}`}</code></pre>
+                        <pre><code className="language-json">{`curl -X "POST" \\
+     -H "Content-Type: application/json" \\
+     -d '{ 
+           "experiment": "${experiment}", 
+           "user": "${user}", 
+           "token": "${token}" 
+         }' \\
+     "https://ablabs.io/api/assign"`}</code></pre>
                         <strong>Example Response</strong>
                         <pre><code className="language-json">{`{
 	"result": "success",
@@ -95,7 +102,15 @@ export default class Developer extends React.Component {
                         The events and experiments must also be in 'slug' form, i.e. all lower case and spaces replaced with dashes.
                         <br/>
                         <strong>Example Request</strong>
-                        <pre><code className="language-markup">{`curl -X POST /api/track?event=${event}&user=${user}&experiments=${experiments}&token=${token}`}</code></pre>
+                        <pre><code className="language-json">{`curl -X "POST" \\
+     -H "Content-Type: application/json" \\
+     -d '{
+           "event": "${event}",
+           "user": "${user}",
+           "experiments": [${JSON.stringify(experiments)}],
+           "token": "${token}"
+         }' \\
+     "https://ablabs.io/api/track"`}</code></pre>
                         <strong>Example Response</strong>
                         <pre><code className="language-json">{`{
 	"result": "success"

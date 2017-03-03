@@ -86,7 +86,7 @@ export default class Menu extends React.Component {
 
         <li className="nav-small-cap m-t-10">--- Support</li>
         <li> 
-            <a href="/contact" className="waves-effect">
+            <a href="mailto:info@ablabs.io" className="waves-effect">
                 <i className="zmdi  zmdi zmdi-comment-text zmdi-hc-fw fa-fw" ></i> 
                 <span className="hide-menu"> 
                     Contact Us

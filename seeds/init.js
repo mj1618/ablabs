@@ -21,7 +21,7 @@ exports.seed = function(knex, Promise) {
       return Promise.all([
         knex('project').insert({id: 1, name: 'VGW', token: require('crypto').randomBytes(16).toString('hex')}),
         knex('user').insert({id: 1, first_name: 'Matt', email: 'matthew.stephen.james@gmail.com'}),
-        knex('user_project').insert({id: 1, user_id: 1, project_id: 1, role: 'owner'}),
+        knex('user_project').insert({id: 1, email: 'matthew.stephen.james@gmail.com', project_id: 1, role: 'owner'}),
         knex('experiment').insert({id: 1, name: 'Facebook Redirect', project_id: 1}),
         knex('variation').insert({id: 1, cohort:33, name: 'Standard', experiment_id: 1}),
         knex('variation').insert({id: 2, cohort:33, name: 'Redirect No-Popups', experiment_id: 1}),
