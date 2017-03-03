@@ -479,12 +479,8 @@ app.post('/collaborators/edit', authMiddleware, (req, res) => {
 
 
 app.post('/collaborators/remove', authMiddleware, (req, res) => {
-    const email = req.body.email;
-    Project.query().findById(req.session.project).then(project=>{
-        return project.$relatedQuery('users').unrelate({
-            email
-        });
-    }).then(()=>{
+    UserProject.query().where('project_id',req.session.project).where('email',req.body.email).delete()
+    .then(()=>{
         res.json({result:'success'});
     });
 });

@@ -3017,11 +3017,6 @@ var Collaborators = function (_React$Component) {
                                         null,
                                         _react2.default.createElement(
                                             'a',
-                                            { href: 'javascript:void(0)', 'data-toggle': 'tooltip', 'data-original-title': 'Edit' },
-                                            _react2.default.createElement('i', { className: 'fa fa-pencil text-inverse m-r-10' })
-                                        ),
-                                        _react2.default.createElement(
-                                            'a',
                                             { href: 'javascript:void(0)', onClick: function onClick() {
                                                     return _this3.remove(u.email);
                                                 }, 'data-toggle': 'tooltip', 'data-original-title': 'Remove' },

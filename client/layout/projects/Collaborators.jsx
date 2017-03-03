@@ -94,9 +94,9 @@ export default class Collaborators extends React.Component {
                                         {
                                             u.role!=='owner' &&
                                             <td>
-                                                <a href="javascript:void(0)" data-toggle="tooltip" data-original-title="Edit"> 
+                                                {/*<a href="javascript:void(0)" data-toggle="tooltip" data-original-title="Edit"> 
                                                     <i className="fa fa-pencil text-inverse m-r-10"></i> 
-                                                </a>
+                                                </a>*/}
                                                 <a href="javascript:void(0)" onClick={()=>this.remove(u.email)} data-toggle="tooltip" data-original-title="Remove">
                                                     <i className="fa fa-close text-warning"></i>
                                                 </a>
