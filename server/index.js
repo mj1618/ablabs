@@ -15,6 +15,12 @@ app.use(require('body-parser').json());
 app.use(require('express-session')({ secret: 'CBiHUkkdqaMTh80iUVzdSPver41P5fKgDMC07SlDUryG5aTk0MJY4UbQTm7wyagO', resave: false, saveUninitialized: true }));
 app.use(express.static('./public'));
 app.set('view engine', 'ejs');
+app.options("/api/*", function(req, res, next){
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With, Accept, Origin');
+    res.send(200);
+});
 
 auth(app, (req,res,profile)=>{
     User.query().where('email', profile.email).then(users=>{
@@ -121,7 +127,9 @@ const compareSlug = (n1,n2) => {
 };
 
 const apiMiddleware = (req,res,next)=>{
-    console.log(req.body)
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With, Accept, Origin');
     const token = req.query.token ? req.query.token : req.body.token;
     if(token==null){
         res.json({result:'fail', error: 'no token'});
@@ -136,7 +144,7 @@ const apiMiddleware = (req,res,next)=>{
     }
 }
 
-// http://localhost:3000/api/track?event=logged-in&user=100009&experiments=facebook-redirect&token=164896c8b1a5eafc84dc02230951974a
+// http://localhost:3000/api/v1/track?event=logged-in&user=100009&experiments=facebook-redirect&token=164896c8b1a5eafc84dc02230951974a
 /*
 curl -X POST \
      -H "Content-Type: application/json" \
@@ -146,9 +154,9 @@ curl -X POST \
            "experiments": ["facebook-redirect"],
            "token": "164896c8b1a5eafc84dc02230951974a"
          }' \
-     http://localhost:3000/api/track
+     http://localhost:3000/api/v1/track
 */
-app.post('/api/track', apiMiddleware, (req, res) => {
+app.post('/api/v1/track', apiMiddleware, (req, res) => {
     console.log(req.body);
     const token = req.body.token;
     const slug = req.body.event;
@@ -196,7 +204,7 @@ app.post('/api/track', apiMiddleware, (req, res) => {
         });
     }
 });
-// localhost:3000/api/assign?experiment=facebook-redirect&user=100009&token=164896c8b1a5eafc84dc02230951974a
+// localhost:3000/api/v1/assign?experiment=facebook-redirect&user=100009&token=164896c8b1a5eafc84dc02230951974a
 /*
 curl -X POST \
      -H "Content-Type: application/json" \
@@ -205,9 +213,9 @@ curl -X POST \
            "user": "1234", 
            "token": "164896c8b1a5eafc84dc02230951974a" 
          }' \
-     http://localhost:3000/api/assign
+     http://localhost:3000/api/v1/assign
 */
-app.post('/api/assign', apiMiddleware, (req, res) => {
+app.post('/api/v1/assign', apiMiddleware, (req, res) => {
     console.log(req.body);
     const token = req.body.token;
     const slug = req.body.experiment;

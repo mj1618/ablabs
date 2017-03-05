@@ -1,4 +1,5 @@
 import React from 'react';
+import {TabMenu, TabMenuItem, TabContent, TabPanel} from '../tabs/index';
 
 export default class Developer extends React.Component {
 
@@ -75,21 +76,61 @@ export default class Developer extends React.Component {
                         The Assign API is used to randomly assign a user to a variation based on the 'cohort %' weightings.
                         The experiment must be in 'slug' form, i.e. all lower case and spaces replaced with dashes.
                         <br/>
-                        <strong>Example Request</strong>
-                        <pre><code className="language-json">{`curl -X "POST" \\
+                        
+                        <TabMenu>
+                            <TabMenuItem id='assign-curl' name='cURL' icon='zmdi zmdi-code' first={true} />
+                            <TabMenuItem id='assign-js' name='JS' icon='zmdi zmdi-code' />
+                        </TabMenu>
+                        <TabContent>
+                            <TabPanel id='assign-curl' first={true}>
+                                <strong>Example Request</strong>
+                                <pre><code className="language-json">{`curl -X "POST" \\
      -H "Content-Type: application/json" \\
      -d '{ 
            "experiment": "${experiment}", 
            "user": "${user}", 
            "token": "${token}" 
          }' \\
-     "https://ablabs.io/api/assign"`}</code></pre>
+     "https://ablabs.io/api/v1/assign"`}</code></pre>
+
                         <strong>Example Response</strong>
                         <pre><code className="language-json">{`{
 	"result": "success",
 	"experiment": "${experiment}",
 	"variation": "${variation}"
 }`}</code></pre>
+                            </TabPanel>
+                            <TabPanel id='assign-js'>
+                                <strong>Example Request</strong>
+                                <pre><code className="language-javascript">{`var experiments=[];
+$.ajax({
+    type:'POST',
+    url: 'https://ablabs.io/api/v1/assign',
+    data: JSON.stringify({ 
+        experiment: '${experiment}', 
+        user: '${user}', 
+        token: '${token}'
+    }),
+    dataType: 'json',
+    contentType: 'application/json',
+    success: function(response){
+        if(response.result==='success'){
+            experiments.push('${experiment}');
+            console.log('Successfully assigned user in ${experiment} experiment');
+            console.log('User "${user}" is in variation: '+response.variation);
+            // here you can change your application behaviour based on the users Variation
+        }
+    }
+});`}</code></pre>
+
+                        <strong>Example Output</strong>
+                        <pre><code className="language-markup">{`Successfully assigned user in ${experiment} experiment
+User "${user}" is in variation: ${variation}`}</code></pre>
+                            </TabPanel>
+                        </TabContent>
+
+
+
                     </div>
                 </div>
             </div>
@@ -101,8 +142,15 @@ export default class Developer extends React.Component {
                         Note that the experiments must be comma separated if you are tracking more than one.
                         The events and experiments must also be in 'slug' form, i.e. all lower case and spaces replaced with dashes.
                         <br/>
-                        <strong>Example Request</strong>
-                        <pre><code className="language-json">{`curl -X "POST" \\
+                        
+                        <TabMenu>
+                            <TabMenuItem id='track-curl' name='cURL' icon='zmdi zmdi-code' first={true} />
+                            <TabMenuItem id='track-js' name='JS' icon='zmdi zmdi-code' />
+                        </TabMenu>
+                        <TabContent>
+                            <TabPanel id='track-curl' first={true}>
+                                <strong>Example Request</strong>
+                                <pre><code className="language-json">{`curl -X "POST" \\
      -H "Content-Type: application/json" \\
      -d '{
            "event": "${event}",
@@ -110,11 +158,38 @@ export default class Developer extends React.Component {
            "experiments": [${JSON.stringify(experiments)}],
            "token": "${token}"
          }' \\
-     "https://ablabs.io/api/track"`}</code></pre>
+     "https://ablabs.io/api/v1/track"`}</code></pre>
+
                         <strong>Example Response</strong>
                         <pre><code className="language-json">{`{
 	"result": "success"
 }`}</code></pre>
+                            </TabPanel>
+                            <TabPanel id='track-js'>
+                                <strong>Example Request</strong>
+                                <pre><code className="language-javascript">{`$.ajax({
+    type:'POST',
+    url: 'https://ablabs.io/api/v1/track',
+    data: JSON.stringify({ 
+        event: '${event}', 
+        user: '${user}', 
+        experiments: experiments, //experiments === [${JSON.stringify(experiments)}] from assign api call
+        token: '${token}'
+    }),
+    dataType: 'json',
+    contentType: 'application/json',
+    success: function(response){
+        if(response.result==='success'){
+            console.log('Successfully tracked ${event} event for user ${user}');
+        }
+    }
+});`}</code></pre>
+<strong>Example Output</strong>
+                        <pre><code className="language-markup">{`Successfully tracked ${event} event for user ${user}`}</code></pre>
+                            </TabPanel>
+                        </TabContent>
+
+
                     </div>
                 </div>
             </div>

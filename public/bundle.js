@@ -180,6 +180,8 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _index = require('../tabs/index');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -330,31 +332,77 @@ var Developer = function (_React$Component) {
                             'The Assign API is used to randomly assign a user to a variation based on the \'cohort %\' weightings. The experiment must be in \'slug\' form, i.e. all lower case and spaces replaced with dashes.',
                             _react2.default.createElement('br', null),
                             _react2.default.createElement(
-                                'strong',
+                                _index.TabMenu,
                                 null,
-                                'Example Request'
+                                _react2.default.createElement(_index.TabMenuItem, { id: 'assign-curl', name: 'cURL', icon: 'zmdi zmdi-code', first: true }),
+                                _react2.default.createElement(_index.TabMenuItem, { id: 'assign-js', name: 'JS', icon: 'zmdi zmdi-code' })
                             ),
                             _react2.default.createElement(
-                                'pre',
+                                _index.TabContent,
                                 null,
                                 _react2.default.createElement(
-                                    'code',
-                                    { className: 'language-json' },
-                                    'curl -X "POST" \\\n     -H "Content-Type: application/json" \\\n     -d \'{ \n           "experiment": "' + experiment + '", \n           "user": "' + user + '", \n           "token": "' + token + '" \n         }\' \\\n     "https://ablabs.io/api/assign"'
-                                )
-                            ),
-                            _react2.default.createElement(
-                                'strong',
-                                null,
-                                'Example Response'
-                            ),
-                            _react2.default.createElement(
-                                'pre',
-                                null,
+                                    _index.TabPanel,
+                                    { id: 'assign-curl', first: true },
+                                    _react2.default.createElement(
+                                        'strong',
+                                        null,
+                                        'Example Request'
+                                    ),
+                                    _react2.default.createElement(
+                                        'pre',
+                                        null,
+                                        _react2.default.createElement(
+                                            'code',
+                                            { className: 'language-json' },
+                                            'curl -X "POST" \\\n     -H "Content-Type: application/json" \\\n     -d \'{ \n           "experiment": "' + experiment + '", \n           "user": "' + user + '", \n           "token": "' + token + '" \n         }\' \\\n     "https://ablabs.io/api/v1/assign"'
+                                        )
+                                    ),
+                                    _react2.default.createElement(
+                                        'strong',
+                                        null,
+                                        'Example Response'
+                                    ),
+                                    _react2.default.createElement(
+                                        'pre',
+                                        null,
+                                        _react2.default.createElement(
+                                            'code',
+                                            { className: 'language-json' },
+                                            '{\n\t"result": "success",\n\t"experiment": "' + experiment + '",\n\t"variation": "' + variation + '"\n}'
+                                        )
+                                    )
+                                ),
                                 _react2.default.createElement(
-                                    'code',
-                                    { className: 'language-json' },
-                                    '{\n\t"result": "success",\n\t"experiment": "' + experiment + '",\n\t"variation": "' + variation + '"\n}'
+                                    _index.TabPanel,
+                                    { id: 'assign-js' },
+                                    _react2.default.createElement(
+                                        'strong',
+                                        null,
+                                        'Example Request'
+                                    ),
+                                    _react2.default.createElement(
+                                        'pre',
+                                        null,
+                                        _react2.default.createElement(
+                                            'code',
+                                            { className: 'language-javascript' },
+                                            'var experiments=[];\n$.ajax({\n    type:\'POST\',\n    url: \'https://ablabs.io/api/v1/assign\',\n    data: JSON.stringify({ \n        experiment: \'' + experiment + '\', \n        user: \'' + user + '\', \n        token: \'' + token + '\'\n    }),\n    dataType: \'json\',\n    contentType: \'application/json\',\n    success: function(response){\n        if(response.result===\'success\'){\n            experiments.push(\'' + experiment + '\');\n            console.log(\'Successfully assigned user in ' + experiment + ' experiment\');\n            console.log(\'User "' + user + '" is in variation: \'+response.variation);\n            // here you can change your application behaviour based on the users Variation\n        }\n    }\n});'
+                                        )
+                                    ),
+                                    _react2.default.createElement(
+                                        'strong',
+                                        null,
+                                        'Example Output'
+                                    ),
+                                    _react2.default.createElement(
+                                        'pre',
+                                        null,
+                                        _react2.default.createElement(
+                                            'code',
+                                            { className: 'language-markup' },
+                                            'Successfully assigned user in ' + experiment + ' experiment\nUser "' + user + '" is in variation: ' + variation
+                                        )
+                                    )
                                 )
                             )
                         )
@@ -377,31 +425,77 @@ var Developer = function (_React$Component) {
                             'The track API is used to track events against experiments. Note that the experiments must be comma separated if you are tracking more than one. The events and experiments must also be in \'slug\' form, i.e. all lower case and spaces replaced with dashes.',
                             _react2.default.createElement('br', null),
                             _react2.default.createElement(
-                                'strong',
+                                _index.TabMenu,
                                 null,
-                                'Example Request'
+                                _react2.default.createElement(_index.TabMenuItem, { id: 'track-curl', name: 'cURL', icon: 'zmdi zmdi-code', first: true }),
+                                _react2.default.createElement(_index.TabMenuItem, { id: 'track-js', name: 'JS', icon: 'zmdi zmdi-code' })
                             ),
                             _react2.default.createElement(
-                                'pre',
+                                _index.TabContent,
                                 null,
                                 _react2.default.createElement(
-                                    'code',
-                                    { className: 'language-json' },
-                                    'curl -X "POST" \\\n     -H "Content-Type: application/json" \\\n     -d \'{\n           "event": "' + event + '",\n           "user": "' + user + '",\n           "experiments": [' + JSON.stringify(experiments) + '],\n           "token": "' + token + '"\n         }\' \\\n     "https://ablabs.io/api/track"'
-                                )
-                            ),
-                            _react2.default.createElement(
-                                'strong',
-                                null,
-                                'Example Response'
-                            ),
-                            _react2.default.createElement(
-                                'pre',
-                                null,
+                                    _index.TabPanel,
+                                    { id: 'track-curl', first: true },
+                                    _react2.default.createElement(
+                                        'strong',
+                                        null,
+                                        'Example Request'
+                                    ),
+                                    _react2.default.createElement(
+                                        'pre',
+                                        null,
+                                        _react2.default.createElement(
+                                            'code',
+                                            { className: 'language-json' },
+                                            'curl -X "POST" \\\n     -H "Content-Type: application/json" \\\n     -d \'{\n           "event": "' + event + '",\n           "user": "' + user + '",\n           "experiments": [' + JSON.stringify(experiments) + '],\n           "token": "' + token + '"\n         }\' \\\n     "https://ablabs.io/api/v1/track"'
+                                        )
+                                    ),
+                                    _react2.default.createElement(
+                                        'strong',
+                                        null,
+                                        'Example Response'
+                                    ),
+                                    _react2.default.createElement(
+                                        'pre',
+                                        null,
+                                        _react2.default.createElement(
+                                            'code',
+                                            { className: 'language-json' },
+                                            '{\n\t"result": "success"\n}'
+                                        )
+                                    )
+                                ),
                                 _react2.default.createElement(
-                                    'code',
-                                    { className: 'language-json' },
-                                    '{\n\t"result": "success"\n}'
+                                    _index.TabPanel,
+                                    { id: 'track-js' },
+                                    _react2.default.createElement(
+                                        'strong',
+                                        null,
+                                        'Example Request'
+                                    ),
+                                    _react2.default.createElement(
+                                        'pre',
+                                        null,
+                                        _react2.default.createElement(
+                                            'code',
+                                            { className: 'language-javascript' },
+                                            '$.ajax({\n    type:\'POST\',\n    url: \'https://ablabs.io/api/v1/track\',\n    data: JSON.stringify({ \n        event: \'' + event + '\', \n        user: \'' + user + '\', \n        experiments: experiments, //experiments === [' + JSON.stringify(experiments) + '] from assign api call\n        token: \'' + token + '\'\n    }),\n    dataType: \'json\',\n    contentType: \'application/json\',\n    success: function(response){\n        if(response.result===\'success\'){\n            console.log(\'Successfully tracked ' + event + ' event for user ' + user + '\');\n        }\n    }\n});'
+                                        )
+                                    ),
+                                    _react2.default.createElement(
+                                        'strong',
+                                        null,
+                                        'Example Output'
+                                    ),
+                                    _react2.default.createElement(
+                                        'pre',
+                                        null,
+                                        _react2.default.createElement(
+                                            'code',
+                                            { className: 'language-markup' },
+                                            'Successfully tracked ' + event + ' event for user ' + user
+                                        )
+                                    )
                                 )
                             )
                         )
@@ -417,7 +511,7 @@ var Developer = function (_React$Component) {
 exports.default = Developer;
 ;
 
-},{"react":195}],4:[function(require,module,exports){
+},{"../tabs/index":22,"react":195}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3584,16 +3678,16 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var TabMenu = function (_React$Component) {
-    _inherits(TabMenu, _React$Component);
+var TabMenuItem = function (_React$Component) {
+    _inherits(TabMenuItem, _React$Component);
 
-    function TabMenu() {
-        _classCallCheck(this, TabMenu);
+    function TabMenuItem() {
+        _classCallCheck(this, TabMenuItem);
 
-        return _possibleConstructorReturn(this, (TabMenu.__proto__ || Object.getPrototypeOf(TabMenu)).apply(this, arguments));
+        return _possibleConstructorReturn(this, (TabMenuItem.__proto__ || Object.getPrototypeOf(TabMenuItem)).apply(this, arguments));
     }
 
-    _createClass(TabMenu, [{
+    _createClass(TabMenuItem, [{
         key: 'render',
         value: function render() {
             return _react2.default.createElement(
@@ -3605,7 +3699,7 @@ var TabMenu = function (_React$Component) {
                     _react2.default.createElement(
                         'span',
                         { className: 'visible-xs' },
-                        _react2.default.createElement('i', { className: 'zmdi zmdi-layers' })
+                        _react2.default.createElement('i', { className: this.props.icon })
                     ),
                     _react2.default.createElement(
                         'span',
@@ -3617,10 +3711,10 @@ var TabMenu = function (_React$Component) {
         }
     }]);
 
-    return TabMenu;
+    return TabMenuItem;
 }(_react2.default.Component);
 
-exports.default = TabMenu;
+exports.default = TabMenuItem;
 
 },{"react":195}],21:[function(require,module,exports){
 "use strict";
