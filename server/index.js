@@ -6,7 +6,7 @@ import auth from './auth';
 import Promise from 'bluebird';
 import df from 'dateformat';
 
-const autoLogin = true;
+const autoLogin = false;
 
 var app = express();
 app.use(require('morgan')('combined'));
@@ -75,7 +75,6 @@ const loginMiddleware = (req,res,next)=>{
     } else {
         next();
     }
-    
 }
 
 const authMiddleware = (req,res,next)=>{

@@ -7,7 +7,7 @@ var knex = require('knex')({
     connection: {
         host: '127.0.0.1',
         user: 'root',
-        password: 'root',
+        password: process.env.AB_DB_PASS,
         database: 'ablabs',
         charset: 'utf8'
     },
