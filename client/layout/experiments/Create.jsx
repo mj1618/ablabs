@@ -26,11 +26,11 @@ export default class Create extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            name: pageData.experiment.name || "",
-            description: pageData.experiment.description || "",
+            name: pageData.experiment ? pageData.experiment.name : "",
+            description: pageData.experiment ? pageData.experiment.description : "",
             showEventsDropdown: false,
             filteredEvents:[],
-            variations: pageData.experiment.variations || [
+            variations: pageData.experiment ? pageData.experiment.variations : [
                 {
                     name: "Variation 1",
                     description: "",
@@ -43,7 +43,7 @@ export default class Create extends React.Component {
                 }
             ],
             events: pageData.events,
-            selectedEvents: pageData.events.filter(e=>pageData.experiment.events.some(e2=>e2.id===e.id)) ||  [],
+            selectedEvents: pageData.experiment ? pageData.events.filter(e=>pageData.experiment.events.some(e2=>e2.id===e.id)) :  [],
             errorsTriggered: false
         };
     }

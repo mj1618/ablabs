@@ -1539,11 +1539,11 @@ var Create = function (_React$Component) {
         var _this = _possibleConstructorReturn(this, (Create.__proto__ || Object.getPrototypeOf(Create)).call(this, props));
 
         _this.state = {
-            name: pageData.experiment.name || "",
-            description: pageData.experiment.description || "",
+            name: pageData.experiment ? pageData.experiment.name : "",
+            description: pageData.experiment ? pageData.experiment.description : "",
             showEventsDropdown: false,
             filteredEvents: [],
-            variations: pageData.experiment.variations || [{
+            variations: pageData.experiment ? pageData.experiment.variations : [{
                 name: "Variation 1",
                 description: "",
                 cohort: 50
@@ -1553,11 +1553,11 @@ var Create = function (_React$Component) {
                 cohort: 50
             }],
             events: pageData.events,
-            selectedEvents: pageData.events.filter(function (e) {
+            selectedEvents: pageData.experiment ? pageData.events.filter(function (e) {
                 return pageData.experiment.events.some(function (e2) {
                     return e2.id === e.id;
                 });
-            }) || [],
+            }) : [],
             errorsTriggered: false
         };
         return _this;
