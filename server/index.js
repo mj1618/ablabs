@@ -96,9 +96,9 @@ const authMiddleware = (req,res,next)=>{
     }
 }
 
-app.get('/', authMiddleware, (req, res) => {
-    res.redirect('/experiments');
-});
+// app.get('/', authMiddleware, (req, res) => {
+//     res.redirect('/experiments');
+// });
 
 const chooseVariation = (variations) => {
     let rand = Math.random();
