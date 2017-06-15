@@ -25,7 +25,7 @@ app.options("/api/*", function(req, res, next){
 auth(app, (req,res,profile)=>{
     User.query().where('email', profile.email).then(users=>{
         if(users.length===0){
-            console.log('inserting user: '+user.id);
+            console.log('inserting user: '+profile);
             User.query().insert({
                 email: profile.email,
                 verified_email: profile.verified_email,
@@ -38,6 +38,7 @@ auth(app, (req,res,profile)=>{
                 res.redirect('/dashboard');
             });
         } else {
+            console.log('user exists: '+users[0]);
             let user=users[0];
             req.session.user = user.id;
             res.redirect('/dashboard');
