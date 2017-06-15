@@ -25,10 +25,10 @@ app.options("/api/*", function(req, res, next){
 auth(app, (req,res,profile)=>{
     User.query().where('email', profile.email).then(users=>{
         if(users.length===0){
-            console.log('inserting user: '+profile);
+            console.log('inserting user: '+profile.email);
             User.query().insert({
                 email: profile.email,
-                verified_email: profile.verified_email,
+                email_verified: profile.verified_email,
                 first_name: profile.given_name,
                 last_name: profile.family_name,
                 google_link: profile.link,
