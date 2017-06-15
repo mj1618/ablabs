@@ -35,16 +35,16 @@ auth(app, (req,res,profile)=>{
                 picture: profile.picture
             }).then(result=>{
                 req.session.user = result.id;
-                res.redirect('/');
+                res.redirect('/dashboard');
             });
         } else {
             let user=users[0];
             req.session.user = user.id;
-            res.redirect('/');
+            res.redirect('/dashboard');
         }
     });
 }, (req,res)=>{
-    res.redirect('/');
+    res.redirect('/login?failed');
 });
 
 const createPageData = (req, data) => {
@@ -86,7 +86,7 @@ const authMiddleware = (req,res,next)=>{
             if(projects.length>0){
                 console.log(JSON.stringify(projects));
                 req.session.project = projects[0].id;
-                res.redirect('/');
+                res.redirect('/dashboard');
             } else {
                 res.redirect('/projects/create');
             }
@@ -96,9 +96,9 @@ const authMiddleware = (req,res,next)=>{
     }
 }
 
-// app.get('/', authMiddleware, (req, res) => {
-//     res.redirect('/experiments');
-// });
+app.get('/dashboard', authMiddleware, (req, res) => {
+    res.redirect('/experiments');
+});
 
 const chooseVariation = (variations) => {
     let rand = Math.random();
@@ -258,7 +258,7 @@ app.get('/login', (req, res) => {
     if(autoLogin){
         User.query().where('email','matthew.stephen.james@gmail.com').then(users=>{
             req.session.user = users[0].id;
-            res.redirect('/');
+            res.redirect('/dashboard');
         });
     } else {
         res.render('dashboard',{
@@ -390,7 +390,7 @@ app.get('/create-project', loginMiddleware, (req, res) => {
 
 app.get('/switch-project/:projectId', loginMiddleware, (req, res) => {
     req.session.project = req.params.projectId;
-    res.redirect('/');
+    res.redirect('/dashboard');
 });
 
 app.get('/settings', authMiddleware, (req, res) => {
