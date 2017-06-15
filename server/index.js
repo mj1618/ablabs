@@ -89,7 +89,7 @@ const authMiddleware = (req,res,next)=>{
                 req.session.project = projects[0].id;
                 res.redirect('/dashboard');
             } else {
-                res.redirect('/projects/create');
+                res.redirect('/create-project');
             }
         });
     } else {
