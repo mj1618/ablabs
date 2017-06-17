@@ -2516,7 +2516,7 @@ var BaseLineEvent = function (_React$Component2) {
                         'button',
                         { 'aria-expanded': 'false', 'data-toggle': 'dropdown', className: 'btn btn-info dropdown-toggle waves-effect waves-light', type: 'button' },
                         'Event: ',
-                        baseline.event.name,
+                        baseline.event ? baseline.event.name : '',
                         ' ',
                         _react2.default.createElement('span', { className: 'caret' })
                     ),
@@ -2569,7 +2569,7 @@ var LineGraph = function (_React$Component3) {
                 parseTime: true,
                 xkey: 'date',
                 element: 'variation-line-chart',
-                data: pageData.lineChartValues['Logged In'],
+                data: baseline.event ? pageData.lineChartValues[baseline.event.name] : [],
                 ykeys: pageData.experiment.variations.map(function (v) {
                     return v.name;
                 }),
@@ -2723,6 +2723,16 @@ var Analysis = function (_React$Component5) {
             return Number(100.0 * v[event.name] / pageData.assigns[v.variation]).toFixed(1);
         }
     }, {
+        key: 'getSafePercentage',
+        value: function getSafePercentage(v, event) {
+            var p = this.getPercentage(v, event);
+            if (isNaN(p)) {
+                return '-';
+            } else {
+                return p + '%';
+            }
+        }
+    }, {
         key: 'getDiffPercentage',
         value: function getDiffPercentage(v, event) {
             var r = Number(100.0 * (this.getPercentage(v, event) - this.getPercentage(baseline.value, event)) / this.getPercentage(baseline.value, event)).toFixed(1);
@@ -2741,13 +2751,19 @@ var Analysis = function (_React$Component5) {
                     r,
                     '%'
                 );
-            } else {
+            } else if (r == 0) {
                 return _react2.default.createElement(
                     'span',
                     { className: '' },
                     '+',
                     r,
                     '%'
+                );
+            } else {
+                return _react2.default.createElement(
+                    'span',
+                    { className: '' },
+                    '-'
                 );
             }
         }
@@ -2855,8 +2871,7 @@ var Analysis = function (_React$Component5) {
                                                             null,
                                                             v[event.name],
                                                             ', ',
-                                                            _this12.getPercentage(v, event),
-                                                            '%'
+                                                            _this12.getSafePercentage(v, event)
                                                         )
                                                     );
                                                 })
@@ -2889,8 +2904,7 @@ var Analysis = function (_React$Component5) {
                                                             null,
                                                             v[event.name],
                                                             ', ',
-                                                            _this12.getPercentage(v, event),
-                                                            '%'
+                                                            _this12.getSafePercentage(v, event)
                                                         )
                                                     );
                                                 })

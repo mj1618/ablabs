@@ -56,7 +56,7 @@ class BaseLineEvent extends React.Component {
     render(){
         return <div className="btn-group col-md-12">
                     <div className="pull-right">
-                        <button aria-expanded="false" data-toggle="dropdown" className="btn btn-info dropdown-toggle waves-effect waves-light" type="button">Event: {baseline.event.name} <span className="caret"></span></button>
+                        <button aria-expanded="false" data-toggle="dropdown" className="btn btn-info dropdown-toggle waves-effect waves-light" type="button">Event: {baseline.event ? baseline.event.name : ''} <span className="caret"></span></button>
                         <ul role="menu" className="dropdown-menu">
                             {
                                 pageData.experiment.events.filter(e=>e.id!==baseline.event.id).map((e,i)=>{
@@ -77,7 +77,7 @@ class LineGraph extends React.Component {
             parseTime:true,
             xkey: 'date',
             element: 'variation-line-chart',
-            data: pageData.lineChartValues['Logged In'],
+            data: baseline.event ? pageData.lineChartValues[baseline.event.name] : [],
             ykeys: pageData.experiment.variations.map(v=>v.name),
             labels: pageData.experiment.variations.map(v=>v.name),
             lineColors:colors,
@@ -166,14 +166,25 @@ class Analysis extends React.Component {
         return Number( 100.0 * v[event.name] / pageData.assigns[v.variation] ).toFixed(1);
     }
 
+    getSafePercentage(v,event){
+        const p = this.getPercentage(v,event);
+        if(isNaN(p)){
+            return '-';
+        } else {
+            return p+'%';
+        }
+    }
+
     getDiffPercentage(v,event){
         const r = Number( 100.0 * (this.getPercentage(v,event)-this.getPercentage(baseline.value, event)) / this.getPercentage(baseline.value, event)).toFixed(1);
         if(r>0){
             return <span className="text-success">+{r}%</span>;
         } else if(r<0){
             return <span className="text-danger">{r}%</span>;
-        } else {
+        } else if(r==0) {
             return <span className="">+{r}%</span>;
+        } else {
+            return <span className="">-</span>;
         }
     }
     componentDidMount(){
@@ -216,7 +227,7 @@ class Analysis extends React.Component {
                                                 {
                                                     pageData.experiment.events.map((event,i) => <td key={i}>
                                                             -
-                                                            <br/><span>{v[event.name]}, {this.getPercentage(v,event)}%</span>
+                                                            <br/><span>{v[event.name]}, {this.getSafePercentage(v,event)}</span>
                                                         </td>
                                                     )
                                                 }
@@ -230,7 +241,7 @@ class Analysis extends React.Component {
                                                 {
                                                     pageData.experiment.events.map((event,i) => <td key={i}>
                                                             {this.getDiffPercentage(v,event)}
-                                                            <br/><span>{v[event.name]}, {this.getPercentage(v,event)}%</span>
+                                                            <br/><span>{v[event.name]}, {this.getSafePercentage(v,event)}</span>
                                                         </td>
                                                     )
                                                 }

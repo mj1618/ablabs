@@ -296,6 +296,7 @@ app.get('/experiments/:experimentId/view', authMiddleware, (req, res) => {
     let experiment;
     Experiment.query().findById(req.params.experimentId).eager('[variations,events]')
     .then(exp=>{
+        console.log(exp);
         experiment = exp;
         return Promise.join(
             Assign.query()
@@ -306,7 +307,11 @@ app.get('/experiments/:experimentId/view', authMiddleware, (req, res) => {
                 .then(res=>{
                     let as = {};
                     exp.variations.forEach(v=>{
-                        as[v.name] = res.find(r=>r.variation_id===v.id)['count(distinct `unique_id`)'];
+                        if(res.find(r=>r.variation_id===v.id)){
+                            as[v.name] = res.find(r=>r.variation_id===v.id)['count(distinct `unique_id`)'];
+                        } else {
+                            as[v.name] = 0;
+                        }
                     });
                     return as;
                 }),
@@ -343,7 +348,7 @@ app.get('/experiments/:experimentId/view', authMiddleware, (req, res) => {
                     const results = {};
                     exp.events.forEach(e=>{
                         const data = {};
-                        lvs.filter(v=>v.event_id===e.id).forEach(v=>{
+                        lvs.filter(v=>v!=null).filter(v=>v.event_id===e.id).forEach(v=>{
                             if(!data[df(v.created_at,'yyyy-mm-dd')]){
                                 data[df(v.created_at,'yyyy-mm-dd')] = {
                                     date: df(v.created_at,'yyyy-mm-dd')
@@ -510,17 +515,18 @@ const sumTracks = (experiments )=>{
 
 app.get('/experiments', authMiddleware, (req, res) => {
     Experiment.query().where('project_id',req.session.project).eager('variations').then(experiments=>{
-        return Promise.join(
-            Assign.query().whereIn('variation_id',[1,2,3]).count().then(c=>c.length>0 ? c[0]['count(*)'] : 0),
-            Track.query().whereIn('variation_id',[1,2,3]).count().then(c=>c.length>0 ? c[0]['count(*)'] : 0),
-            (nUsers, nTracks)=>{
-                return experiments.map((exp,i) => {
-                    exp.nTracks = nTracks;
-                    exp.cohort = exp.variations.reduce((t, v)=>t+v.cohort,0);
-                    exp.nUsers = nUsers;
-                    return exp;
+        return Promise.map(experiments, e => {
+            return Promise.join(
+                Assign.query().whereIn('variation_id',e.variations.map(v=>v.id)).count().then(c=>c.length>0 ? c[0]['count(*)'] : 0),
+                Track.query().whereIn('variation_id',e.variations.map(v=>v.id)).count().then(c=>c.length>0 ? c[0]['count(*)'] : 0),
+                (nUsers, nTracks)=>{
+                    return Object.assign({},e,{
+                        nTracks: nTracks,
+                        cohort: e.variations.reduce((t, v)=>t+v.cohort,0),
+                        nUsers: nUsers
+                    });
                 });
-            });
+        });
     }).then(experiments=>{
         return createPageData(req,{
             routeId: 'experiments',
