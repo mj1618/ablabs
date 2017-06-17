@@ -321,7 +321,9 @@ app.get('/experiments/:experimentId/view', authMiddleware, (req, res) => {
                 .whereIn('variation_id',experiment.variations.map(v=>v.id))
                 .groupBy('event_id')
                 .groupBy('variation_id')
-                .countDistinct('unique_id')
+                .groupBy('unique_id')
+                .distinct('unique_id')
+                .sum('amount')
                 .then(ns=>{
                     return exp.variations.map(v=>{
                         let res = {
@@ -330,7 +332,7 @@ app.get('/experiments/:experimentId/view', authMiddleware, (req, res) => {
                         };
                         ns.filter(n => n.variation_id===v.id).forEach(n=>{
                             let eventName = experiment.events.find(e=>e.id===n.event_id).name;
-                            res[eventName] = n['count(distinct `unique_id`)'];
+                            res[eventName] = n['sum(`amount`)'];
                         });
                         return res;
                     });
