@@ -5,6 +5,19 @@ import {User,Experiment,Project,Event,Variation,Assign,Track,UserProject,roles} 
 import auth from './auth';
 import Promise from 'bluebird';
 import df from 'dateformat';
+var session = require('express-session');
+var MySQLStore = require('express-mysql-session')(session);
+
+
+var options = {
+    host: '127.0.0.1',
+    port: 3306,
+    user: 'root',
+    password: process.env.AB_DB_PASS,
+    database: 'ablabs'
+};
+
+var sessionStore = new MySQLStore(options);
 
 const autoLogin = false;
 
@@ -12,7 +25,16 @@ var app = express();
 app.use(require('morgan')('combined'));
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(require('body-parser').json());
-app.use(require('express-session')({ secret: 'CBiHUkkdqaMTh80iUVzdSPver41P5fKgDMC07SlDUryG5aTk0MJY4UbQTm7wyagO', resave: false, saveUninitialized: true }));
+// app.use(require('express-session')({ secret: 'CBiHUkkdqaMTh80iUVzdSPver41P5fKgDMC07SlDUryG5aTk0MJY4UbQTm7wyagO', resave: false, saveUninitialized: true }));
+app.use(session({
+    key: 'ablabs_session',
+    secret: 'CBiHUkkdqaMTh80iUVzdSPver41P5fKgDMC07SlDUryG5aTk0MJY4UbQTm7wyagO',
+    store: sessionStore,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true }
+}));
+
 app.use(express.static('./public'));
 app.set('view engine', 'ejs');
 app.options("/api/*", function(req, res, next){
