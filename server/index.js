@@ -31,8 +31,7 @@ app.use(session({
     secret: 'CBiHUkkdqaMTh80iUVzdSPver41P5fKgDMC07SlDUryG5aTk0MJY4UbQTm7wyagO',
     store: sessionStore,
     resave: false,
-    saveUninitialized: true,
-    cookie: { secure: true }
+    saveUninitialized: true
 }));
 
 app.use(express.static('./public'));
