@@ -226,7 +226,6 @@ class Analysis extends React.Component {
                                                 <td style={{verticalAlign: 'middle'}}>{pageData.assigns[v.variation]}</td>
                                                 {
                                                     pageData.experiment.events.map((event,i) => <td key={i}>
-                                                            -
                                                             <br/><span>{v[event.name]}, {this.getSafePercentage(v,event)}</span>
                                                         </td>
                                                     )
@@ -240,8 +239,8 @@ class Analysis extends React.Component {
                                                 <td style={{verticalAlign: 'middle'}}>{pageData.assigns[v.variation]}</td>
                                                 {
                                                     pageData.experiment.events.map((event,i) => <td key={i}>
-                                                            {this.getDiffPercentage(v,event)}
                                                             <br/><span>{v[event.name]}, {this.getSafePercentage(v,event)}</span>
+                                                            {this.getDiffPercentage(v,event)}
                                                         </td>
                                                     )
                                                 }

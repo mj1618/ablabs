@@ -2864,7 +2864,6 @@ var Analysis = function (_React$Component5) {
                                                     return _react2.default.createElement(
                                                         'td',
                                                         { key: i },
-                                                        '-',
                                                         _react2.default.createElement('br', null),
                                                         _react2.default.createElement(
                                                             'span',
@@ -2897,7 +2896,6 @@ var Analysis = function (_React$Component5) {
                                                     return _react2.default.createElement(
                                                         'td',
                                                         { key: i },
-                                                        _this12.getDiffPercentage(v, event),
                                                         _react2.default.createElement('br', null),
                                                         _react2.default.createElement(
                                                             'span',
@@ -2905,7 +2903,8 @@ var Analysis = function (_React$Component5) {
                                                             v[event.name],
                                                             ', ',
                                                             _this12.getSafePercentage(v, event)
-                                                        )
+                                                        ),
+                                                        _this12.getDiffPercentage(v, event)
                                                     );
                                                 })
                                             );
