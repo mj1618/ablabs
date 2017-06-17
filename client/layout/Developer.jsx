@@ -106,11 +106,11 @@ export default class Developer extends React.Component {
 $.ajax({
     type:'POST',
     url: 'https://ablabs.io/api/v1/assign',
-    data: JSON.stringify({ 
+    data: { 
         experiment: '${experiment}', 
         user: '${user}', 
         token: '${token}'
-    }),
+    },
     dataType: 'json',
     contentType: 'application/json',
     success: function(response){
@@ -170,12 +170,12 @@ User "${user}" is in variation: ${variation}`}</code></pre>
                                 <pre><code className="language-javascript">{`$.ajax({
     type:'POST',
     url: 'https://ablabs.io/api/v1/track',
-    data: JSON.stringify({ 
+    data: { 
         event: '${event}', 
         user: '${user}', 
         experiments: experiments, //experiments === [${JSON.stringify(experiments)}] from assign api call
         token: '${token}'
-    }),
+    },
     dataType: 'json',
     contentType: 'application/json',
     success: function(response){

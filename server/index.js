@@ -535,7 +535,7 @@ app.get('/experiments', authMiddleware, (req, res) => {
 });
 
 app.get('/events', authMiddleware, (req, res) => {
-    Event.query().where('project_id',1).orderBy('id','desc').eager('[tracks,experiments]').then(events=>{
+    Event.query().where('project_id',req.session.project).orderBy('id','desc').eager('[tracks,experiments]').then(events=>{
         console.log(JSON.stringify(events));
         return createPageData(req,{
             routeId: 'events',
