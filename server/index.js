@@ -184,16 +184,18 @@ app.post('/api/v1/track', apiMiddleware, (req, res) => {
 
            return Promise.all(
                exps.map(exp => {
-                   Assign.query().where('unique_id',uniqueId).where('experiment_id',exp.id).then(as=>{
-                        if(as.length===0){
-                            const v = chooseVariation(exp.variations);
-                            return Assign.create(exp, v, uniqueId);
-                        } else {
-                            return as[0];
-                        }
-                   }).then(a => {
-                       return Track.create(project.id, exp.id, a.variation_id, event.id, uniqueId, amount);
-                   })
+                    if(exp.active===1){
+                        Assign.query().where('unique_id',uniqueId).where('experiment_id',exp.id).then(as=>{
+                            if(as.length===0){
+                                const v = chooseVariation(exp.variations);
+                                return Assign.create(exp, v, uniqueId);
+                            } else {
+                                return as[0];
+                            }
+                        }).then(a => {
+                            return Track.create(project.id, exp.id, a.variation_id, event.id, uniqueId, amount);
+                        })
+                    }
                })
            );
        }).then(()=>{
@@ -233,10 +235,12 @@ app.post('/api/v1/assign', apiMiddleware, (req, res) => {
         } else {
             project = ps[0];
             experiment = project.experiments.find(e=>compareSlug(e.name, slug));
-            if(experiment!=null){
-                return Assign.query().where('experiment_id',experiment.id).where('unique_id',uniqueId);
-            } else {
+            if(experiment==null){
                 throw 'Experiment not found';
+            } else if(experiment.active!=1) {
+                throw 'Experiment inactive';
+            } else {
+                return Assign.query().where('experiment_id',experiment.id).where('unique_id',uniqueId);
             }
         }
     }).then(as=>{
