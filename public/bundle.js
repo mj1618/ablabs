@@ -244,7 +244,24 @@ var Developer = function (_React$Component) {
                                 { className: 'box-title m-b-0' },
                                 'Developer Guide '
                             ),
-                            _react2.default.createElement('p', { className: 'text-muted m-b-20' }),
+                            _react2.default.createElement(
+                                'p',
+                                { className: 'text-muted m-b-20' },
+                                'This guide will step you through an end-to-end experiment.',
+                                _react2.default.createElement('br', null),
+                                'To try a live demo, check out the ',
+                                _react2.default.createElement(
+                                    'a',
+                                    { target: '_blank', href: 'https://cdn.rawgit.com/mj1618/ablabs-js/master/demo.html' },
+                                    'Browser Demo'
+                                ),
+                                ' and ',
+                                _react2.default.createElement(
+                                    'a',
+                                    { target: '_blank', href: 'https://runkit.com/embed/wqdw4dni7wgz' },
+                                    'Node Demo'
+                                )
+                            ),
                             'Let\'s say you have written a tutorial popup on your website that explains to users how the site works. You aren\'t sure if this tutorial will be too annoying and hinder your sites performance, or if people will appreciate the explanation and use the site better. So you decided to create the ',
                             _react2.default.createElement(
                                 'mark',

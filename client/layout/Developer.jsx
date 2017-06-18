@@ -36,7 +36,12 @@ export default class Developer extends React.Component {
                 <div className="col-md-12">
                     <div className="white-box">
                         <h3 className="box-title m-b-0">Developer Guide </h3>
-                        <p className="text-muted m-b-20"></p>
+
+                        <p className="text-muted m-b-20">
+                            This guide will step you through an end-to-end experiment. 
+                            <br/>
+                            To try a live demo, check out the <a target="_blank" href="https://cdn.rawgit.com/mj1618/ablabs-js/master/demo.html">Browser Demo</a> and <a target="_blank" href="https://runkit.com/embed/wqdw4dni7wgz">Node Demo</a>
+                        </p>
                         Let's say you have written a tutorial popup on your website that explains to users how the site works.
                         You aren't sure if this tutorial will be too annoying and hinder your sites performance, or if people will appreciate the explanation and use the site better.
                         So you decided to create the <mark>Popup Tutorial</mark> experiment.
