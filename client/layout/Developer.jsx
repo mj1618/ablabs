@@ -88,7 +88,7 @@ export default class Developer extends React.Component {
                         <TabContent>
                             <TabPanel id='install-browser-js' first={true}>
                                 <strong>Install with CDN</strong>
-                                <pre><code className="language-html">{`<script src="https://cdn.rawgit.com/mj1618/ablabs-js/master/build/ablabs.min.js"></script>`}</code></pre>
+                                <pre><code className="language-html">{`<script src="https://cdn.rawgit.com/mj1618/ablabs-js/v1.0.7/build/ablabs.min.js"></script>`}</code></pre>
                                 <pre><code className="language-js">{`var ab = new ABLabs.default('${token}', '1234') // assuming user ID is 1234, optionally leave blank`}</code></pre>
                             </TabPanel>
                             <TabPanel id='install-node-js'>

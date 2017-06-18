@@ -370,7 +370,7 @@ var Developer = function (_React$Component) {
                                         _react2.default.createElement(
                                             'code',
                                             { className: 'language-html' },
-                                            '<script src="https://cdn.rawgit.com/mj1618/ablabs-js/master/build/ablabs.min.js"></script>'
+                                            '<script src="https://cdn.rawgit.com/mj1618/ablabs-js/v1.0.7/build/ablabs.min.js"></script>'
                                         )
                                     ),
                                     _react2.default.createElement(
