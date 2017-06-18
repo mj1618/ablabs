@@ -137,7 +137,7 @@ const ab = new ABLabs('${token}', '1234') // assuming user ID is 1234, optionall
                                 <strong>Example Request</strong>
                                 <pre><code className="language-javascript">{`ab.assign('${experiment}').then(response=>{
     console.log('Successfully assigned user in ${experiment} experiment');
-    console.log('User "'+ab.user+'" is in variation: ${variation}')
+    console.log('User "'+ab.user+'" is in variation: '+response.variation)
 })`}</code></pre>
 
                         <strong>Example Output</strong>

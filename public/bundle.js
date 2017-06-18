@@ -485,7 +485,7 @@ var Developer = function (_React$Component) {
                                         _react2.default.createElement(
                                             'code',
                                             { className: 'language-javascript' },
-                                            'ab.assign(\'' + experiment + '\').then(response=>{\n    console.log(\'Successfully assigned user in ' + experiment + ' experiment\');\n    console.log(\'User "\'+ab.user+\'" is in variation: ' + variation + '\')\n})'
+                                            'ab.assign(\'' + experiment + '\').then(response=>{\n    console.log(\'Successfully assigned user in ' + experiment + ' experiment\');\n    console.log(\'User "\'+ab.user+\'" is in variation: \'+response.variation)\n})'
                                         )
                                     ),
                                     _react2.default.createElement(
