@@ -252,7 +252,7 @@ var Developer = function (_React$Component) {
                                 'To try a live demo, check out the ',
                                 _react2.default.createElement(
                                     'a',
-                                    { target: '_blank', href: 'https://cdn.rawgit.com/mj1618/ablabs-js/master/demo.html' },
+                                    { target: '_blank', href: 'https://rawgit.com/mj1618/ablabs-js/master/demo.html' },
                                     'Browser Demo'
                                 ),
                                 ' and ',
