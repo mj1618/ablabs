@@ -72,17 +72,45 @@ export default class Developer extends React.Component {
             <div className="row">
                 <div className="col-md-12">
                     <div className="white-box">
+                        <h3 className="box-title m-b-0">Install</h3>
+                        
+                        <br/>
+                        
+                        <TabMenu>
+                            <TabMenuItem id='install-browser-js' name='Browser JS' icon='zmdi zmdi-code' first={true} />
+                            <TabMenuItem id='install-node-js' name='Node JS' icon='zmdi zmdi-code' />
+                        </TabMenu>
+                        <TabContent>
+                            <TabPanel id='install-browser-js' first={true}>
+                                <strong>Install with CDN</strong>
+                                <pre><code className="language-html">{`<script src="https://cdn.rawgit.com/mj1618/ablabs-js/master/build/ablabs.min.js"></script>`}</code></pre>
+                                <pre><code className="language-js">{`var ab = new ABLabs.default('${token}', '1234') // assuming user ID is 1234, optionally leave blank`}</code></pre>
+                            </TabPanel>
+                            <TabPanel id='install-node-js'>
+                                <strong>Install with NPM</strong>
+                                <pre><code className="language-javascript">{`npm install --save ablabs-js`}</code></pre>
+                                <pre><code className="language-javascript">{`import ABLabs from 'ablabs-js'
+const ab = new ABLabs('${token}', '1234') // assuming user ID is 1234, optionally leave blank`}</code></pre>
+                            </TabPanel>
+                        </TabContent>
+                    </div>
+                </div>
+            </div>
+            <div className="row">
+                <div className="col-md-12">
+                    <div className="white-box">
                         <h3 className="box-title m-b-0">Assign API</h3>
                         The Assign API is used to randomly assign a user to a variation based on the 'cohort %' weightings.
                         The experiment must be in 'slug' form, i.e. all lower case and spaces replaced with dashes.
                         <br/>
                         
                         <TabMenu>
-                            <TabMenuItem id='assign-curl' name='cURL' icon='zmdi zmdi-code' first={true} />
-                            <TabMenuItem id='assign-js' name='JS' icon='zmdi zmdi-code' />
+                            <TabMenuItem id='assign-js' name='JS' icon='zmdi zmdi-code' first={true}  />
+                            <TabMenuItem id='assign-curl' name='cURL' icon='zmdi zmdi-code'/>
+                            
                         </TabMenu>
                         <TabContent>
-                            <TabPanel id='assign-curl' first={true}>
+                            <TabPanel id='assign-curl'>
                                 <strong>Example Request</strong>
                                 <pre><code className="language-json">{`curl -X "POST" \\
      -H "Content-Type: application/json" \\
@@ -100,28 +128,12 @@ export default class Developer extends React.Component {
 	"variation": "${variation}"
 }`}</code></pre>
                             </TabPanel>
-                            <TabPanel id='assign-js'>
+                            <TabPanel id='assign-js' first={true}>
                                 <strong>Example Request</strong>
-                                <pre><code className="language-javascript">{`var experiments=[];
-$.ajax({
-    type:'POST',
-    url: 'https://ablabs.io/api/v1/assign',
-    data: { 
-        experiment: '${experiment}', 
-        user: '${user}', 
-        token: '${token}'
-    },
-    dataType: 'json',
-    contentType: 'application/json',
-    success: function(response){
-        if(response.result==='success'){
-            experiments.push('${experiment}');
-            console.log('Successfully assigned user in ${experiment} experiment');
-            console.log('User "${user}" is in variation: '+response.variation);
-            // here you can change your application behaviour based on the users Variation
-        }
-    }
-});`}</code></pre>
+                                <pre><code className="language-javascript">{`ab.assign('${experiment}').then(response=>{
+    console.log('Successfully assigned user in ${experiment} experiment');
+    console.log('User "'+ab.user+'" is in variation: ${variation}')
+})`}</code></pre>
 
                         <strong>Example Output</strong>
                         <pre><code className="language-markup">{`Successfully assigned user in ${experiment} experiment
@@ -144,11 +156,12 @@ User "${user}" is in variation: ${variation}`}</code></pre>
                         <br/>
                         
                         <TabMenu>
-                            <TabMenuItem id='track-curl' name='cURL' icon='zmdi zmdi-code' first={true} />
-                            <TabMenuItem id='track-js' name='JS' icon='zmdi zmdi-code' />
+                            <TabMenuItem id='track-js' name='JS' icon='zmdi zmdi-code' first={true} />
+                            <TabMenuItem id='track-curl' name='cURL' icon='zmdi zmdi-code' />
+                            
                         </TabMenu>
                         <TabContent>
-                            <TabPanel id='track-curl' first={true}>
+                            <TabPanel id='track-curl'>
                                 <strong>Example Request</strong>
                                 <pre><code className="language-json">{`curl -X "POST" \\
      -H "Content-Type: application/json" \\
@@ -165,25 +178,12 @@ User "${user}" is in variation: ${variation}`}</code></pre>
 	"result": "success"
 }`}</code></pre>
                             </TabPanel>
-                            <TabPanel id='track-js'>
+                            <TabPanel id='track-js' first={true}>
                                 <strong>Example Request</strong>
-                                <pre><code className="language-javascript">{`$.ajax({
-    type:'POST',
-    url: 'https://ablabs.io/api/v1/track',
-    data: { 
-        event: '${event}', 
-        user: '${user}', 
-        experiments: experiments, //experiments === [${JSON.stringify(experiments)}] from assign api call
-        token: '${token}'
-    },
-    dataType: 'json',
-    contentType: 'application/json',
-    success: function(response){
-        if(response.result==='success'){
-            console.log('Successfully tracked ${event} event for user ${user}');
-        }
-    }
-});`}</code></pre>
+                                <pre><code className="language-javascript">{`ab.track('${event}').then(res=>{
+    if(res.result==='success')
+        console.log('Successfully tracked ${event} event for user '+ab.user);
+})`}</code></pre>
 <strong>Example Output</strong>
                         <pre><code className="language-markup">{`Successfully tracked ${event} event for user ${user}`}</code></pre>
                             </TabPanel>

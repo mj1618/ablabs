@@ -327,6 +327,88 @@ var Developer = function (_React$Component) {
                             _react2.default.createElement(
                                 'h3',
                                 { className: 'box-title m-b-0' },
+                                'Install'
+                            ),
+                            _react2.default.createElement('br', null),
+                            _react2.default.createElement(
+                                _index.TabMenu,
+                                null,
+                                _react2.default.createElement(_index.TabMenuItem, { id: 'install-browser-js', name: 'Browser JS', icon: 'zmdi zmdi-code', first: true }),
+                                _react2.default.createElement(_index.TabMenuItem, { id: 'install-node-js', name: 'Node JS', icon: 'zmdi zmdi-code' })
+                            ),
+                            _react2.default.createElement(
+                                _index.TabContent,
+                                null,
+                                _react2.default.createElement(
+                                    _index.TabPanel,
+                                    { id: 'install-browser-js', first: true },
+                                    _react2.default.createElement(
+                                        'strong',
+                                        null,
+                                        'Install with CDN'
+                                    ),
+                                    _react2.default.createElement(
+                                        'pre',
+                                        null,
+                                        _react2.default.createElement(
+                                            'code',
+                                            { className: 'language-html' },
+                                            '<script src="https://cdn.rawgit.com/mj1618/ablabs-js/master/build/ablabs.min.js"></script>'
+                                        )
+                                    ),
+                                    _react2.default.createElement(
+                                        'pre',
+                                        null,
+                                        _react2.default.createElement(
+                                            'code',
+                                            { className: 'language-js' },
+                                            'var ab = new ABLabs.default(\'' + token + '\', \'1234\') // assuming user ID is 1234, optionally leave blank'
+                                        )
+                                    )
+                                ),
+                                _react2.default.createElement(
+                                    _index.TabPanel,
+                                    { id: 'install-node-js' },
+                                    _react2.default.createElement(
+                                        'strong',
+                                        null,
+                                        'Install with NPM'
+                                    ),
+                                    _react2.default.createElement(
+                                        'pre',
+                                        null,
+                                        _react2.default.createElement(
+                                            'code',
+                                            { className: 'language-javascript' },
+                                            'npm install --save ablabs-js'
+                                        )
+                                    ),
+                                    _react2.default.createElement(
+                                        'pre',
+                                        null,
+                                        _react2.default.createElement(
+                                            'code',
+                                            { className: 'language-javascript' },
+                                            'import ABLabs from \'ablabs-js\'\nconst ab = new ABLabs(\'' + token + '\', \'1234\') // assuming user ID is 1234, optionally leave blank'
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'row' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'col-md-12' },
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'white-box' },
+                            _react2.default.createElement(
+                                'h3',
+                                { className: 'box-title m-b-0' },
                                 'Assign API'
                             ),
                             'The Assign API is used to randomly assign a user to a variation based on the \'cohort %\' weightings. The experiment must be in \'slug\' form, i.e. all lower case and spaces replaced with dashes.',
@@ -334,15 +416,15 @@ var Developer = function (_React$Component) {
                             _react2.default.createElement(
                                 _index.TabMenu,
                                 null,
-                                _react2.default.createElement(_index.TabMenuItem, { id: 'assign-curl', name: 'cURL', icon: 'zmdi zmdi-code', first: true }),
-                                _react2.default.createElement(_index.TabMenuItem, { id: 'assign-js', name: 'JS', icon: 'zmdi zmdi-code' })
+                                _react2.default.createElement(_index.TabMenuItem, { id: 'assign-js', name: 'JS', icon: 'zmdi zmdi-code', first: true }),
+                                _react2.default.createElement(_index.TabMenuItem, { id: 'assign-curl', name: 'cURL', icon: 'zmdi zmdi-code' })
                             ),
                             _react2.default.createElement(
                                 _index.TabContent,
                                 null,
                                 _react2.default.createElement(
                                     _index.TabPanel,
-                                    { id: 'assign-curl', first: true },
+                                    { id: 'assign-curl' },
                                     _react2.default.createElement(
                                         'strong',
                                         null,
@@ -374,7 +456,7 @@ var Developer = function (_React$Component) {
                                 ),
                                 _react2.default.createElement(
                                     _index.TabPanel,
-                                    { id: 'assign-js' },
+                                    { id: 'assign-js', first: true },
                                     _react2.default.createElement(
                                         'strong',
                                         null,
@@ -386,7 +468,7 @@ var Developer = function (_React$Component) {
                                         _react2.default.createElement(
                                             'code',
                                             { className: 'language-javascript' },
-                                            'var experiments=[];\n$.ajax({\n    type:\'POST\',\n    url: \'https://ablabs.io/api/v1/assign\',\n    data: { \n        experiment: \'' + experiment + '\', \n        user: \'' + user + '\', \n        token: \'' + token + '\'\n    },\n    dataType: \'json\',\n    contentType: \'application/json\',\n    success: function(response){\n        if(response.result===\'success\'){\n            experiments.push(\'' + experiment + '\');\n            console.log(\'Successfully assigned user in ' + experiment + ' experiment\');\n            console.log(\'User "' + user + '" is in variation: \'+response.variation);\n            // here you can change your application behaviour based on the users Variation\n        }\n    }\n});'
+                                            'ab.assign(\'' + experiment + '\').then(response=>{\n    console.log(\'Successfully assigned user in ' + experiment + ' experiment\');\n    console.log(\'User "\'+ab.user+\'" is in variation: ' + variation + '\')\n})'
                                         )
                                     ),
                                     _react2.default.createElement(
@@ -427,15 +509,15 @@ var Developer = function (_React$Component) {
                             _react2.default.createElement(
                                 _index.TabMenu,
                                 null,
-                                _react2.default.createElement(_index.TabMenuItem, { id: 'track-curl', name: 'cURL', icon: 'zmdi zmdi-code', first: true }),
-                                _react2.default.createElement(_index.TabMenuItem, { id: 'track-js', name: 'JS', icon: 'zmdi zmdi-code' })
+                                _react2.default.createElement(_index.TabMenuItem, { id: 'track-js', name: 'JS', icon: 'zmdi zmdi-code', first: true }),
+                                _react2.default.createElement(_index.TabMenuItem, { id: 'track-curl', name: 'cURL', icon: 'zmdi zmdi-code' })
                             ),
                             _react2.default.createElement(
                                 _index.TabContent,
                                 null,
                                 _react2.default.createElement(
                                     _index.TabPanel,
-                                    { id: 'track-curl', first: true },
+                                    { id: 'track-curl' },
                                     _react2.default.createElement(
                                         'strong',
                                         null,
@@ -467,7 +549,7 @@ var Developer = function (_React$Component) {
                                 ),
                                 _react2.default.createElement(
                                     _index.TabPanel,
-                                    { id: 'track-js' },
+                                    { id: 'track-js', first: true },
                                     _react2.default.createElement(
                                         'strong',
                                         null,
@@ -479,7 +561,7 @@ var Developer = function (_React$Component) {
                                         _react2.default.createElement(
                                             'code',
                                             { className: 'language-javascript' },
-                                            '$.ajax({\n    type:\'POST\',\n    url: \'https://ablabs.io/api/v1/track\',\n    data: { \n        event: \'' + event + '\', \n        user: \'' + user + '\', \n        experiments: experiments, //experiments === [' + JSON.stringify(experiments) + '] from assign api call\n        token: \'' + token + '\'\n    },\n    dataType: \'json\',\n    contentType: \'application/json\',\n    success: function(response){\n        if(response.result===\'success\'){\n            console.log(\'Successfully tracked ' + event + ' event for user ' + user + '\');\n        }\n    }\n});'
+                                            'ab.track(\'' + event + '\').then(res=>{\n    if(res.result===\'success\')\n        console.log(\'Successfully tracked ' + event + ' event for user \'+ab.user);\n})'
                                         )
                                     ),
                                     _react2.default.createElement(
