@@ -319,7 +319,7 @@ app.get('/logout', (req,res)=>{
 
 app.get('/experiments/:experimentId/view', authMiddleware, (req, res) => {
     let experiment;
-    Experiment.query().findById(req.params.experimentId).eager('[variations,events]')
+    Experiment.query().where('project_id',req.session.project).where('id',req.params.experimentId).eager('[variations,events]')
     .then(exp=>{
         console.log(exp);
         experiment = exp;
