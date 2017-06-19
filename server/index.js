@@ -441,11 +441,63 @@ app.get('/settings', authMiddleware, (req, res) => {
     });
 });
 
+const createInitialExperiment = (projectId) => {
+    let experiment;
+    let event;
+    return Event.query().insert({name:'Clicked Button', project_id: projectId}).then(e=>{
+        event = e;
+        return Experiment.query().insert({
+            project_id: projectId,
+            name: 'Blue/Green Button Experiment',
+            description: '',
+            active: true
+        });
+    }).then(exp => {
+        experiment = exp;
+        return experiment.$relatedQuery('events').relate(event.id);
+    }).then(()=>{
+        const variations = [
+            {
+                name: 'Blue Button',
+                description:'',
+                cohort: 50
+            },
+            {
+                name: 'Green Button',
+                description:'',
+                cohort: 50
+            }
+        ];
+        return Promise.all(variations.map(variation => {
+            return Variation.query().insert({
+                name: variation.name,
+                description: variation.description,
+                cohort: variation.cohort,
+                experiment_id: experiment.id
+            })
+        }));
+    }).then(()=>{
+        // success
+    }).catch((e)=>{
+        console.error(e);
+        if(experiment){
+            Experiment.query().where('id',experiment.id).delete();
+        }
+    });
+};
+
+app.get('/projects/create', (req,res)=>{
+    return res.redirect('/create-project');
+})
+
 app.post('/projects/create', loginMiddleware, (req, res) => {
     User.query().findById(req.session.user).then(user=>{
         Project.create(req.body.name, user.email).then(project=>{
             req.session.project = project.id;
-            res.redirect('/experiments');
+            console.log(project);
+            createInitialExperiment(project.id).then(()=>{
+                res.redirect('/experiments');
+            });
         });    
     });
 });

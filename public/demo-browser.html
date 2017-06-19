@@ -90,7 +90,11 @@
 
 <script src="https://cdn.rawgit.com/mj1618/ablabs-js/v1.0.7/build/ablabs.min.js"></script>
 <script type="text/javascript">
-var ab = new ABLabs.default( 'a49ca12dd64415c580a28e8326287335' );
+var token = getUrlParameter('token');
+if(token==null){
+    token = 'a49ca12dd64415c580a28e8326287335';
+}
+var ab = new ABLabs.default( token );
 append("<li>Random user ID generated for current browser session: "+ab.user+"</li>");
 append("<li>Requesting to assign variation to user for experiment: 'Blue/Green Button Experiment'</li>");
 assign();
@@ -138,6 +142,21 @@ function append(html){
     $('#output-items').append(html);
     $('#output-items').scrollTop(Number.MAX_SAFE_INTEGER);
 }
+
+function getUrlParameter(sParam) {
+    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : sParameterName[1];
+        }
+    }
+};
 </script>
 </body>
 </html>

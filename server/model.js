@@ -244,8 +244,12 @@ class Project extends Model {
         this.updated_at = dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
     }
     static create(name, email){
-        return Project.query().insert({name, token:require('crypto').randomBytes(16).toString('hex')}).then(project=>{
-            return project.$relatedQuery('users').relate(email);
+        let project;
+        return Project.query().insert({name, token:require('crypto').randomBytes(16).toString('hex')}).then(p=>{
+            project = p;
+            return p.$relatedQuery('users').relate(email);
+        }).then(()=>{
+            return project;
         });
     }
     static get relationMappings() {

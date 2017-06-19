@@ -7,10 +7,10 @@ export default class Developer extends React.Component {
         super(props);
         this.state = {
             user: '1234',
-            experiment: pageData.experiments[0] ? slugify(pageData.experiments[0].name) : 'popup-tutorial',
-            experiments: [pageData.experiments[0] ? slugify(pageData.experiments[0].name) : 'popup-tutorial'],
-            event: pageData.events[0] ? slugify(pageData.events[0].name) : 'registered',
-            variation: pageData.experiments[0] ? pageData.experiments[0].variations[0].name : 'show-tutorial',
+            experiment: 'Blue/Green Button Experiment',//pageData.experiments[0] ? slugify(pageData.experiments[0].name) : 
+            experiments: ['Blue/Green Button Experiment'],//[pageData.experiments[0] ? slugify(pageData.experiments[0].name) : 
+            event: 'Clicked Button',//pageData.events[0] ? slugify(pageData.events[0].name) : 
+            variation: 'Blue Button'//pageData.experiments[0] ? pageData.experiments[0].variations[0].name : 
         };
     }
 
@@ -40,35 +40,31 @@ export default class Developer extends React.Component {
                         <p className="text-muted m-b-20">
                             This guide will step you through an end-to-end experiment. 
                             <br/>
-                            To try a live demo, check out the <a target="_blank" href="https://ablabs.io/demo-browser.html">Browser Demo</a> and <a target="_blank" href="https://ablabs.io/demo-node.html">Node Demo</a>
+                            To try a live demo, check out the <a target="_blank" href={`https://ablabs.io/demo-browser.html?token=${token}`}>Browser Demo</a> and <a target="_blank" href="https://ablabs.io/demo-node.html">Node Demo</a>
                         </p>
-                        Let's say you have written a tutorial popup on your website that explains to users how the site works.
-                        You aren't sure if this tutorial will be too annoying and hinder your sites performance, or if people will appreciate the explanation and use the site better.
-                        So you decided to create the <mark>Popup Tutorial</mark> experiment.
+                        The most simple experiment is the Blue/Green button experiment. You're trying to work out if Blue or Green buttons entice users to click the button more.<br/>
                         
                         The experiment has 2 variations that users are randomly grouped into:
                         <ul>
-                            <li>No Tutorial - 50%</li>
-                            <li>Show Tutorial - 50%</li>
+                            <li>Blue Button - 50%</li>
+                            <li>Green Button - 50%</li>
                         </ul>
-                        And 2 Events that you track for the user:
+                        And 1 event you would like to optimize for:
                         <ul>
-                            <li>Registered</li>
-                            <li>Purchased</li>
+                            <li>Clicked Button</li>
                         </ul>
 
                         A typical user flow using this experiment would work as follows:
                         <ol>
                             <li>User accesses the home page of your website</li>
                             <li>The 'Assign API' is used to assign the user to a variation</li>
-                            <li>If the user is in the 'No Tutorial' variation your code will not show the tutorial. Conversley if they are in the 'Show Tutorial' variation you will run your code that shows the tutorial</li>
-                            <li>If the user registers, you track the user against the 'Registered' event</li>
-                            <li>If the user makes a purchase, you track the user against the 'Purchase' event with the amount of the purchase</li>
+                            <li>The button is coloured based on which variation the user is in</li>
+                            <li>When the user clicks the button, the Clicked Button event is fired</li>
                         </ol>
 
-                        Simple! You now have your first experiment. 
-                        Once you have had enough users enter the experiment you will be able to see the results by viewing the Experiment Report.
-                        It will be able to tell if the Tutorial Popup helped improve registrations and purchases on your site, and thereby determine if you should go live with the experiment.
+                        Simple! You now have your first experiment.
+                        With enough users going through the variation you may start to see a pattern of a certain coloured button getting more clicks (on average) than the other.
+                        Now you understand how a simplistic experiment works you understand the potential for more complex experiments.
                         {/*<pre><code className="hljs">{`curl -X POST /api/experiment/${experiment}/assign?token=${token}&user=${user}
     curl -X POST /api/event/${event}/track?token=${token}&user=${user}&experiments=${experiments}`}</code></pre>*/}
                     </div>
@@ -122,7 +118,7 @@ const ab = new ABLabs('${token}', '1234') // assuming user ID is 1234, optionall
                     <div className="white-box">
                         <h3 className="box-title m-b-0">Assign API</h3>
                         The Assign API is used to randomly assign a user to a variation based on the 'cohort %' weightings.
-                        The experiment must be in 'slug' form, i.e. all lower case and spaces replaced with dashes.
+                        You should assign the user to a variation early in the page load.
                         <br/>
                         
                         <TabMenu>
@@ -154,7 +150,8 @@ const ab = new ABLabs('${token}', '1234') // assuming user ID is 1234, optionall
                                 <strong>Example Request</strong>
                                 <pre><code className="language-javascript">{`ab.assign('${experiment}').then(response=>{
     console.log('Successfully assigned user in ${experiment} experiment');
-    console.log('User "'+ab.user+'" is in variation: '+response.variation)
+    console.log('User "'+ab.user+'" is in variation: '+response.variation);
+    // now make the button blue or green based on the variation
 })`}</code></pre>
 
                         <strong>Example Output</strong>
@@ -179,7 +176,7 @@ $.ajax({
             experiments.push('${experiment}');
             console.log('Successfully assigned user in ${experiment} experiment');
             console.log('User "${user}" is in variation: '+response.variation);
-            // here you can change your application behaviour based on the users Variation
+            // now make the button blue or green based on the variation
         }
     }
 });`}</code></pre>
@@ -201,7 +198,7 @@ User "${user}" is in variation: ${variation}`}</code></pre>
                         <h3 className="box-title m-b-0">Track API</h3>
                         The track API is used to track events against experiments. 
                         Note that the experiments must be comma separated if you are tracking more than one.
-                        The events and experiments must also be in 'slug' form, i.e. all lower case and spaces replaced with dashes.
+                        e.g. In our example we would track this event when the user clicks the button
                         <br/>
                         
                         <TabMenu>
