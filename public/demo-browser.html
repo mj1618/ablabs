@@ -119,7 +119,7 @@ function assign(){
 $('#reassign').click(()=>{
     localStorage.removeItem('user');
     append("<li>Cleared user data, starting as fresh user</li>");
-    ab = new ABLabs.default( 'a49ca12dd64415c580a28e8326287335' );
+    ab = new ABLabs.default( token );
     append("<li>New random user ID :"+ab.user+"</li>");
     append("<li>Assigning new variation</li>");
     assign();
