@@ -3392,15 +3392,36 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Create = function (_React$Component) {
     _inherits(Create, _React$Component);
 
-    function Create() {
+    function Create(props) {
         _classCallCheck(this, Create);
 
-        return _possibleConstructorReturn(this, (Create.__proto__ || Object.getPrototypeOf(Create)).apply(this, arguments));
+        var _this = _possibleConstructorReturn(this, (Create.__proto__ || Object.getPrototypeOf(Create)).call(this, props));
+
+        _this.state = {
+            error: ''
+        };
+        return _this;
     }
 
     _createClass(Create, [{
+        key: 'submit',
+        value: function submit(e) {
+            if (this.name.value == '') {
+                e.preventDefault();
+                this.setState({
+                    error: 'Please enter a project name'
+                });
+            } else {
+                this.setState({
+                    error: ''
+                });
+            }
+        }
+    }, {
         key: 'render',
         value: function render() {
+            var _this2 = this;
+
             return _react2.default.createElement(
                 'div',
                 { className: 'row', style: { marginTop: '15vh' } },
@@ -3422,7 +3443,9 @@ var Create = function (_React$Component) {
                         ),
                         _react2.default.createElement(
                             'form',
-                            { className: 'form-horizontal', method: 'POST', action: '/projects/create' },
+                            { onSubmit: function onSubmit(e) {
+                                    return _this2.submit(e);
+                                }, className: 'form-horizontal', method: 'POST', action: '/projects/create' },
                             _react2.default.createElement(
                                 'div',
                                 { className: 'form-group' },
@@ -3434,12 +3457,21 @@ var Create = function (_React$Component) {
                                 _react2.default.createElement(
                                     'div',
                                     { className: 'col-md-12' },
-                                    _react2.default.createElement('input', { type: 'text', name: 'name', className: 'form-control' })
+                                    _react2.default.createElement('input', { ref: function ref(name) {
+                                            return _this2.name = name;
+                                        }, type: 'text', name: 'name', className: 'form-control' })
+                                ),
+                                _react2.default.createElement(
+                                    'span',
+                                    { style: { color: "red" } },
+                                    this.state.error
                                 )
                             ),
                             _react2.default.createElement(
                                 'button',
-                                { className: 'btn btn-outline btn-primary fcbtn btn-1e btn-lg btn-block waves-effect' },
+                                { onClick: function onClick() {
+                                        return _this2.submit();
+                                    }, className: 'btn btn-outline btn-primary fcbtn btn-1e btn-lg btn-block waves-effect' },
                                 'Create'
                             )
                         )

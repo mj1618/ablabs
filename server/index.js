@@ -645,8 +645,11 @@ app.get('/events', authMiddleware, (req, res) => {
 });
 
 app.post('/experiments/:experimentId/toggle', authMiddleware, (req,res)=>{
-    Experiment.query().findById(req.params.experimentId).then(exp=>{
-        return exp.$query().updateAndFetch({active: !exp.active})
+    Experiment.query()
+        .where('project_id',req.session.project)
+        .where('id',req.params.experimentId)
+        .then(exps=>{
+        return exps[0].$query().updateAndFetch({active: !exp.active})
     }).then(newExp => {
         res.json({result:'success',active:newExp.active});
     })
@@ -713,7 +716,12 @@ app.post('/experiments/create', authMiddleware, (req,res) => {
         active: true
     }).then(exp => {
         experiment = exp;
-        return Promise.all(req.body.selectedEvents.map(event=>{
+        return Event
+            .query()
+            .where('project_id',req.session.project)
+            .whereIn('id',req.body.selectedEvents.map(event=>event.id))
+    }).then(events=>{
+        return Promise.all(events.map(event=>{
             return experiment.$relatedQuery('events').relate(event.id)
         }));
     }).then(()=>{
