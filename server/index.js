@@ -347,7 +347,6 @@ app.get('/experiments/:experimentId/view', authMiddleware, (req, res) => {
                 .groupBy('event_id')
                 .groupBy('variation_id')
                 .groupBy('unique_id')
-                .distinct('unique_id')
                 .sum('amount')
                 .then(ns=>{
                     return exp.variations.map(v=>{
@@ -370,7 +369,8 @@ app.get('/experiments/:experimentId/view', authMiddleware, (req, res) => {
                 .groupBy('event_id')
                 .groupBy('variation_id')
                 .orderBy('created_at')
-                .countDistinct('unique_id')
+                .groupBy('unique_id')
+                .sum('amount')
                 .then(lvs=>{
                     const results = {};
                     exp.events.forEach(e=>{
@@ -384,7 +384,7 @@ app.get('/experiments/:experimentId/view', authMiddleware, (req, res) => {
                                     data[df(v.created_at,'yyyy-mm-dd')][va.name] = 0;
                                 })
                             }
-                            data[df(v.created_at,'yyyy-mm-dd')][experiment.variations.find(va=>va.id===v.variation_id).name] += v['count(distinct `unique_id`)'];
+                            data[df(v.created_at,'yyyy-mm-dd')][experiment.variations.find(va=>va.id===v.variation_id).name] += v['sum(`amount`)'];
                         })
                         results[e.name] = Object.values(data);
                     });
