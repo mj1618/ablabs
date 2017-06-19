@@ -355,6 +355,7 @@ app.get('/experiments/:experimentId/view', authMiddleware, (req, res) => {
                             variation_id: v.id
                         };
                         ns.filter(n => n.variation_id===v.id).forEach(n=>{
+                            let eventName = experiment.events.find(e=>e.id===n.event_id).name;
                             if(!res[eventName]){
                                 res[eventName]=0;
                             }
