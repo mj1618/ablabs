@@ -321,17 +321,17 @@ app.get('/experiments/:experimentId/view', authMiddleware, (req, res) => {
     let experiment;
     Experiment.query().where('project_id',req.session.project).where('id',req.params.experimentId).eager('[variations,events]')
     .then(exp=>{
-        console.log(exp);
-        experiment = exp;
+        experiment = exp[0];
+        console.log(experiment.variations);
         return Promise.join(
             Assign.query()
                 .select('variation_id')
-                .whereIn('variation_id',experiment.variations.map(v=>v.id))
+                .whereIn('variation_id', experiment.variations.map(v=>v.id))
                 .groupBy('variation_id')
                 .countDistinct('unique_id')
                 .then(res=>{
                     let as = {};
-                    exp.variations.forEach(v=>{
+                    experiment.variations.forEach(v=>{
                         if(res.find(r=>r.variation_id===v.id)){
                             as[v.name] = res.find(r=>r.variation_id===v.id)['count(distinct `unique_id`)'];
                         } else {
@@ -349,7 +349,7 @@ app.get('/experiments/:experimentId/view', authMiddleware, (req, res) => {
                 .groupBy('unique_id')
                 .sum('amount')
                 .then(ns=>{
-                    return exp.variations.map(v=>{
+                    return experiment.variations.map(v=>{
                         let res = {
                             variation: v.name,
                             variation_id: v.id
@@ -376,7 +376,7 @@ app.get('/experiments/:experimentId/view', authMiddleware, (req, res) => {
                 .sum('amount')
                 .then(lvs=>{
                     const results = {};
-                    exp.events.forEach(e=>{
+                    experiment.events.forEach(e=>{
                         const data = {};
                         lvs.filter(v=>v!=null).filter(v=>v.event_id===e.id).forEach(v=>{
                             if(!data[df(v.created_at,'yyyy-mm-dd')]){
