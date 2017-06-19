@@ -252,13 +252,13 @@ var Developer = function (_React$Component) {
                                 'To try a live demo, check out the ',
                                 _react2.default.createElement(
                                     'a',
-                                    { target: '_blank', href: 'https://rawgit.com/mj1618/ablabs-js/master/demo.html' },
+                                    { target: '_blank', href: 'https://ablabs.io/demo-browser.html' },
                                     'Browser Demo'
                                 ),
                                 ' and ',
                                 _react2.default.createElement(
                                     'a',
-                                    { target: '_blank', href: 'https://runkit.com/embed/wqdw4dni7wgz' },
+                                    { target: '_blank', href: 'https://ablabs.io/demo-node.html' },
                                     'Node Demo'
                                 )
                             ),
@@ -351,7 +351,9 @@ var Developer = function (_React$Component) {
                                 _index.TabMenu,
                                 null,
                                 _react2.default.createElement(_index.TabMenuItem, { id: 'install-browser-js', name: 'Browser JS', icon: 'zmdi zmdi-code', first: true }),
-                                _react2.default.createElement(_index.TabMenuItem, { id: 'install-node-js', name: 'Node JS', icon: 'zmdi zmdi-code' })
+                                _react2.default.createElement(_index.TabMenuItem, { id: 'install-node-js', name: 'Node JS', icon: 'zmdi zmdi-code' }),
+                                _react2.default.createElement(_index.TabMenuItem, { id: 'install-jquery', name: 'JQuery', icon: 'zmdi zmdi-code' }),
+                                _react2.default.createElement(_index.TabMenuItem, { id: 'install-curl', name: 'cURL', icon: 'zmdi zmdi-code' })
                             ),
                             _react2.default.createElement(
                                 _index.TabContent,
@@ -363,6 +365,17 @@ var Developer = function (_React$Component) {
                                         'strong',
                                         null,
                                         'Install with CDN'
+                                    ),
+                                    _react2.default.createElement(
+                                        'p',
+                                        null,
+                                        'This is to use the ',
+                                        _react2.default.createElement(
+                                            'a',
+                                            { target: '_blank', href: 'https://github.com/mj1618/ablabs-js' },
+                                            'ablabs-js'
+                                        ),
+                                        ' package in your browser'
                                     ),
                                     _react2.default.createElement(
                                         'pre',
@@ -392,6 +405,17 @@ var Developer = function (_React$Component) {
                                         'Install with NPM'
                                     ),
                                     _react2.default.createElement(
+                                        'p',
+                                        null,
+                                        'This is to use the ',
+                                        _react2.default.createElement(
+                                            'a',
+                                            { target: '_blank', href: 'https://github.com/mj1618/ablabs-js' },
+                                            'ablabs-js'
+                                        ),
+                                        ' package on a Node server'
+                                    ),
+                                    _react2.default.createElement(
                                         'pre',
                                         null,
                                         _react2.default.createElement(
@@ -408,6 +432,44 @@ var Developer = function (_React$Component) {
                                             { className: 'language-javascript' },
                                             'import ABLabs from \'ablabs-js\'\nconst ab = new ABLabs(\'' + token + '\', \'1234\') // assuming user ID is 1234, optionally leave blank'
                                         )
+                                    )
+                                ),
+                                _react2.default.createElement(
+                                    _index.TabPanel,
+                                    { id: 'install-jquery' },
+                                    _react2.default.createElement(
+                                        'strong',
+                                        null,
+                                        'Install JQuery'
+                                    ),
+                                    _react2.default.createElement(
+                                        'pre',
+                                        null,
+                                        _react2.default.createElement(
+                                            'code',
+                                            { className: 'language-html' },
+                                            '<script\n  src="https://code.jquery.com/jquery-3.2.1.min.js"\n  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="\n  crossorigin="anonymous"></script>'
+                                        )
+                                    )
+                                ),
+                                _react2.default.createElement(
+                                    _index.TabPanel,
+                                    { id: 'install-curl' },
+                                    _react2.default.createElement(
+                                        'strong',
+                                        null,
+                                        'Install cURL'
+                                    ),
+                                    _react2.default.createElement(
+                                        'p',
+                                        null,
+                                        'See ',
+                                        _react2.default.createElement(
+                                            'a',
+                                            { target: '_blank', href: 'https://curl.haxx.se/download.html' },
+                                            'https://curl.haxx.se/download.html'
+                                        ),
+                                        ' for details.'
                                     )
                                 )
                             )
@@ -433,7 +495,8 @@ var Developer = function (_React$Component) {
                             _react2.default.createElement(
                                 _index.TabMenu,
                                 null,
-                                _react2.default.createElement(_index.TabMenuItem, { id: 'assign-js', name: 'JS', icon: 'zmdi zmdi-code', first: true }),
+                                _react2.default.createElement(_index.TabMenuItem, { id: 'assign-js', name: 'ablabs-js', icon: 'zmdi zmdi-code', first: true }),
+                                _react2.default.createElement(_index.TabMenuItem, { id: 'assign-jquery', name: 'JQuery', icon: 'zmdi zmdi-code' }),
                                 _react2.default.createElement(_index.TabMenuItem, { id: 'assign-curl', name: 'cURL', icon: 'zmdi zmdi-code' })
                             ),
                             _react2.default.createElement(
@@ -502,6 +565,38 @@ var Developer = function (_React$Component) {
                                             'Successfully assigned user in ' + experiment + ' experiment\nUser "' + user + '" is in variation: ' + variation
                                         )
                                     )
+                                ),
+                                _react2.default.createElement(
+                                    _index.TabPanel,
+                                    { id: 'assign-jquery' },
+                                    _react2.default.createElement(
+                                        'strong',
+                                        null,
+                                        'Example Request'
+                                    ),
+                                    _react2.default.createElement(
+                                        'pre',
+                                        null,
+                                        _react2.default.createElement(
+                                            'code',
+                                            { className: 'language-javascript' },
+                                            'var experiments=[];\n$.ajax({\n    type:\'POST\',\n    url: \'https://ablabs.io/api/v1/assign\',\n    data: JSON.stringify({ \n        experiment: \'' + experiment + '\', \n        user: \'' + user + '\', \n        token: \'' + token + '\'\n    }),\n    dataType: \'json\',\n    contentType: \'application/json\',\n    success: function(response){\n        if(response.result===\'success\'){\n            experiments.push(\'' + experiment + '\');\n            console.log(\'Successfully assigned user in ' + experiment + ' experiment\');\n            console.log(\'User "' + user + '" is in variation: \'+response.variation);\n            // here you can change your application behaviour based on the users Variation\n        }\n    }\n});'
+                                        )
+                                    ),
+                                    _react2.default.createElement(
+                                        'strong',
+                                        null,
+                                        'Example Output'
+                                    ),
+                                    _react2.default.createElement(
+                                        'pre',
+                                        null,
+                                        _react2.default.createElement(
+                                            'code',
+                                            { className: 'language-markup' },
+                                            'Successfully assigned user in ' + experiment + ' experiment\nUser "' + user + '" is in variation: ' + variation
+                                        )
+                                    )
                                 )
                             )
                         )
@@ -526,7 +621,8 @@ var Developer = function (_React$Component) {
                             _react2.default.createElement(
                                 _index.TabMenu,
                                 null,
-                                _react2.default.createElement(_index.TabMenuItem, { id: 'track-js', name: 'JS', icon: 'zmdi zmdi-code', first: true }),
+                                _react2.default.createElement(_index.TabMenuItem, { id: 'track-js', name: 'ablabs-js', icon: 'zmdi zmdi-code', first: true }),
+                                _react2.default.createElement(_index.TabMenuItem, { id: 'track-jquery', name: 'JQuery', icon: 'zmdi zmdi-code' }),
                                 _react2.default.createElement(_index.TabMenuItem, { id: 'track-curl', name: 'cURL', icon: 'zmdi zmdi-code' })
                             ),
                             _react2.default.createElement(
@@ -579,6 +675,38 @@ var Developer = function (_React$Component) {
                                             'code',
                                             { className: 'language-javascript' },
                                             'ab.track(\'' + event + '\').then(res=>{\n    if(res.result===\'success\')\n        console.log(\'Successfully tracked ' + event + ' event for user \'+ab.user);\n})'
+                                        )
+                                    ),
+                                    _react2.default.createElement(
+                                        'strong',
+                                        null,
+                                        'Example Output'
+                                    ),
+                                    _react2.default.createElement(
+                                        'pre',
+                                        null,
+                                        _react2.default.createElement(
+                                            'code',
+                                            { className: 'language-markup' },
+                                            'Successfully tracked ' + event + ' event for user ' + user
+                                        )
+                                    )
+                                ),
+                                _react2.default.createElement(
+                                    _index.TabPanel,
+                                    { id: 'track-jquery' },
+                                    _react2.default.createElement(
+                                        'strong',
+                                        null,
+                                        'Example Request'
+                                    ),
+                                    _react2.default.createElement(
+                                        'pre',
+                                        null,
+                                        _react2.default.createElement(
+                                            'code',
+                                            { className: 'language-javascript' },
+                                            '$.ajax({\n    type:\'POST\',\n    url: \'https://ablabs.io/api/v1/track\',\n    data: JSON.stringify({ \n        event: \'' + event + '\', \n        user: \'' + user + '\', \n        experiments: experiments, //experiments === [' + JSON.stringify(experiments) + '] from assign api call\n        token: \'' + token + '\'\n    }),\n    dataType: \'json\',\n    contentType: \'application/json\',\n    success: function(response){\n        if(response.result===\'success\'){\n            console.log(\'Successfully tracked ' + event + ' event for user ' + user + '\');\n        }\n    }\n});'
                                         )
                                     ),
                                     _react2.default.createElement(

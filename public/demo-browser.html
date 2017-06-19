@@ -1,0 +1,143 @@
+
+<html>
+<head>
+<style>
+.wrapper {
+    text-align: center;
+    position: absolute;
+    top: 20%;   
+    width: 100%;
+}
+
+.green {
+    background-color: #4CAF50;
+}
+
+.blue {
+    background-color: #008CBA;
+}
+
+.button {
+    text-align: center;
+    margin-top:60px;
+    padding: 10px 20px;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+#output {
+    width: 70%;
+    text-align: left;
+    margin: 0 auto;
+}
+#output-items li {
+    padding: 10px 0px;
+}
+.left-half{
+    width:30%;
+    height:100%;
+    text-align: center;
+    position:absolute;
+    left:0;
+    top:0;
+    padding:0;
+    margin:0;
+}
+.right-half{
+    width:70%;
+    position:absolute;
+    left:30%;
+    top:0;
+    display:inline-block;
+    padding:0;
+    margin:0;
+}
+#output-items{
+    max-height:350px;
+    height:350px;
+    border: 1px solid black;
+    overflow:scroll;
+}
+</style>
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+<body>
+
+<div class="left-half">
+<h4>Test Button</h4>
+    <button id='test-button' class="button">Click Me!</button>
+</div>
+
+<div class="right-half">
+    <div id="output">
+    <h4>Javascript Output</h4>
+    <button id='reassign'>Clear user and reassign</button>
+    <ul id="output-items">
+
+    </ul>
+    </div>
+</div>
+
+<div class="wrapper">
+
+</div>
+
+
+<script src="https://cdn.rawgit.com/mj1618/ablabs-js/v1.0.7/build/ablabs.min.js"></script>
+<script type="text/javascript">
+var ab = new ABLabs.default( 'a49ca12dd64415c580a28e8326287335' );
+append("<li>Random user ID generated for current browser session: "+ab.user+"</li>");
+append("<li>Requesting to assign variation to user for experiment: 'Blue/Green Button Experiment'</li>");
+assign();
+
+function assign(){
+    $('#test-button').removeClass('blue');
+    $('#test-button').removeClass('green');
+    ab.assign('Blue/Green Button Experiment').then(e=>{
+        append("<li>User was given variation: "+e.variation+"</li>");
+        if(e.variation==='Blue Button'){
+            $('#test-button').addClass('blue');
+            trackOnClick();
+        } else if(e.variation==='Green Button') {
+            $('#test-button').addClass('green');
+            trackOnClick();
+        } else {
+            append("<li>Didn't receive a valid variation</li>");
+        }
+    });
+}
+
+$('#reassign').click(()=>{
+    localStorage.removeItem('user');
+    append("<li>Cleared user data, starting as fresh user</li>");
+    ab = new ABLabs.default( 'a49ca12dd64415c580a28e8326287335' );
+    append("<li>New random user ID :"+ab.user+"</li>");
+    append("<li>Assigning new variation</li>");
+    assign();
+});
+
+function trackOnClick(){
+    $('#test-button').prop('onclick',null).off('click');
+    $('#test-button').click(()=>{
+        ab.track('Clicked Button').then(t=>{
+            if(t.result==='success'){
+                append("<li>Tracked 'Clicked Button' event</li>");
+            } else {
+                append("<li>Failed to track 'Clicked Button' event</li>");
+            }
+        });
+    })
+}
+
+function append(html){
+    $('#output-items').append(html);
+    $('#output-items').scrollTop(Number.MAX_SAFE_INTEGER);
+}
+</script>
+</body>
+</html>
